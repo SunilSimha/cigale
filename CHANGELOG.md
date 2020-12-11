@@ -1,5 +1,25 @@
 # Change Log
 
+## Unreleased
+### Added
+- The polar dust model of X-CIGALE (Yang et al., 2020) for the `skirtor2016` module has been integrated into the regular version. (Médéric Boquien, based on the initial work of Guang Yang)
+- An additional check is done when constructing the `pcigale.ini` and `pcigale.ini.spec` files to avoid the generation of an incorrect `pcigale.ini.spec` when `pcigale.ini` exists but `pcigale.ini.spec` does not, which is not supposed to happen under regular circumstances. (Médéric Boquien)
+- Now `pcigale check` also displays the number of models per redshift. (Médéric Boquien)
+### Changed
+### Fixed
+- Ensure that `pcigale-plots` correctly detects the `skirtor2016` AGN models. (Médéric Boquien, reported by Guang Yang)
+- Correct a typo in the `themis` module. (Médéric Boquien, reported by Alexandros Maragkoudakis)
+- Make sure that the best fit is also given for the bands for which `pdf\_analysis` provides a Bayesian estimate. (Médéric Boquien)
+- The `save_chi2` parameter was not correctly acknowledged in `pcigale-plots pdf`, leading to a crash as it tried to build the PDF of parameters for which the corresponding `chi2` files were not saved. (Médéric Boquien, reported by Laia Barrufet de Soto)
+- The help of `pcigale-plots sed` incorrectly reported that the values given to the `--xrange` option were in nm, rather than μm. (Médéric Boquien, reported by Guang Yang)
+- A run with an already existing `out/` directory led to a crash under Microsoft Windows. This was due to renaming `out/` to add the time with hours, minutes, and second separated by a colon. This is not allowed on this platform. The renamed directory has not been made compact and does not use colons anymore. (Médéric Boquien, reported by Samir Salim)
+- The units of line fluxes were not always correct for Bayesian estimates. (Médéric Boquien, reported by Katarzyna Małek)
+- An input redshift of integer type caused `pcigale-plots sed` to crash because it could not be formatted as a float. It is now explicitly converted to a float for safety. (Médéric Boquien)
+- SED plots could not be generated for runs without a dust attenuation module as `pcigale-plots sed` assumed there would be one. This case is now handled. (Médéric Boquien)
+### Optimised
+- The estimation of the physical properties and the related uncertainties has been made up to 50% faster. The final gain in the analysis speed accounting for all the steps depends on the number of properties to be evaluated and the number of models but can be over 25% when estimating many properties over a large parameter space. (Médéric Boquien)
+- Invalid models (e.g., when the stellar populations are older than the universe) are now ignored when handling upper limits. The speedup is very variable but can be substantial in case there are many invalid models. (Médéric Boquien)
+
 ## 2020.0 (2020-06-29)
 ### Added
 - The (1+z1)/(1+z2) factor between observed and grid flux densities caused by the differential redshifting is now taken into account. With a default grid redshift rounding of two decimals this yields a difference of at most 0.5% in the estimated physical properties at z=0 and even less at higher z. (Médéric Boquien)
@@ -36,7 +56,7 @@
 - Some labels and the title for the SED plots has been improved to avoid overlaps and overflows. (Médéric Boquien)
 - Ensure that best models are properly computed when models are computed by blocks and that no fit could be made in one or more blocks. This can be case if all the models in the block are older than the age of the universe. (Médéric)
 - Make sure that the parameters are saved with the proper scale (linear or logarithmic) in the χ² files. (Médéric Boquien)
-- Some math libraries such as MKL or OpenBLAS sometime try to be (too) smart, starting computation threads on their own. As cigale is already parallel, this just oversubscribes the CPU and can lead to important slowdowns. An environment variable could be set by the user to disable this, but this is cumbersome. Rather, we set these variables directly in the code at the startup of cigale. (Yannick Roehlly & Médéric Boquien)
+- Some math libraries such as MKL or OpenBLAS sometimes try to be (too) smart, starting computation threads on their own. As cigale is already parallel, this just oversubscribes the CPU and can lead to important slowdowns. An environment variable could be set by the user to disable this, but this is cumbersome. Rather, we set these variables directly in the code at the startup of cigale. (Yannick Roehlly & Médéric Boquien)
 - Fix a crash in `pcigale-plots` when plotting the SED of models computed without stellar populations. (Médéric Boquien)
 - Make sure that upper limits on physical properties are correctly taken into account. (Médéric Boquien)
 - Improve the sanitation of input data so that upper limits of extensive properties are not eliminated from the quantities to be fitted when upper limits are activated. (Médéric Boquien)
@@ -48,7 +68,7 @@
 - Speedup of the computation of the χ² by ~10% taking the opposite of a scalar rather than of an array. (Médéric Boquien)
 - Thanks to a change in the layout of the models storage in RAM, the computation of the χ² is now massively faster when the run contains multiple redshifts. (Médéric Boquien)
 - The computation of the weighted means and standard deviations has been made ~50% faster by normalising the likelihood. (Médéric Boquien)
-- The the fritz2006 module should now run faster thanks to an optimisation of the computation of the luminosity of the various AGN components (Médéric Boquien & Guang Yang)
+- The `fritz2006` module should now run faster thanks to an optimisation of the computation of the luminosity of the various AGN components (Médéric Boquien & Guang Yang)
 - Various optimisations have been made regarding shared arrays to make their access faster. The overall effect is a speedup of 3-4% for the computation of the models. (Médéric Boquien)
 - All the cores should now be used over the entire duration of the computation of the Bayesian and best-fit estimates. Before the number of active cores could drop towards the end of the computation. (Médéric Boquien)
 
