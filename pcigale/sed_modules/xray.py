@@ -91,7 +91,6 @@ class Xray(SedModule):
         lam_300keV = lam_1keV*0.0033333
         lam_2keV = lam_1keV/2
         lam_10keV = lam_1keV*0.1
-        lam_8keV = lam_1keV*0.125
         # Define frequency corresponding to 2 keV in units of Hz.
         self.nu_2keV = self.c / lam_2keV
 
@@ -115,7 +114,7 @@ class Xray(SedModule):
         self.lumin_hmxb = self.wave**(2.00 - 3.) * np.exp(-lam_100keV/self.wave)
         lam_idxs = (self.wave<=lam_2keV) & (self.wave>=lam_10keV)
         self.lumin_lmxb /= np.trapz(self.lumin_lmxb[lam_idxs], x=self.wave[lam_idxs])
-        lam_idxs = (self.wave<=lam_0p5keV) & (self.wave>=lam_8keV)
+        lam_idxs = (self.wave<=lam_2keV) & (self.wave>=lam_10keV)
         self.lumin_hmxb /= np.trapz(self.lumin_hmxb[lam_idxs], x=self.wave[lam_idxs])
 
         # We compute the unobscured AGN corona X-ray emission
@@ -125,10 +124,10 @@ class Xray(SedModule):
         # Normaliz the SED at 2 keV
         self.lumin_corona *= 1./(lam_2keV**(self.gam - 3.) * np.exp(-lam_300keV/lam_2keV))
         # Calculate total AGN corona X-ray luminosity
-        self.l_agn_xray_total = np.trapz(self.lumin_corona, x=self.wave)
+        self.l_agn_total = np.trapz(self.lumin_corona, x=self.wave)
         # Calculate 2-10 keV AGN corona X-ray luminosity
         lam_idxs = (self.wave<=lam_2keV) & (self.wave>=lam_10keV)
-        self.l_agn_xray_2to10keV = np.trapz(self.lumin_corona[lam_idxs], x=self.wave[lam_idxs])
+        self.l_agn_2to10keV = np.trapz(self.lumin_corona[lam_idxs], x=self.wave[lam_idxs])
 
 
     def process(self, sed):
@@ -173,13 +172,13 @@ class Xray(SedModule):
         sed.add_info("xray.max_dev_alpha_ox", self.max_dev_alpha_ox)
 
         # Calculate 0.5-2 keV hot-gas luminosities
-        l_hotgas_xray_0p5to2keV = 8.3e31 * sfr
+        l_hotgas_0p5to2keV = 8.3e31 * sfr
         # Calculate 2-10 keV HMXB luminosities
-        l_hmxb_xray_0p5to8keV = sfr * \
-            10**(30.83 - 1.33*logZ - 0.17*logZ**2 \
+        l_hmxb_2to10keV = sfr * \
+            10**(30.58 - 1.33*logZ - 0.17*logZ**2 \
                  + self.det_hmxb)
         # Calculate 2-10 keV LMXB luminosities
-        l_lmxb_xray_2to10keV = mstar * \
+        l_lmxb_2to10keV = mstar * \
             10**(33.276 - 1.503*logT - 0.423*logT**2 + 0.425*logT**3 + 0.136*logT**4 \
                  + self.det_lmxb)
 
@@ -189,22 +188,22 @@ class Xray(SedModule):
         # Calculate total AGN corona X-ray luminosity at theta deg
         scl_fac = (self.a1*cosi + self.a2*cosi**2 + 1-self.a1-self.a2) /\
                   (1 - 0.13397*self.a1 - 0.25*self.a2) * L_lam_2keV
-        l_agn_xray_total = self.l_agn_xray_total * scl_fac
+        l_agn_total = self.l_agn_total * scl_fac
         # Calculate 2-10 keV AGN corona X-ray luminosity at theta deg
-        l_agn_xray_2to10keV = self.l_agn_xray_2to10keV * scl_fac
+        l_agn_2to10keV = self.l_agn_2to10keV * scl_fac
 
         # Save the results
-        sed.add_info("xray.hotgas_Lx_0p5to2keV", l_hotgas_xray_0p5to2keV, True, unit='W')
-        sed.add_info("xray.hmxb_Lx_0p5to8keV", l_hmxb_xray_0p5to8keV, True, unit='W')
-        sed.add_info("xray.lmxb_Lx_2to10keV", l_lmxb_xray_2to10keV, True, unit='W')
-        sed.add_info("xray.agn_Lx_total", l_agn_xray_total, True, unit='W')
-        sed.add_info("xray.agn_Lx_2to10keV", l_agn_xray_2to10keV, True, unit='W')
+        sed.add_info("xray.hotgas_Lx_0p5to2keV", l_hotgas_0p5to2keV, True, unit='W')
+        sed.add_info("xray.hmxb_Lx_2to10keV", l_hmxb_2to10keV, True, unit='W')
+        sed.add_info("xray.lmxb_Lx_2to10keV", l_lmxb_2to10keV, True, unit='W')
+        sed.add_info("xray.agn_Lx_total", l_agn_total, True, unit='W')
+        sed.add_info("xray.agn_Lx_2to10keV", l_agn_2to10keV, True, unit='W')
         sed.add_info("xray.agn_Lnu_2keV_30deg", Lnu_2keV, True, unit='W/Hz')
         # Add the SED components
         sed.add_contribution('xray.galaxy', self.wave,
-                self.lumin_hotgas*l_hotgas_xray_0p5to2keV + \
-                self.lumin_lmxb*l_lmxb_xray_2to10keV + \
-                self.lumin_hmxb*l_hmxb_xray_0p5to8keV)
+                self.lumin_hotgas*l_hotgas_0p5to2keV + \
+                self.lumin_lmxb*l_lmxb_2to10keV + \
+                self.lumin_hmxb*l_hmxb_2to10keV)
         sed.add_contribution('xray.agn', self.wave, self.lumin_corona * scl_fac)
 
 # SedModule to be returned by get_module
