@@ -248,7 +248,7 @@ def _sed_worker(obs, mod, filters, sed_type, logo, xrange, yrange, series,
                 ax1.loglog(wavelength_spec[wsed],
                            sed['radio.sf_nonthermal'][wsed],
                            label="Radio SF nonthermal", color='brown',
-                           marker=None, nonposy='clip', linestyle='-',
+                           marker=None, nonpositive='clip', linestyle='-',
                            linewidth=1.0)
 
             if 'model' in series:
