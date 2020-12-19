@@ -41,10 +41,12 @@ class Xray(SedModule):
         )),
         ("max_dev_alpha_ox", (
             "float()",
-            "Maximum deviation of alpha_ox from the empirical alpha_ox-Lnu_2500A relation (Just et al. 2007), "
+            "Maximum allowed deviation of alpha_ox from the empirical alpha_ox-Lnu_2500A relation (Just et al. 2007), "
             "i.e. |alpha_ox-alpha_ox(Lnu_2500A)| <= max_dev_alpha_ox. "
             "The alpha_ox-Lnu_2500A relation has a 1-sigma scatter of ~ 0.1. "
-            "We assume the relation is measured at a typical AGN viewing angle of 30°.",
+            "We assume the relation is measured at a typical AGN viewing angle of 30°. "
+            "Setting it to zero or a negative value means do not apply the alpha_ox-Lnu_2500A relation "
+            "(i.e., allowing all given alpha_ox values).",
             0.2
         )),
         ("angle_coef", (
@@ -58,13 +60,13 @@ class Xray(SedModule):
         ("det_lmxb", (
             "cigale_list()",
             "The deviation from the expected low-mass X-ray binary (LMXB) logLx. "
-            "Positive values mean higher logLx from LMXB",
+            "Positive values mean higher logLx from LMXB.",
             0.
         )),
         ("det_hmxb", (
             "cigale_list()",
             "The deviation from the expected high-mass X-ray binary (HMXB) logLx. "
-            "Positive values mean higher logLx from HMXB",
+            "Positive values mean higher logLx from HMXB.",
             0.
         ))
     ])
@@ -79,7 +81,6 @@ class Xray(SedModule):
         self.det_lmxb = float(self.parameters["det_lmxb"])
         self.det_hmxb = float(self.parameters["det_hmxb"])
         self.alpha_ox = float(self.parameters["alpha_ox"])
-        self.max_dev_alpha_ox = float(self.parameters["max_dev_alpha_ox"])
 
         # We define various constants necessary to compute the model. For
         # consistency, we define speed of light in units of nm s¯¹
@@ -169,7 +170,6 @@ class Xray(SedModule):
         sed.add_info("xray.det_lmxb", self.det_lmxb)
         sed.add_info("xray.det_hmxb", self.det_hmxb)
         sed.add_info("xray.alpha_ox", self.alpha_ox)
-        sed.add_info("xray.max_dev_alpha_ox", self.max_dev_alpha_ox)
 
         # Calculate 0.5-2 keV hot-gas luminosities
         l_hotgas_0p5to2keV = 8.3e31 * sfr
