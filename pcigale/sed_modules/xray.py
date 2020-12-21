@@ -172,7 +172,8 @@ class Xray(SedModule):
         sed.add_info("xray.alpha_ox", self.alpha_ox)
 
         # Calculate 0.5-2 keV hot-gas luminosities
-        l_hotgas_0p5to2keV = 8.3e31 * sfr
+        # The factor 1.78 is to account diference between Salpeter and Kroupa IMFs
+        l_hotgas_0p5to2keV = 8.3e31 * sfr * 1.78
         # Calculate 2-10 keV HMXB luminosities
         l_hmxb_2to10keV = sfr * \
             10**(30.58 - 1.33*logZ - 0.17*logZ**2 \
