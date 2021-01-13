@@ -100,9 +100,9 @@ class Xray(SedModule):
         self.wave = np.logspace(-3, 0.7, 1000)
 
         # X-ray emission from galaxies: 1.hot-gas & 2.X-ray binaries
-        # 1.Hot-gas, assuming power-law index gamma=1, E_cut=0.24 keV
+        # 1.Hot-gas, assuming power-law index gamma=1, E_cut=1 keV
         # normalized such that L(0.5-2 keV) = 1
-        self.lumin_hotgas = self.wave**-2 * np.exp(-lam_1keV*4.17/self.wave)
+        self.lumin_hotgas = self.wave**-2 * np.exp(-lam_1keV/self.wave)
         lam_idxs = (self.wave<=lam_0p5keV) & (self.wave>=lam_2keV)
         self.lumin_hotgas *= 1./np.trapz(self.lumin_hotgas[lam_idxs], x=self.wave[lam_idxs])
         # 2. X-ray binaries (XRB)
@@ -115,7 +115,6 @@ class Xray(SedModule):
         self.lumin_hmxb = self.wave**(2.00 - 3.) * np.exp(-lam_100keV/self.wave)
         lam_idxs = (self.wave<=lam_2keV) & (self.wave>=lam_10keV)
         self.lumin_lmxb /= np.trapz(self.lumin_lmxb[lam_idxs], x=self.wave[lam_idxs])
-        lam_idxs = (self.wave<=lam_2keV) & (self.wave>=lam_10keV)
         self.lumin_hmxb /= np.trapz(self.lumin_hmxb[lam_idxs], x=self.wave[lam_idxs])
 
         # We compute the unobscured AGN corona X-ray emission
@@ -152,7 +151,7 @@ class Xray(SedModule):
         # log stellar age, units: Gyr
         logT = np.log10( sed.info['stellar.age_m_star']*1e-3 )
         # log metallicity, units: none
-        logZ = np.log10(sed.info['stellar.metallicity'])
+        Z = sed.info['stellar.metallicity']
         # Get AGN viewing angle and 2500A intrinsic luminosity (at 30 deg)
         if 'agn.i' in sed.info:
             # SKIRTOR model
@@ -172,11 +171,10 @@ class Xray(SedModule):
         sed.add_info("xray.alpha_ox", self.alpha_ox)
 
         # Calculate 0.5-2 keV hot-gas luminosities
-        # The factor 1.78 is to account diference between Salpeter and Kroupa IMFs
-        l_hotgas_0p5to2keV = 8.3e31 * sfr * 1.78
+        l_hotgas_0p5to2keV = 8.3e31 * sfr
         # Calculate 2-10 keV HMXB luminosities
         l_hmxb_2to10keV = sfr * \
-            10**(30.58 - 1.33*logZ - 0.17*logZ**2 \
+            10**(33.28 - 62.12*Z + 569.44*Z**2 - 1833.80*Z**3 + 1968.33*Z**4 \
                  + self.det_hmxb)
         # Calculate 2-10 keV LMXB luminosities
         l_lmxb_2to10keV = mstar * \
