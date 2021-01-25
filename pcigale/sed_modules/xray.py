@@ -168,6 +168,8 @@ class Xray(SedModule):
         sed.add_info("xray.det_lmxb", self.det_lmxb)
         sed.add_info("xray.det_hmxb", self.det_hmxb)
         sed.add_info("xray.alpha_ox", self.alpha_ox)
+        sed.add_info("xray.a1", self.a1)
+        sed.add_info("xray.a2", self.a2)
 
         # Calculate 0.5-2 keV hot-gas luminosities
         l_hotgas_0p5to2keV = 8.3e31 * sfr
