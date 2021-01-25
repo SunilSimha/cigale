@@ -50,12 +50,13 @@ class Xray(SedModule):
             0.2
         )),
         ("angle_coef", (
-            "string()",
-            "The 1st-order and 2nd-order polynomial coefficients (a1/a2) in X-ray dependence on AGN viewing angle, "
+            "cigale_string_list()",
+            "The 1st-order and 2nd-order polynomial coefficients (a1 & a2) in X-ray dependence on AGN viewing angle, "
             "i.e. Lx(i)/Lx(0) = a1*cos(i) + a2*cos(i)^2 + 1-a1-a2, where i=0° is face-on and i=90° is edge on. "
             "The viewing angle, i, is defined in the AGN module. "
-            "Setting to 0/0 means isotropic AGN X-ray emission.",
-            "0/0"
+            "Setting to 0 & 0 means isotropic AGN X-ray emission. "
+            "You can give multiple sets of a1 & a2 separated by comma.",
+            "0 & 0"
         )),
         ("det_lmxb", (
             "cigale_list()",
@@ -75,9 +76,7 @@ class Xray(SedModule):
         """Build the model for a given set of parameters."""
 
         self.gam = float(self.parameters["gam"])
-        self.angle_coef = str(self.parameters["angle_coef"]).split('/')
-        self.a1 = float(self.angle_coef[0])
-        self.a2 = float(self.angle_coef[1])
+        self.a1, self.a2 = [float(item) for item in self.parameters["angle_coef"].split('&')]
         self.det_lmxb = float(self.parameters["det_lmxb"])
         self.det_hmxb = float(self.parameters["det_hmxb"])
         self.alpha_ox = float(self.parameters["alpha_ox"])
