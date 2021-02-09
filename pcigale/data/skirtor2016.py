@@ -6,7 +6,7 @@ class SKIRTOR2016(object):
 
     """
 
-    def __init__(self, t, pl, q, oa, R, Mcl, i, wave, disk, dust):
+    def __init__(self, t, pl, q, oa, R, Mcl, i, norm, wave, disk, dust):
         """Create a new AGN model. The descriptions of the parameters are taken
            directly from https://sites.google.com/site/skirtorus/sed-library.
 
@@ -31,6 +31,8 @@ class SKIRTOR2016(object):
             inclination, i.e. viewing angle, i.e. position of the instrument
             w.r.t. the AGN axis. i=0: face-on, type 1 view; i=90: edge-on, type
             2 view.
+        norm: float
+            normalization factor (integral of the dust luminosity).
         wave: array of float
             Wavelength grid in nm.
         disk: array of flaot
@@ -46,6 +48,7 @@ class SKIRTOR2016(object):
         self.R = R
         self.Mcl = Mcl
         self.i = i
+        self.norm = norm
         self.wave = wave
         self.disk = disk
         self.dust = dust

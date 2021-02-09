@@ -323,6 +323,9 @@ class SKIRTOR2016(SedModule):
                                                     self.i)
             AGN1 = base.get_skirtor2016(self.t, self.pl, self.q, self.oa,
                                         self.R, self.Mcl, 0.)
+            # Re-normalize AGN1, to be consistent with the intrinsic AGN
+            # luminosity of SKIRTOR2016
+            AGN1.disk *= AGN1.norm / self.SKIRTOR2016.norm
 
         # We offer the possibility to modify the change the disk spectrum.
         # To ensure the conservation of the energy we first normalize the new

@@ -215,6 +215,7 @@ class _SKIRTOR2016(BASE):
     R = Column(Float, primary_key=True)
     Mcl = Column(Float, primary_key=True)
     i = Column(Float, primary_key=True)
+    norm = Column(Float)
     wave = Column(PickleType)
     disk = Column(PickleType)
     dust = Column(PickleType)
@@ -227,6 +228,7 @@ class _SKIRTOR2016(BASE):
         self.R = agn.R
         self.Mcl = agn.Mcl
         self.i = agn.i
+        self.norm = agn.norm
         self.wave = agn.wave
         self.disk = agn.disk
         self.dust = agn.dust
@@ -844,8 +846,8 @@ class Database(object):
                   first())
         if result:
             return SKIRTOR2016(result.t, result.pl, result.q, result.oa,
-                               result.R, result.Mcl, result.i, result.wave,
-                               result.disk, result.dust)
+                               result.R, result.Mcl, result.i, result.norm,
+                               result.wave, result.disk, result.dust)
         else:
             raise DatabaseLookupError(
                 "The SKIRTOR2016 model is not in the database.")
