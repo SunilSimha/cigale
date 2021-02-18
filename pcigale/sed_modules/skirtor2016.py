@@ -110,7 +110,7 @@ class SKIRTOR2016(SedModule):
             "cigale_list(options=3 & 5 & 7 & 9 & 11)",
             "Average edge-on optical depth at 9.7 micron; the actual one along"
             "the line of sight may vary depending on the clumps distribution. "
-            "Possible values are: 3, 5, 7, 8, and 11.",
+            "Possible values are: 3, 5, 7, 9, and 11.",
             3
         )),
         ('pl', (
