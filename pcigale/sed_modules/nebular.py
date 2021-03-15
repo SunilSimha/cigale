@@ -71,7 +71,7 @@ class NebularEmission(SedModule):
             '0.012 & 0.014 & 0.016 & 0.019 & 0.022 & 0.025 & 0.03 & 0.033 & '
             '0.037 & 0.041 & 0.046 & 0.051)',
             "Gas metallicity",
-            0.02
+            0.014
         )),
         ('f_esc', (
             'cigale_list(minvalue=0., maxvalue=1.)',
