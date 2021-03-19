@@ -18,6 +18,7 @@
 - An input redshift of integer type caused `pcigale-plots sed` to crash because it could not be formatted as a float. It is now explicitly converted to a float for safety. (Médéric Boquien)
 - SED plots could not be generated for runs without a dust attenuation module as `pcigale-plots sed` assumed there would be one. This case is now handled. (Médéric Boquien)
 - Indicate the correct possible values for the optical depth at 9.7 μm in the `skirtor2016` module. (Médéric Boquien, reported by Katarzyna Małek)
+- Prevent a crash in the spectral resampling procedure. That was due to the array containing the spectra of the individual components to be of dimension 1 when not having stellar populations and the first two modules not generating spectra on the same wavelength grid. (Médéric Boquien)
 ### Optimised
 - The estimation of the physical properties and the related uncertainties has been made up to 50% faster. The final gain in the analysis speed accounting for all the steps depends on the number of properties to be evaluated and the number of models but can be over 25% when estimating many properties over a large parameter space. (Médéric Boquien)
 - Invalid models (e.g., when the stellar populations are older than the universe) are now ignored when handling upper limits. The speedup is very variable but can be substantial in case there are many invalid models. (Médéric Boquien)

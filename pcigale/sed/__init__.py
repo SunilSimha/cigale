@@ -202,7 +202,7 @@ class SED(object):
         if self.luminosity is None:
             self.wavelength_grid = results_wavelengths.copy()
             self.luminosity = results_lumin.copy()
-            self.luminosities = results_lumin.copy()
+            self.luminosities = results_lumin[np.newaxis, :].copy()
         else:
             # If the added luminosity contribution changes the SED wavelength
             # grid, we interpolate everything on a common wavelength grid.
