@@ -104,7 +104,7 @@ class Configuration(object):
 
         self.config['sed_modules'] = []
         self.config.comments['sed_modules'] = ([""] +
-            ["Avaiable modules to compute the models. The order must be kept."
+            ["Available modules to compute the models. The order must be kept."
             ] +
             ["SFH:"] +
             ["* sfh2exp (double exponential)"] +
