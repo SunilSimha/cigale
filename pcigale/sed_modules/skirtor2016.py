@@ -81,89 +81,13 @@ def disk(wl, limits, coefs):
     return spectrum  * (1. / np.trapz(spectrum, x=wl))
 
 def schartmann2005_disk(wl, delta=0.):
-    limits = np.array([1., 50., 125., 10000., 1e6])
+    limits = np.array([8., 50., 125., 10000., 1e6])
     coefs = np.array([1.0, -0.2, -1.5 + delta, -4.0])
 
     return disk(wl, limits, coefs)
 
 def skirtor_disk(wl, delta=0.):
-    limits = np.array([1., 10., 100., 5000., 1e6])
-    coefs = np.array([0.2, -1.0, -1.5 + delta, -4.0])
-
-    return disk(wl, limits, coefs)
-
-
-def k_ext(wavelength, ext_law):
-    """
-    Compute k(λ)=A(λ)/E(B-V) for a specified extinction law
-
-    Parameters
-    ----------
-    wavelength: array of floats
-        Wavelength grid in nm.
-    ext_law: the extinction law
-             0=SMC, 1=Calzetti2000, 2=Gaskell2004
-
-    Returns
-    -------
-    a numpy array of floats
-
-    """
-    if ext_law == 0:
-        # SMC, from Bongiorno+2012
-        return 1.39 * (wavelength * 1e-3) ** -1.2
-    elif ext_law == 1:
-        # Calzetti2000, from dustatt_calzleit.py
-        result = np.zeros(len(wavelength))
-        # Attenuation between 120 nm and 630 nm
-        mask = (wavelength < 630)
-        result[mask] = 2.659 * (-2.156 + 1.509e3 / wavelength[mask] -
-                                0.198e6 / wavelength[mask] ** 2 +
-                                0.011e9 / wavelength[mask] ** 3) + 4.05
-        # Attenuation between 630 nm and 2200 nm
-        mask = (wavelength >= 630)
-        result[mask] = 2.659 * (-1.857 + 1.040e3 / wavelength[mask]) + 4.05
-        return result
-    elif ext_law == 2:
-        # Gaskell+2004, from the appendix of that paper
-        x = 1e3 / wavelength
-        Alam_Av = np.zeros(len(wavelength))
-        # Attenuation for x = 1.6 -- 3.69
-        mask = (x < 3.69)
-        Alam_Av[mask] = -0.8175 + 1.5848*x[mask] - 0.3774*x[mask]**2 + 0.0296*x[mask]**3
-        # Attenuation for x = 3.69 -- 8
-        mask = (x >= 3.69)
-        Alam_Av[mask] = 1.3468 + 0.0087*x[mask]
-        # Set negative values to zero
-        Alam_Av[Alam_Av < 0.] = 0.
-        # Convert A(λ)/A(V) to A(λ)/E(B-V)
-        # assuming A(B)/A(V) = 1.182 (Table 3 of Gaskell+2004)
-        return Alam_Av / 0.182
-    else:
-        raise KeyError("Extinction law is different from the expected ones")
-
-def disk(wl, limits, coefs):
-    ss = np.searchsorted(wl, limits)
-    wpl = [slice(lo, hi) for lo, hi in zip(ss[:-1], ss[1:])]
-
-    norms = np.ones_like(coefs)
-    for idx in range(1, coefs.size):
-        norms[idx] = norms[idx-1] * limits[idx] ** (coefs[idx-1] - coefs[idx])
-
-    spectrum = np.zeros_like(wl)
-    for w, coef, norm in zip(wpl, coefs, norms):
-        spectrum[w] = wl[w]**coef * norm
-
-    return spectrum  * (1. / np.trapz(spectrum, x=wl))
-
-def schartmann2005_disk(wl, delta=0.):
-    limits = np.array([1., 50., 125., 10000., 1e6])
-    coefs = np.array([1.0, -0.2, -1.5 + delta, -4.0])
-
-    return disk(wl, limits, coefs)
-
-def skirtor_disk(wl, delta=0.):
-    limits = np.array([1., 10., 100., 5000., 1e6])
+    limits = np.array([8., 10., 100., 5000., 1e6])
     coefs = np.array([0.2, -1.0, -1.5 + delta, -4.0])
 
     return disk(wl, limits, coefs)
