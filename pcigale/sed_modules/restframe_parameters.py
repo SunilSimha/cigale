@@ -224,7 +224,7 @@ class RestframeParam(SedModule):
 
         for filt in self.lumin_filters:
             sed.add_info(f"param.restframe_Lnu({filt})",
-                         fluxes[filt] * self.to_lumin, True, unit='W')
+                         fluxes[filt] * self.to_lumin, True, unit='W/Hz')
         for filt1, filt2 in self.colours:
             sed.add_info(f"param.restframe_{filt1}-{filt2}",
                          2.5 * np.log10(fluxes[filt2]/fluxes[filt1]),
