@@ -47,7 +47,8 @@ setup(
     entry_points=entry_points,
 
     cmdclass={"build": custom_build},
-    package_data={'pcigale': ['data/data.db'],
+    package_data={'pcigale': ['data/data.db',
+                              'sed_modules/curves/*.dat'],
                   'pcigale_plots': ['resources/CIGALE.png']},
 
     include_package_data=True,
