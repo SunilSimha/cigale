@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2014 Yannick Roehlly, Médéric Boquien, Denis Burgarella
 # Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Author: Yannick Roehlly, Médéric Boquien, Denis Burgarella
+# Author: Yannick Roehlly, Médéric Boquien, Denis Burgarella, Guang Yang
 
 """
 Redshifting module
@@ -91,11 +91,12 @@ def igm_transmission(wavelength, redshift):
                            (float(n) * (float(n*n - 1.))))
 
     for n in range(2, n_transitions_max):
-        w = np.where(z_n[n, :] >= redshift)
+        # If z_n>=redshift or z_n<0, the photon cannot be absorbed by Lyman n→1
+        w = np.where((z_n[n, :] >= redshift) | (z_n[n, :] < 0))
         tau_n[n, w] = 0.
 
     z_l = wavelength / lambda_limit - 1.
-    w = np.where(z_l < redshift)
+    w = slice(None, np.searchsorted(z_l, redshift))
 
     tau_l_igm = np.zeros_like(wavelength)
     tau_l_igm[w] = (0.805 * np.power(1. + z_l[w], 3) *
@@ -119,20 +120,22 @@ def igm_transmission(wavelength, redshift):
     tau_l_lls = np.zeros_like(wavelength)
     tau_l_lls[w] = n0 * ((term1 - term2) * term3 - term4)
 
+    # Reset for short wavelength (z_l<0)
+    w = slice(None, np.searchsorted(z_l, 0.))
+
+    # Get the normalization factor at z_l=0
+    tau_norm_l_igm = np.interp(0, z_l, tau_l_igm)
+    tau_norm_l_lls = np.interp(0, z_l, tau_l_lls)
+
+    # Calculate tau_l_igm & tau_l_lls, assuming cross section ~λ^2.75
+    # from (O'Meara et al. 2013)
+    damp_factor = (z_l[w] + 1.) ** 2.75
+    tau_l_igm[w] = tau_norm_l_igm * damp_factor
+    tau_l_lls[w] = tau_norm_l_lls * damp_factor
+
     tau_taun = np.sum(tau_n[2:n_transitions_max, :], axis=0)
 
-    lambda_min_igm = (1+redshift)*70.
-    w = np.where(wavelength < lambda_min_igm)
-
-    weight = np.ones_like(wavelength)
-    weight[w] = np.power(wavelength[w]/lambda_min_igm, 2.)
-    # Another weight using erf function can be used.
-    # However, you would need to add: from scipy.special import erf
-    # weight[w] = 0.5*(1.+erf(0.05*(wavelength[w]-lambda_min_igm)))
-
-    igm_transmission = np.exp(-tau_taun-tau_l_igm-tau_l_lls) * weight
-
-    return igm_transmission
+    return np.exp(- tau_taun - tau_l_igm - tau_l_lls)
 
 
 class Redshifting(SedModule):
