@@ -5,12 +5,33 @@ SKIRTOR 2016 (Stalevski et al., 2016) AGN dust torus emission module
 This module implements the SKIRTOR 2016 models.
 
 """
+from functools import lru_cache
+
+from astropy.table import Table
 import numpy as np
+import pkg_resources
 import scipy.constants as cst
+from scipy.interpolate import interp1d
 
 from pcigale.data import SimpleDatabase as Database
 from . import SedModule
 
+@lru_cache
+def k_ext_short(ext_law):
+    if ext_law == 0:
+        ext_file = 'extFun_SMC.dat'
+    elif ext_law == 1:
+        ext_file = 'extFun_MRN.dat'
+    elif ext_law == 2:
+        ext_file = 'extFun_Gaskel04.dat'
+    else:
+        raise ValueError(f"Exinction law {ext_law} unknown.")
+    ext_file = pkg_resources.resource_filename(__name__, f"curves/{ext_file}")
+    curve = Table.read(ext_file, header_start=5, format='ascii')
+    wl = curve['lambda'] * 1e3
+    AB, AV = np.interp([440., 550.], wl, curve['ext'])
+
+    return interp1d(wl, curve['ext'] / (AB - AV))
 
 def k_ext(wavelength, ext_law):
     """
@@ -30,7 +51,7 @@ def k_ext(wavelength, ext_law):
     """
     if ext_law == 0:
         # SMC, from Bongiorno+2012
-        return 1.39 * (wavelength * 1e-3) ** -1.2
+        k = 1.39 * (wavelength * 1e-3) ** -1.2
     elif ext_law == 1:
         # Calzetti2000, from dustatt_calzleit.py
         result = np.zeros(len(wavelength))
@@ -42,7 +63,7 @@ def k_ext(wavelength, ext_law):
         # Attenuation between 630 nm and 2200 nm
         mask = (wavelength >= 630)
         result[mask] = 2.659 * (-1.857 + 1.040e3 / wavelength[mask]) + 4.05
-        return result
+        k = result
     elif ext_law == 2:
         # Gaskell+2004, from the appendix of that paper
         x = 1e3 / wavelength
@@ -58,10 +79,16 @@ def k_ext(wavelength, ext_law):
         Alam_Av[Alam_Av < 0.] = 0.
         # Convert A(λ)/A(V) to A(λ)/E(B-V)
         # assuming A(B)/A(V) = 1.182 (Table 3 of Gaskell+2004)
-        return Alam_Av / 0.182
+        k = Alam_Av / 0.182
     else:
         raise KeyError("Extinction law is different from the expected ones")
 
+    mask = np.where(wavelength < 100.)
+    if mask[0].size > 0:
+        k_short = k_ext_short(ext_law)(wavelength[mask])
+        k[mask] = k_short * (k[mask][-1] / k_short[-1])
+
+    return k
 
 def disk(wl, limits, coefs):
     ss = np.searchsorted(wl, limits)
