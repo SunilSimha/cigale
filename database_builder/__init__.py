@@ -41,7 +41,7 @@ def read_bc03_ssp(filename):
 
     Parameters
     ----------
-    filename : string
+    filename : Path
 
     Returns
     -------
@@ -62,7 +62,7 @@ def read_bc03_ssp(filename):
         there are 5 informational lines after the time vector. We use this
         generator to the if we are on lines to read or not.
         """
-        if "chab" in filename:
+        if "chab" in filename.stem:
             bad_line_number = 5
         else:
             bad_line_number = 6
@@ -83,7 +83,7 @@ def read_bc03_ssp(filename):
     full_table = []
     tmp_table = []
 
-    with open(filename) as file_:
+    with filename.open() as file_:
         # We read the file line by line.
         for line in file_:
             if what_line == "data":
@@ -329,7 +329,7 @@ def build_m2005(base):
 
 
 def build_bc2003(base, res):
-    bc03_dir = os.path.join(os.path.dirname(__file__), 'bc03/')
+    bc03_dir = Path(__file__).parent / 'bc03'
 
     # Time grid (1 Myr to 14 Gyr with 1 Myr step)
     time_grid = np.arange(1, 14000)
@@ -346,12 +346,9 @@ def build_bc2003(base, res):
     }
 
     for key, imf in itertools.product(metallicity, ["salp", "chab"]):
-        ssp_filename = "{}bc2003_{}_{}_{}_ssp.ised_ASCII".format(bc03_dir, res,
-                                                                 key, imf)
-        color3_filename = "{}bc2003_lr_{}_{}_ssp.3color".format(bc03_dir, key,
-                                                                imf)
-        color4_filename = "{}bc2003_lr_{}_{}_ssp.4color".format(bc03_dir, key,
-                                                                imf)
+        ssp_filename = bc03_dir / f"bc2003_{res}_{key}_{imf}_ssp.ised_ASCII"
+        color3_filename = bc03_dir / f"bc2003_lr_{key}_{imf}_ssp.3color"
+        color4_filename = bc03_dir / f"bc2003_lr_{key}_{imf}_ssp.4color"
 
         print("Importing {}...".format(ssp_filename))
 
