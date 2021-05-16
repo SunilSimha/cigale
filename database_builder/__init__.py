@@ -16,10 +16,13 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 import glob
 import io
 import itertools
+from pathlib import Path
+
 import numpy as np
 from scipy import interpolate
 import scipy.constants as cst
 from astropy.table import Table
+
 from pcigale.data import (Database, Filter, M2005, BC03, Fritz2006,
                           Dale2014, DL2007, DL2014, NebularLines,
                           NebularContinuum, SKIRTOR2016, Schreiber2016, THEMIS)
@@ -139,17 +142,16 @@ def read_bc03_ssp(filename):
 
 def build_filters(base):
     filters = []
-    filters_dir = os.path.join(os.path.dirname(__file__), 'filters/')
-    for filter_file in glob.glob(filters_dir + '**/*.dat', recursive=True):
-        with open(filter_file, 'r') as filter_file_read:
+    filters_dir = Path(__file__).parent / 'filters'
+    pathlen = len(filters_dir.parts)
+    for filter_file in filters_dir.rglob('*.dat'):
+        with filter_file.open() as filter_file_read:
             filter_name = filter_file_read.readline().strip('# \n\t')
             filter_type = filter_file_read.readline().strip('# \n\t')
             filter_description = filter_file_read.readline().strip('# \n\t')
 
-        # Make the name dynamic for filters in subdirectories
-        tmp_name = filter_file.replace(filters_dir, '')[:-4]
-        if '/' in tmp_name:
-            filter_name = tmp_name.replace('/', '.')
+        filter_name = '.'.join(filter_file.with_suffix('').parts[pathlen:])
+
         filter_table = np.genfromtxt(filter_file)
         # The table is transposed to have table[0] containing the wavelength
         # and table[1] containing the transmission.
@@ -186,16 +188,16 @@ def build_filters(base):
 
 def build_filters_gazpar(base):
     filters = []
-    filters_dir = os.path.join(os.path.dirname(__file__), 'filters_gazpar/')
-    for filter_file in glob.glob(filters_dir + '**/*.pb', recursive=True):
-        with open(filter_file, 'r') as filter_file_read:
+    filters_dir = Path(__file__).parent / 'filters_gazpar'
+    pathlen = len(filters_dir.parts)
+    for filter_file in filters_dir.rglob('*.pb'):
+        with filter_file.open() as filter_file_read:
             _ = filter_file_read.readline() # We use the filename for the name
             filter_type = filter_file_read.readline().strip('# \n\t')
             _ = filter_file_read.readline() # We do not yet use the calib type
             filter_desc = filter_file_read.readline().strip('# \n\t')
 
-        filter_name = filter_file.replace(filters_dir, '')[:-3]
-        filter_name = filter_name.replace('/', '.')
+        filter_name = '.'.join(filter_file.with_suffix('').parts[pathlen:])
 
         filter_table = np.genfromtxt(filter_file)
         # The table is transposed to have table[0] containing the wavelength
