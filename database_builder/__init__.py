@@ -680,11 +680,9 @@ def build_fritz2006(base):
 
 def build_skirtor2016(base):
     models = []
-    skirtor2016_dir = os.path.join(os.path.dirname(__file__), 'skirtor2016/')
+    skirtor2016_dir = Path(__file__).parent / 'skirtor2016'
 
-    files = glob.glob(skirtor2016_dir + '/*')
-    files = [os.path.split(file)[-1] for file in files]
-    params = [f.split('_')[:-1] for f in files]
+    params = [f.stem.split('_')[:-1] for f in skirtor2016_dir.glob('*')]
 
     # Parameters of SKIRTOR 2016
     t = list({param[0][1:] for param in params})
@@ -705,7 +703,7 @@ def build_skirtor2016(base):
                    for p7 in i)
 
     for params in iter_params:
-        filename = skirtor2016_dir + \
+        filename = skirtor2016_dir / \
                 "t{}_p{}_q{}_oa{}_R{}_Mcl{}_i{}_sed.dat".format(*params)
         print("Importing {}...".format(filename))
 
