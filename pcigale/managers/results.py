@@ -11,6 +11,7 @@ etc. Each of these classes contain a merge() method that allows to combine
 results of the analysis with different blocks of models.
 """
 import ctypes
+from pathlib import Path
 
 from astropy.table import Table, Column
 from astropy.units import Unit, LogUnit
@@ -445,7 +446,7 @@ class ResultsManager(object):
                                     name="best."+band,
                                     unit=self.fluxunit(band)))
 
-
-        table.write(f"out/{filename}.txt", format='ascii.fixed_width',
+        out = Path('out')
+        table.write(out / f"{filename}.txt", format='ascii.fixed_width',
                     delimiter=None)
-        table.write(f"out/{filename}.fits", format='fits')
+        table.write(out / f"{filename}.fits", format='fits')

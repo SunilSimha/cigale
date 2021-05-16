@@ -7,6 +7,7 @@
 # Author: Yannick Roehlly, Médéric Boquien & Denis Burgarella
 
 from copy import deepcopy
+from pathlib import Path
 
 import numpy as np
 
@@ -271,6 +272,6 @@ def bestfit(oidx, obs):
                                                        * corr_dz
 
         if gbl_conf['analysis_params']["save_best_sed"]:
-            sed.to_fits(f"out/{obs.id}", scaling * corr_dz)
+            sed.to_fits(Path('out') / f"{obs.id}", scaling * corr_dz)
 
     gbl_counter.inc()

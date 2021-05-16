@@ -5,6 +5,7 @@
 
 from astropy.table import Column
 import numpy as np
+from pathlib import Path
 from scipy.constants import parsec
 
 from ..utils.cosmology import luminosity_distance
@@ -266,8 +267,9 @@ class ObservationsManagerPassbands(object):
             Root of the filename where to save the observations.
 
         """
-        self.table.write(f'out/{filename}.fits')
-        self.table.write(f'out/{filename}.txt', format='ascii.fixed_width',
+        out = Path('out')
+        self.table.write(out / f'{filename}.fits')
+        self.table.write(out / f'{filename}.txt', format='ascii.fixed_width',
                          delimiter=None)
 
 

@@ -6,6 +6,7 @@
 # Author: Yannick Roehlly & Médéric Boquien
 
 from functools import lru_cache
+from pathlib import Path
 
 from astropy import log
 from ...utils.cosmology import luminosity_distance
@@ -21,7 +22,7 @@ def save_chi2(obs, variable, models, chi2, values):
     """Save the chi² and the associated physocal properties
 
     """
-    fname = f"out/{obs.id}_{variable.replace('/', '_')}_chi2-block-" \
+    fname = Path('out') / f"{obs.id}_{variable.replace('/', '_')}_chi2-block-" \
             f"{models.iblock}.npy"
     data = np.memmap(fname, dtype=np.float64, mode='w+',
                      shape=(2, chi2.size))

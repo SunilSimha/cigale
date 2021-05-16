@@ -10,6 +10,7 @@ of the models.
 """
 
 import ctypes
+from pathlib import Path
 
 from astropy.table import Table, Column
 from astropy.units import Unit
@@ -80,6 +81,7 @@ class ModelsManager(object):
             table.add_column(Column(self.intprop[prop], name=prop,
                                     unit=Unit(self.unit[prop])))
 
-        table.write(f"out/{filename}.fits")
-        table.write(f"out/{filename}.txt", format='ascii.fixed_width',
+        out = Path('out')
+        table.write(out / f"{filename}.fits")
+        table.write(out / f"{filename}.txt", format='ascii.fixed_width',
                     delimiter=None)

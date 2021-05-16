@@ -6,6 +6,7 @@
 # Author: Yannick Roehlly & Médéric Boquien
 
 import numpy as np
+from pathlib import Path
 
 from ...warehouse import SedWarehouse
 
@@ -62,6 +63,6 @@ def fluxes(idx, midx):
             gbl_models.intprop[prop][idx] = sed.info[prop]
 
     if gbl_save is True:
-        sed.to_fits(f"out/{midx}")
+        sed.to_fits(Path('out') / f"{midx}")
 
     gbl_counter.inc()
