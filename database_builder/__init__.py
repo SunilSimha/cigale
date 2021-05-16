@@ -615,7 +615,7 @@ def build_dl2014(base):
 
 def build_fritz2006(base):
     models = []
-    fritz2006_dir = os.path.join(os.path.dirname(__file__), 'fritz2006/')
+    fritz2006_dir = Path(__file__).parent / 'fritz2006'
 
     # Parameters of Fritz+2006
     psy = [0.001, 10.100, 20.100, 30.100, 40.100, 50.100, 60.100, 70.100,
@@ -627,11 +627,9 @@ def build_fritz2006(base):
     r_ratio = ["10", "30", "60", "100", "150"]
 
     # Read and convert the wavelength
-    datafile = open(fritz2006_dir + "ct{}al{}be{}ta{}rm{}.tot"
-                    .format(opening_angle[0], gamma[0], beta[0], tau[0],
-                            r_ratio[0]))
-    data = "".join(datafile.readlines()[-178:])
-    datafile.close()
+    filename = fritz2006_dir / "ct20al0.0be-1.00ta0.1rm10.tot"
+    with filename.open() as datafile:
+        data = "".join(datafile.readlines()[-178:])
     wave = np.genfromtxt(io.BytesIO(data.encode()), usecols=(0))
     wave *= 1e3
     # Number of wavelengths: 178; Number of comments lines: 28
@@ -646,14 +644,13 @@ def build_fritz2006(base):
                    for rm in r_ratio)
 
     for params in iter_params:
-        filename = fritz2006_dir + "ct{}al{}be{}ta{}rm{}.tot".format(*params)
+        filename = fritz2006_dir / "ct{}al{}be{}ta{}rm{}.tot".format(*params)
         print("Importing {}...".format(filename))
         try:
-            datafile = open(filename)
+            with filename.open() as datafile:
+                data = datafile.readlines()
         except IOError:
             continue
-        data = datafile.readlines()
-        datafile.close()
 
         for n in range(len(psy)):
             block = data[nskip + blocksize * n + 4 * (n + 1) - 1:
