@@ -814,7 +814,7 @@ def build_schreiber2016(base):
 
 def build_themis(base):
     models = []
-    themis_dir = os.path.join(os.path.dirname(__file__), 'themis/')
+    themis_dir = Path(__file__).parent / 'themis'
 
     # Mass fraction of hydrocarbon solids i.e., a-C(:H) smaller than 1.5 nm,
     # also known as HAC
@@ -839,11 +839,9 @@ def build_themis(base):
             "080": 7.4e-3, "090": 7.4e-3, "100": 7.4e-3}
 
     # Here we obtain the wavelength beforehand to avoid reading it each time.
-    datafile = open(themis_dir + "U{}_{}_MW3.1_{}/spec_1.0.dat"
-                    .format(uminimum[0], uminimum[0], "000"))
-
-    data = "".join(datafile.readlines()[-576:])
-    datafile.close()
+    filename = themis_dir / "U0.100_0.100_MW3.1_000" / "spec_1.0.dat"
+    with filename.open() as datafile:
+        data = "".join(datafile.readlines()[-576:])
 
     wave = np.genfromtxt(io.BytesIO(data.encode()), usecols=(0))
 
@@ -855,8 +853,8 @@ def build_themis(base):
 
     for model in sorted(qhac.keys()):
         for umin in uminimum:
-            filename = (themis_dir + "U{}_{}_MW3.1_{}/spec_1.0.dat"
-                        .format(umin, umin, model))
+            filename = themis_dir / f"U{umin}_{umin}_MW3.1_{model}" / \
+                "spec_1.0.dat"
             print("Importing {}...".format(filename))
             with open(filename) as datafile:
                 data = "".join(datafile.readlines()[-576:])
@@ -867,8 +865,8 @@ def build_themis(base):
 
             models.append(THEMIS(qhac[model], umin, umin, 1.0, wave, lumin))
             for al in alpha:
-                filename = (themis_dir + "U{}_1e7_MW3.1_{}/spec_{}.dat"
-                            .format(umin, model, al))
+                filename = themis_dir / f"U{umin}_1e7_MW3.1_{model}" / \
+                    f"spec_{al}.dat"
                 print("Importing {}...".format(filename))
                 with open(filename) as datafile:
                     data = "".join(datafile.readlines()[-576:])
