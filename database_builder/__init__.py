@@ -476,7 +476,7 @@ def build_dale2014(base):
 
 def build_dl2007(base):
     models = []
-    dl2007_dir = os.path.join(os.path.dirname(__file__), 'dl2007/')
+    dl2007_dir = Path(__file__).parent / 'dl2007'
 
     qpah = {
         "00": 0.47,
@@ -499,12 +499,9 @@ def build_dl2007(base):
             "40": 0.0102, "50": 0.0103, "60": 0.0104}
 
     # Here we obtain the wavelength beforehand to avoid reading it each time.
-    datafile = open(dl2007_dir + "U{}/U{}_{}_MW3.1_{}.txt".format(umaximum[0],
-                                                                  umaximum[0],
-                                                                  umaximum[0],
-                                                                  "00"))
-    data = "".join(datafile.readlines()[-1001:])
-    datafile.close()
+    filename = dl2007_dir / "U1e3" / "U1e3_1e3_MW3.1_00.txt"
+    with filename.open() as datafile:
+        data = "".join(datafile.readlines()[-1001:])
 
     wave = np.genfromtxt(io.BytesIO(data.encode()), usecols=(0))
     # For some reason wavelengths are decreasing in the model files
@@ -517,14 +514,11 @@ def build_dl2007(base):
 
     for model in sorted(qpah.keys()):
         for umin in uminimum:
-            filename = dl2007_dir + "U{}/U{}_{}_MW3.1_{}.txt".format(umin,
-                                                                     umin,
-                                                                     umin,
-                                                                     model)
+            filename = dl2007_dir / f"U{umin}" / \
+                f"U{umin}_{umin}_MW3.1_{model}.txt"
             print("Importing {}...".format(filename))
-            datafile = open(filename)
-            data = "".join(datafile.readlines()[-1001:])
-            datafile.close()
+            with filename.open() as datafile:
+                data = "".join(datafile.readlines()[-1001:])
             lumin = np.genfromtxt(io.BytesIO(data.encode()), usecols=(2))
             # For some reason fluxes are decreasing in the model files
             lumin = lumin[::-1]
@@ -533,14 +527,11 @@ def build_dl2007(base):
 
             models.append(DL2007(qpah[model], umin, umin, wave, lumin))
             for umax in umaximum:
-                filename = dl2007_dir + "U{}/U{}_{}_MW3.1_{}.txt".format(umin,
-                                                                         umin,
-                                                                         umax,
-                                                                         model)
+                filename = dl2007_dir / f"U{umin}" / \
+                    f"U{umin}_{umax}_MW3.1_{model}.txt"
                 print("Importing {}...".format(filename))
-                datafile = open(filename)
-                data = "".join(datafile.readlines()[-1001:])
-                datafile.close()
+                with filename.open() as datafile:
+                    data = "".join(datafile.readlines()[-1001:])
                 lumin = np.genfromtxt(io.BytesIO(data.encode()), usecols=(2))
                 # For some reason fluxes are decreasing in the model files
                 lumin = lumin[::-1]
