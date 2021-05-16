@@ -163,8 +163,7 @@ def build_filters(base):
             raise ValueError("Filter transmission type can only be "
                              "'energy' or 'photon'.")
 
-        print("Importing %s... (%s points)" % (filter_name,
-                                               filter_table.shape[1]))
+        print(f"Importing {filter_name}... ({filter_table.shape[1]} points)")
 
         new_filter = Filter(filter_name, filter_description, filter_table)
 
@@ -210,8 +209,7 @@ def build_filters_gazpar(base):
             raise ValueError("Filter transmission type can only be "
                              "'energy' or 'photon'.")
 
-        print("Importing %s... (%s points)" % (filter_name,
-                                               filter_table.shape[1]))
+        print(f"Importing {filter_name}... ({filter_table.shape[1]} points)")
 
         new_filter = Filter(filter_name, filter_desc, filter_table)
 
@@ -242,7 +240,7 @@ def build_m2005(base):
         np.genfromtxt(m2005_dir / 'stellarmass.salpeter').transpose()
 
     for spec_file in m2005_dir.glob('*.rhb'):
-        print("Importing %s..." % spec_file)
+        print(f"Importing {spec_file}...")
 
         spec_table = np.genfromtxt(spec_file).transpose()
         metallicity = spec_table[1, 0]
@@ -346,7 +344,7 @@ def build_bc2003(base, res):
         color3_filename = bc03_dir / f"bc2003_lr_{key}_{imf}_ssp.3color"
         color4_filename = bc03_dir / f"bc2003_lr_{key}_{imf}_ssp.4color"
 
-        print("Importing {}...".format(ssp_filename))
+        print(f"Importing {ssp_filename}...")
 
         # Read the desired information from the color files
         color_table = []
@@ -438,7 +436,7 @@ def build_dale2014(base):
     # Emission from dust heated by SB
     fraction = 0.0
     filename = dale2014_dir / "spectra.0.00AGN.dat"
-    print("Importing {}...".format(filename))
+    print(f"Importing {filename}...")
     with filename.open() as datafile:
         data = "".join(datafile.readlines())
 
@@ -456,7 +454,7 @@ def build_dale2014(base):
         models.append(Dale2014(fraction, alpha_grid[al-1], wave, lumin))
     # Emission from dust heated by AGN - Quasar template
     filename = dale2014_dir / "shi_agn.regridded.extended.dat"
-    print("Importing {}...".format(filename))
+    print(f"Importing {filename}...")
 
     wave, lumin_quasar = np.genfromtxt(filename, unpack=True)
     wave *= 1e3
@@ -511,7 +509,7 @@ def build_dl2007(base):
         for umin in uminimum:
             filename = dl2007_dir / f"U{umin}" / \
                 f"U{umin}_{umin}_MW3.1_{model}.txt"
-            print("Importing {}...".format(filename))
+            print(f"Importing {filename}...")
             with filename.open() as datafile:
                 data = "".join(datafile.readlines()[-1001:])
             lumin = np.genfromtxt(io.BytesIO(data.encode()), usecols=(2))
@@ -524,7 +522,7 @@ def build_dl2007(base):
             for umax in umaximum:
                 filename = dl2007_dir / f"U{umin}" / \
                     f"U{umin}_{umax}_MW3.1_{model}.txt"
-                print("Importing {}...".format(filename))
+                print(f"Importing {filename}...")
                 with filename.open() as datafile:
                     data = "".join(datafile.readlines()[-1001:])
                 lumin = np.genfromtxt(io.BytesIO(data.encode()), usecols=(2))
@@ -579,7 +577,7 @@ def build_dl2014(base):
         for umin in uminimum:
             filename = dl2014_dir / f"U{umin}_{umin}_MW3.1_{model}"/ \
                 "spec_1.0.dat"
-            print("Importing {}...".format(filename))
+            print(f"Importing {filename}...")
             with filename.open() as datafile:
                 data = "".join(datafile.readlines()[-1001:])
             lumin = np.genfromtxt(io.BytesIO(data.encode()), usecols=(2))
@@ -594,7 +592,7 @@ def build_dl2014(base):
             for al in alpha:
                 filename = dl2014_dir / f"U{umin}_1e7_MW3.1_{model}" / \
                     f"spec_{al}.dat"
-                print("Importing {}...".format(filename))
+                print(f"Importing {filename}...")
                 with filename.open() as datafile:
                     data = "".join(datafile.readlines()[-1001:])
                 lumin = np.genfromtxt(io.BytesIO(data.encode()), usecols=(2))
@@ -640,7 +638,7 @@ def build_fritz2006(base):
 
     for params in iter_params:
         filename = fritz2006_dir / "ct{}al{}be{}ta{}rm{}.tot".format(*params)
-        print("Importing {}...".format(filename))
+        print(f"Importing {filename}...")
         try:
             with filename.open() as datafile:
                 data = datafile.readlines()
@@ -700,7 +698,7 @@ def build_skirtor2016(base):
     for params in iter_params:
         filename = skirtor2016_dir / \
                 "t{}_p{}_q{}_oa{}_R{}_Mcl{}_i{}_sed.dat".format(*params)
-        print("Importing {}...".format(filename))
+        print(f"Importing {filename}...")
 
         wl, disk, scatt, dust = np.genfromtxt(filename, unpack=True,
                                               usecols=(0, 2, 3, 4))
@@ -726,7 +724,7 @@ def build_nebular(base):
 
     nebular_dir = Path(__file__).parent / 'nebular'
     filename = nebular_dir / 'lines.dat'
-    print("Importing {}...".format(filename))
+    print(f"Importing {filename}...")
     lines = np.genfromtxt(filename)
 
     tmp = Table.read(nebular_dir / 'line_wavelengths.dat', format='ascii')
@@ -734,7 +732,7 @@ def build_nebular(base):
     name_lines = tmp['col2'].data
 
     filename = nebular_dir / 'continuum.dat'
-    print("Importing {}...".format(filename))
+    print(f"Importing {filename}...")
     cont = np.genfromtxt(filename)
 
     # Convert wavelength from Å to nm
@@ -784,11 +782,11 @@ def build_schreiber2016(base):
     schreiber2016_dir = Path(__file__).parent / 'schreiber2016'
 
     filename = schreiber2016_dir / 'g15_pah.fits'
-    print("Importing {}...".format(filename))
+    print(f"Importing {filename}...")
     pah = Table.read(filename)
 
     filename = schreiber2016_dir / 'g15_dust.fits'
-    print("Importing {}...".format(filename))
+    print(f"Importing {filename}...")
     dust = Table.read(filename)
 
     # Getting the lambda grid for the templates and convert from μm to nm.
@@ -851,7 +849,7 @@ def build_themis(base):
         for umin in uminimum:
             filename = themis_dir / f"U{umin}_{umin}_MW3.1_{model}" / \
                 "spec_1.0.dat"
-            print("Importing {}...".format(filename))
+            print(f"Importing {filename}...")
             with open(filename) as datafile:
                 data = "".join(datafile.readlines()[-576:])
             lumin = np.genfromtxt(io.BytesIO(data.encode()), usecols=(2))
@@ -863,7 +861,7 @@ def build_themis(base):
             for al in alpha:
                 filename = themis_dir / f"U{umin}_1e7_MW3.1_{model}" / \
                     f"spec_{al}.dat"
-                print("Importing {}...".format(filename))
+                print(f"Importing {filename}...")
                 with open(filename) as datafile:
                     data = "".join(datafile.readlines()[-576:])
                 lumin = np.genfromtxt(io.BytesIO(data.encode()), usecols=(2))
