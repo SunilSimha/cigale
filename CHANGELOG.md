@@ -22,6 +22,7 @@
 - Prevent a crash in the spectral resampling procedure. That was due to the array containing the spectra of the individual components to be of dimension 1 when not having stellar populations and the first two modules not generating spectra on the same wavelength grid. (Médéric Boquien)
 - Give the correct unit for `param.restframe\_Lnu`. (Médéric Boquien, reported by Miguel Figueira)
 - Fix incorrect filename handling that prevented the import of the `skirtor2016` models under Microsoft Windows. (Médéric Boquien)
+- Following a past change in the way `chi2` files are saved, adapt `pcigale\_plot` to correctly produce PDF plots for physical properties that are in log rather than crashing. (Médéric Boquien)
 ### Optimised
 - The estimation of the physical properties and the related uncertainties has been made up to 50% faster. The final gain in the analysis speed accounting for all the steps depends on the number of properties to be evaluated and the number of models but can be over 25% when estimating many properties over a large parameter space. (Médéric Boquien)
 - Invalid models (e.g., when the stellar populations are older than the universe) are now ignored when handling upper limits. The speedup is very variable but can be substantial in case there are many invalid models. (Médéric Boquien)
