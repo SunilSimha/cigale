@@ -416,19 +416,19 @@ def build_bc2003(base, res):
 
 def build_dale2014(base):
     models = []
-    dale2014_dir = os.path.join(os.path.dirname(__file__), 'dale2014/')
+    dale2014_dir = Path(__file__).parent / 'dale2014'
 
     # Getting the alpha grid for the templates
-    d14cal = np.genfromtxt(dale2014_dir + 'dhcal.dat')
+    d14cal = np.genfromtxt(dale2014_dir / 'dhcal.dat')
     alpha_grid = d14cal[:, 1]
 
     # Getting the lambda grid for the templates and convert from microns to nm.
-    first_template = np.genfromtxt(dale2014_dir + 'spectra.0.00AGN.dat')
+    first_template = np.genfromtxt(dale2014_dir / 'spectra.0.00AGN.dat')
     wave = first_template[:, 0] * 1E3
 
     # Getting the stellar emission and interpolate it at the same wavelength
     # grid
-    stell_emission_file = np.genfromtxt(dale2014_dir +
+    stell_emission_file = np.genfromtxt(dale2014_dir /
                                         'stellar_SED_age13Gyr_tau10Gyr.spec')
     # A -> to nm
     wave_stell = stell_emission_file[:, 0] * 0.1
@@ -441,11 +441,10 @@ def build_dale2014(base):
 
     # Emission from dust heated by SB
     fraction = 0.0
-    filename = dale2014_dir + "spectra.0.00AGN.dat"
+    filename = dale2014_dir / "spectra.0.00AGN.dat"
     print("Importing {}...".format(filename))
-    datafile = open(filename)
-    data = "".join(datafile.readlines())
-    datafile.close()
+    with filename.open() as datafile:
+        data = "".join(datafile.readlines())
 
     for al in range(1, len(alpha_grid)+1, 1):
         lumin_with_stell = np.genfromtxt(io.BytesIO(data.encode()),
@@ -460,7 +459,7 @@ def build_dale2014(base):
 
         models.append(Dale2014(fraction, alpha_grid[al-1], wave, lumin))
     # Emission from dust heated by AGN - Quasar template
-    filename = dale2014_dir + "shi_agn.regridded.extended.dat"
+    filename = dale2014_dir / "shi_agn.regridded.extended.dat"
     print("Importing {}...".format(filename))
 
     wave, lumin_quasar = np.genfromtxt(filename, unpack=True)
