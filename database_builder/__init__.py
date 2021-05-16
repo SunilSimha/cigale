@@ -785,13 +785,15 @@ def build_nebular(base):
 
 def build_schreiber2016(base):
     models = []
-    schreiber2016_dir = os.path.join(os.path.dirname(__file__),
-                                     'schreiber2016/')
+    schreiber2016_dir = Path(__file__).parent / 'schreiber2016'
 
-    print("Importing {}...".format(schreiber2016_dir + 'g15_pah.fits'))
-    pah = Table.read(schreiber2016_dir + 'g15_pah.fits')
-    print("Importing {}...".format(schreiber2016_dir + 'g15_dust.fits'))
-    dust = Table.read(schreiber2016_dir + 'g15_dust.fits')
+    filename = schreiber2016_dir / 'g15_pah.fits'
+    print("Importing {}...".format(filename))
+    pah = Table.read(filename)
+
+    filename = schreiber2016_dir / 'g15_dust.fits'
+    print("Importing {}...".format(filename))
+    dust = Table.read(filename)
 
     # Getting the lambda grid for the templates and convert from μm to nm.
     wave = dust['LAM'][0, 0, :].data * 1e3
