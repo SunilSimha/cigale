@@ -728,16 +728,18 @@ def build_nebular(base):
     models_lines = []
     models_cont = []
 
-    nebular_dir = os.path.join(os.path.dirname(__file__), 'nebular/')
-    print("Importing {}...".format(nebular_dir + 'lines.dat'))
-    lines = np.genfromtxt(nebular_dir + 'lines.dat')
+    nebular_dir = Path(__file__).parent / 'nebular'
+    filename = nebular_dir / 'lines.dat'
+    print("Importing {}...".format(filename))
+    lines = np.genfromtxt(filename)
 
-    tmp = Table.read(nebular_dir + 'line_wavelengths.dat', format='ascii')
+    tmp = Table.read(nebular_dir / 'line_wavelengths.dat', format='ascii')
     wave_lines = tmp['col1'].data
     name_lines = tmp['col2'].data
 
-    print("Importing {}...".format(nebular_dir + 'continuum.dat'))
-    cont = np.genfromtxt(nebular_dir + 'continuum.dat')
+    filename = nebular_dir / 'continuum.dat'
+    print("Importing {}...".format(filename))
+    cont = np.genfromtxt(filename)
 
     # Convert wavelength from Å to nm
     wave_lines *= 0.1
