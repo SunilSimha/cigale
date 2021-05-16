@@ -5,7 +5,7 @@
 
 from collections import OrderedDict
 import multiprocessing as mp
-import os.path
+from pathlib import Path
 import sys
 from textwrap import wrap
 
@@ -27,12 +27,12 @@ class Configuration(object):
     """This class manages the configuration of pcigale.
     """
 
-    def __init__(self, filename="pcigale.ini"):
+    def __init__(self, filename=Path("pcigale.ini")):
         """Initialise a pcigale configuration.
 
         Parameters
         ----------
-        filename: string
+        filename: Path
             Name of the configuration file (pcigale.conf by default).
 
         """
@@ -40,14 +40,14 @@ class Configuration(object):
         # pcigale.ini.spec. While this seems to work when doing the pcigale
         # genconf, it actually generates an incorrect pcigale.ini.spec. The only
         # clean solution is to rebuild both files.
-        if os.path.isfile(filename) and not os.path.isfile(filename+'.spec'):
+        if filename.is_file() and not filename.with_suffix('.ini.spec').is_file():
             raise Exception("The pcigale.ini.spec file appears to be missing. "
                             "Please delete the pcigale.ini file and regenrate "
                             "it with 'pcigale init' and then 'pcigale genconf' "
                             "after having filled the initial pcigale.ini "
                             "template.")
         else:
-            self.spec = configobj.ConfigObj(filename+'.spec',
+            self.spec = configobj.ConfigObj(filename.with_suffix('.ini.spec'),
                                             write_empty_values=True,
                                             indent_type='  ',
                                             encoding='UTF8',
@@ -64,7 +64,7 @@ class Configuration(object):
         # we actually return the configuration file from the property() method.
         self.config.validate(validate.Validator(validation.functions))
 
-        self.pcigaleini_exists = os.path.isfile(filename)
+        self.pcigaleini_exists = filename.is_file()
 
     def create_blank_conf(self):
         """Create the initial configuration file

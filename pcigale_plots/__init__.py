@@ -17,8 +17,8 @@ os.environ["NUMEXPR_NUM_THREADS"] = "1"
 
 import argparse
 import sys
-from os import path
 import multiprocessing as mp
+from pathlib import Path
 
 from pcigale.session.configuration import Configuration
 from .plot_types.chi2 import chi2 as chi2_action
@@ -100,12 +100,12 @@ def main():
     mock_parser.set_defaults(parser='mock')
 
     args = parser.parse_args()
-    outdir = path.abspath(args.outdir)
+    outdir = Path(args.outdir)
 
     if args.config_file:
-        config = Configuration(args.config_file)
+        config = Configuration(Path(args.config_file))
     else:
-        config = Configuration(path.join(path.dirname(outdir), 'pcigale.ini'))
+        config = Configuration(outdir / 'pcigale.ini')
 
     if len(sys.argv) == 1:
         parser.print_usage()

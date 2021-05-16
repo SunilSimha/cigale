@@ -101,7 +101,7 @@ def main():
         args = parser.parse_args()
 
         if args.config_file:
-            config = Configuration(args.config_file)
+            config = Configuration(Path(args.config_file))
         else:
             config = Configuration()
 
