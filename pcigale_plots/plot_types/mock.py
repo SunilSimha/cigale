@@ -9,14 +9,13 @@
 from astropy.table import Table
 import matplotlib
 import sys
-from os import path
-
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import multiprocessing as mp
 import numpy as np
 import pkg_resources
 from scipy import stats
+
 from utils.counter import Counter
 
 # Name of the file containing the best models information
@@ -38,8 +37,8 @@ def pool_initializer(counter):
 def mock(config, nologo, outdir):
     """Plot the comparison of input/output values of analysed variables.
     """
-    best_results_file = path.abspath(path.join(outdir, BEST_RESULTS))
-    mock_results_file = path.abspath(path.join(outdir, MOCK_RESULTS))
+    best_results_file = outdir / BEST_RESULTS
+    mock_results_file = outdir / MOCK_RESULTS
 
     try:
         exact = Table.read(best_results_file)
@@ -87,8 +86,8 @@ def _mock_worker(exact, estimated, param, logo, outdir):
         Name of the parameter
     nologo: boolean
         Do not add the logo when set to true.
-    outdir: string
-        The absolute path to outdir
+    outdir: Path
+        Path to outdir
 
     """
     gbl_counter.inc()
@@ -122,6 +121,6 @@ def _mock_worker(exact, estimated, param, logo, outdir):
                         zorder=0, alpha=1)
 
     plt.tight_layout()
-    plt.savefig(f'{outdir}/mock_{param}.pdf', dpi=figure.dpi * 2.)
+    plt.savefig(outdir / f'mock_{param}.pdf', dpi=figure.dpi * 2.)
 
     plt.close()

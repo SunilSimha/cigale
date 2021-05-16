@@ -16,7 +16,6 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import multiprocessing as mp
 import numpy as np
-from os import path
 import pkg_resources
 from scipy.constants import c
 from pcigale.data import Database
@@ -53,9 +52,8 @@ def pool_initializer(counter):
 def sed(config, sed_type, nologo, xrange, yrange, series, format, outdir):
     """Plot the best SED with associated observed and modelled fluxes.
     """
-    obs = read_table(path.join(path.dirname(outdir),
-                               config.configuration['data_file']))
-    mod = Table.read(path.join(outdir, BEST_RESULTS))
+    obs = read_table(outdir.parent / config.configuration['data_file'])
+    mod = Table.read(outdir / BEST_RESULTS)
 
     with Database() as base:
         filters = OrderedDict([(name, base.get_filter(name))
@@ -106,15 +104,15 @@ def _sed_worker(obs, mod, filters, sed_type, logo, xrange, yrange, series,
     series: list
     format: string
         One of png, pdf, ps, eps or svg.
-    outdir: string
-        The absolute path to outdir
+    outdir: Path
+        Path to outdir
 
     """
     np.seterr(invalid='ignore')
     gbl_counter.inc()
 
-    id_best_model_file = path.join(outdir, f"{obs['id']}_best_model.fits")
-    if path.isfile(id_best_model_file):
+    id_best_model_file = outdir / f"{obs['id']}_best_model.fits"
+    if id_best_model_file.is_file():
         sed = Table.read(id_best_model_file)
 
         filters_wl = np.array([filt.pivot_wavelength
@@ -364,8 +362,7 @@ def _sed_worker(obs, mod, filters, sed_type, logo, xrange, yrange, series,
                 figure.figimage(logo, figwidth-logo.shape[0], 0,
                                 origin='upper', zorder=0, alpha=1)
 
-            figure.savefig(path.join(outdir,
-                                     f"{obs['id']}_best_model.{format}"),
+            figure.savefig(outdir / f"{obs['id']}_best_model.{format}",
                            dpi=figure.dpi * 2.)
             plt.close(figure)
         else:

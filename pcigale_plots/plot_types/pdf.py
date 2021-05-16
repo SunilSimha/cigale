@@ -6,15 +6,13 @@
 # Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
 # Author: Yannick Roehlly, Médéric Boquien & Denis Burgarella
 
-import glob
 from itertools import product
 import matplotlib
-from os import path
-
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import multiprocessing as mp
 import numpy as np
+
 from utils.io import read_table
 from utils.counter import Counter
 
@@ -40,9 +38,7 @@ def pdf(config, format, outdir):
         pdf_vars += config.configuration['analysis_params']['variables']
     if 'all' in save_chi2 or 'fluxes' in save_chi2:
         pdf_vars += config.configuration['analysis_params']['bands']
-
-    input_data = read_table(path.join(path.dirname(outdir),
-                                      config.configuration['data_file']))
+    input_data = read_table(outdir.parent / config.configuration['data_file'])
     if len(pdf_vars) > 0:
         items = list(product(input_data['id'], pdf_vars, [format], [outdir]))
         counter = Counter(len(items))
@@ -62,13 +58,13 @@ def _pdf_worker(obj_name, var_name, format, outdir):
         Name of the object.
     var_name: string
         Name of the analysed variable..
-    outdir: string
+    outdir: Path
         The absolute path to outdir
 
     """
     gbl_counter.inc()
     var_name = var_name.replace('/', '_')
-    fnames = glob.glob(f"{outdir}/{obj_name}_{var_name}_chi2-block-*.npy")
+    fnames = outdir.glob(f"{obj_name}_{var_name}_chi2-block-*.npy")
     likelihood = []
     model_variable = []
     for fname in fnames:
@@ -108,5 +104,5 @@ def _pdf_worker(obj_name, var_name, format, outdir):
     ax.minorticks_on()
     figure.suptitle(f"Probability distribution function of {var_name} for "
                     f"{obj_name}")
-    figure.savefig(f"{outdir}/{obj_name}_{var_name}_pdf.{format}")
+    figure.savefig(outdir / f"{obj_name}_{var_name}_pdf.{format}")
     plt.close(figure)
