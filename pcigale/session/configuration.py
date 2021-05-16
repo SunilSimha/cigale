@@ -47,13 +47,13 @@ class Configuration(object):
                             "after having filled the initial pcigale.ini "
                             "template.")
         else:
-            self.spec = configobj.ConfigObj(filename.with_suffix('.ini.spec'),
+            self.spec = configobj.ConfigObj(filename.with_suffix('.ini.spec').name,
                                             write_empty_values=True,
                                             indent_type='  ',
                                             encoding='UTF8',
                                             list_values=False,
                                             _inspec=True)
-            self.config = configobj.ConfigObj(filename,
+            self.config = configobj.ConfigObj(filename.name,
                                               write_empty_values=True,
                                               indent_type='  ',
                                               encoding='UTF8',
