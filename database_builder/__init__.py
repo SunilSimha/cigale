@@ -233,7 +233,7 @@ def build_filters_gazpar(base):
     base.add_filters(filters)
 
 def build_m2005(base):
-    m2005_dir = os.path.join(os.path.dirname(__file__), 'maraston2005/')
+    m2005_dir = Path(__file__).parent / 'maraston2005'
 
     # Age grid (1 Myr to 13.7 Gyr with 1 Myr step)
     time_grid = np.arange(1, 13701)
@@ -241,21 +241,20 @@ def build_m2005(base):
 
     # Transpose the table to have access to each value vector on the first
     # axis
-    kroupa_mass = np.genfromtxt(m2005_dir + 'stellarmass.kroupa').transpose()
+    kroupa_mass = np.genfromtxt(m2005_dir / 'stellarmass.kroupa').transpose()
     salpeter_mass = \
-        np.genfromtxt(m2005_dir + '/stellarmass.salpeter').transpose()
+        np.genfromtxt(m2005_dir / 'stellarmass.salpeter').transpose()
 
-    for spec_file in glob.glob(m2005_dir + '*.rhb'):
-
+    for spec_file in m2005_dir.glob('*.rhb'):
         print("Importing %s..." % spec_file)
 
         spec_table = np.genfromtxt(spec_file).transpose()
         metallicity = spec_table[1, 0]
 
-        if 'krz' in spec_file:
+        if 'krz' in spec_file.stem:
             imf = 'krou'
             mass_table = np.copy(kroupa_mass)
-        elif 'ssz' in spec_file:
+        elif 'ssz' in spec_file.stem:
             imf = 'salp'
             mass_table = np.copy(salpeter_mass)
         else:
