@@ -10,10 +10,6 @@ This script is used the build pcigale internal database containing:
 - The Dale and Helou 2002 infra-red templates.
 
 """
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
-import glob
 import io
 import itertools
 from pathlib import Path
