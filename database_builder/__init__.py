@@ -545,7 +545,7 @@ def build_dl2007(base):
 
 def build_dl2014(base):
     models = []
-    dl2014_dir = os.path.join(os.path.dirname(__file__), 'dl2014/')
+    dl2014_dir = Path(__file__).parent / 'dl2014'
 
     qpah = {"000": 0.47, "010": 1.12, "020": 1.77, "030": 2.50, "040": 3.19,
             "050": 3.90, "060": 4.58, "070": 5.26, "080": 5.95, "090": 6.63,
@@ -568,12 +568,9 @@ def build_dl2014(base):
             "080": 0.0106, "090": 0.0107, "100": 0.0108}
 
     # Here we obtain the wavelength beforehand to avoid reading it each time.
-    datafile = open(dl2014_dir + "U{}_{}_MW3.1_{}/spec_1.0.dat"
-                    .format(uminimum[0], uminimum[0], "000"))
-
-    data = "".join(datafile.readlines()[-1001:])
-    datafile.close()
-
+    filename = dl2014_dir / "U0.100_0.100_MW3.1_000" / "spec_1.0.dat"
+    with filename.open() as datafile:
+        data = "".join(datafile.readlines()[-1001:])
     wave = np.genfromtxt(io.BytesIO(data.encode()), usecols=(0))
     # For some reason wavelengths are decreasing in the model files
     wave = wave[::-1]
@@ -585,10 +582,10 @@ def build_dl2014(base):
 
     for model in sorted(qpah.keys()):
         for umin in uminimum:
-            filename = (dl2014_dir + "U{}_{}_MW3.1_{}/spec_1.0.dat"
-                        .format(umin, umin, model))
+            filename = dl2014_dir / f"U{umin}_{umin}_MW3.1_{model}"/ \
+                "spec_1.0.dat"
             print("Importing {}...".format(filename))
-            with open(filename) as datafile:
+            with filename.open() as datafile:
                 data = "".join(datafile.readlines()[-1001:])
             lumin = np.genfromtxt(io.BytesIO(data.encode()), usecols=(2))
             # For some reason fluxes are decreasing in the model files
@@ -598,11 +595,12 @@ def build_dl2014(base):
             lumin *= conv/MdMH[model]
 
             models.append(DL2014(qpah[model], umin, umin, 1.0, wave, lumin))
+
             for al in alpha:
-                filename = (dl2014_dir + "U{}_1e7_MW3.1_{}/spec_{}.dat"
-                            .format(umin, model, al))
+                filename = dl2014_dir / f"U{umin}_1e7_MW3.1_{model}" / \
+                    f"spec_{al}.dat"
                 print("Importing {}...".format(filename))
-                with open(filename) as datafile:
+                with filename.open() as datafile:
                     data = "".join(datafile.readlines()[-1001:])
                 lumin = np.genfromtxt(io.BytesIO(data.encode()), usecols=(2))
                 # For some reason fluxes are decreasing in the model files
