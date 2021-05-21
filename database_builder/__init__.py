@@ -699,7 +699,7 @@ def build_skirtor2016(base):
     skirtor2016_dir = os.path.join(os.path.dirname(__file__), 'skirtor2016/')
 
     files = glob.glob(skirtor2016_dir + '/*')
-    files = [file.split('/')[-1] for file in files]
+    files = [os.path.split(file)[-1] for file in files]
     params = [f.split('_')[:-1] for f in files]
 
     # Parameters of SKIRTOR 2016
