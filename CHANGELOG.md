@@ -8,6 +8,7 @@
 - Implementation of the AGN radio emission (Guang Yang, adapted by Médéric Boquien)
 ### Changed
 - The IGM absorption from Meiksin has been modified to include the dependence of the hydrogen absorption cross section (~λ^2.75) so that the universe becomes transparent again at very short wavelengths. (Guang Yang, adapted by Médéric Boquien)
+- The `fluxes` module has been removed as it has been superseded by the `bands` parameter of the `pdf\_analysis` module. (Médéric Boquien)
 ### Fixed
 - Ensure that `pcigale-plots` correctly detects the `skirtor2016` AGN models. (Médéric Boquien, reported by Guang Yang)
 - Correct a typo in the `themis` module. (Médéric Boquien, reported by Alexandros Maragkoudakis)
