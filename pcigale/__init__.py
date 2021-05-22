@@ -62,9 +62,9 @@ def run(config):
 
 
 def main():
-    if sys.version_info[:2] < (3, 6):
+    if sys.version_info[:2] < (3, 8):
         raise Exception(f"Python {sys.version_info[0]}.{sys.version_info[1]} is"
-                        f" unsupported. Please upgrade to Python 3.6 or later.")
+                        f" unsupported. Please upgrade to Python 3.8 or later.")
 
     # We set the sub processes start method to spawn because it solves
     # deadlocks when a library cannot handle being used on two sides of a
