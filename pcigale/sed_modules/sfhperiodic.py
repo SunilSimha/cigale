@@ -14,8 +14,6 @@ decaying exponential, or "delayed".
 
 """
 
-from collections import OrderedDict
-
 import numpy as np
 
 from . import SedModule
@@ -29,43 +27,43 @@ class SfhPeriodic(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ("type_bursts", (
+    parameter_list = {
+        "type_bursts": (
             "cigale_list(dtype=int, options=0. & 1. & 2.)",
             "Type of the individual star formation episodes. 0: exponential, "
             "1: delayed, 2: rectangle.",
             0
-        )),
-        ("delta_bursts", (
+        ),
+        "delta_bursts": (
             "cigale_list(dtype=int, minvalue=0.)",
             "Elapsed time between the beginning of each burst in Myr. The "
             "precision is 1 Myr.",
             50
-        )),
-        ("tau_bursts", (
+        ),
+        "tau_bursts": (
             "cigale_list()",
             "Duration (rectangle) or e-folding time of all short events in "
             "Myr. The precision is 1 Myr.",
             20.
-        )),
-        ("age", (
+        ),
+        "age": (
             "cigale_list(dtype=int, minvalue=0.)",
             "Age of the main stellar population in the galaxy in Myr. The "
             "precision is 1 Myr.",
             1000
-        )),
-        ("sfr_A", (
+        ),
+        "sfr_A": (
             "cigale_list(minvalue=0.)",
             "Multiplicative factor controlling the amplitude of SFR (valid "
             "for each event).",
             1.
-        )),
-        ("normalise", (
+        ),
+        "normalise": (
             "boolean()",
             "Normalise the SFH to produce one solar mass.",
             True
-        )),
-    ])
+        ),
+    }
 
     def _init_code(self):
         self.type_bursts = int(self.parameters["type_bursts"])

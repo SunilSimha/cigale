@@ -14,8 +14,6 @@ FIR/radio correlation and the power law of the synchrotron spectrum.
 
 """
 
-from collections import OrderedDict
-
 import numpy as np
 import scipy.constants as cst
 
@@ -29,33 +27,33 @@ class Radio(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ("qir_sf", (
+    parameter_list = {
+        "qir_sf": (
             "cigale_list(minvalue=0.)",
             "The value of the FIR/radio correlation coefficient for star "
             "formation.",
             2.58
-        )),
-        ("alpha_sf", (
+        ),
+        "alpha_sf": (
             "cigale_list()",
             "The slope of the power-law synchrotron emission related to star "
             "formation, Lν∝ν^-α.",
             0.8
-        )),
-        ("R_agn", (
+        ),
+        "R_agn": (
             "cigale_list(minvalue=0.)",
             "The radio-loudness parameter for AGN, defined as "
             "R=Lν_5GHz/Lν_2500A, where Lν_2500A is the AGN 2500 Å intrinsic "
             "disk luminosity measured at viewing angle=30°.",
             0.
-        )),
-        ("alpha_agn", (
+        ),
+        "alpha_agn": (
             "cigale_list()",
             "The slope of the power-law AGN radio emission (assumed "
             "isotropic), Lν∝ν^-α.",
             0.5
-        ))
-    ])
+        )
+    }
 
     def _init_code(self):
         """Build the model for a given set of parameters."""

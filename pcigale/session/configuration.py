@@ -3,7 +3,6 @@
 # Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
 # Author: Yannick Roehlly
 
-from collections import OrderedDict
 import multiprocessing as mp
 from pathlib import Path
 import sys
@@ -310,23 +309,21 @@ class Configuration(object):
         unofficial module that is not in our list
         """
 
-        modules = OrderedDict((('SFH', ['sfh2exp', 'sfhdelayed', 'sfhdelayedbq',
-                                        'sfhfromfile', 'sfhperiodic']),
-                               ('SSP', ['bc03', 'm2005']),
-                               ('nebular', ['nebular']),
-                               ('dust attenuation', ['dustatt_calzleit',
-                                                     'dustatt_powerlaw',
-                                                     'dustatt_2powerlaws',
-                                                     'dustatt_modified_CF00',
-                                                     'dustatt_modified_starburst']),
-                               ('dust emission', ['casey2012', 'dale2014',
-                                                  'dl2007', 'dl2014',
-                                                  'themis']),
-                               ('AGN', ['fritz2006', 'skirtor2016']),
-                               ('radio', ['radio']),
-                               ('restframe_parameters',
-                                ['restframe_parameters']),
-                               ('redshift', ['redshifting'])))
+        modules = {'SFH': ['sfh2exp', 'sfhdelayed', 'sfhdelayedbq',
+                           'sfhfromfile', 'sfhperiodic'],
+                   'SSP': ['bc03', 'm2005'],
+                   'nebular': ['nebular'],
+                   'dust attenuation': ['dustatt_calzleit', 'dustatt_powerlaw',
+                                        'dustatt_2powerlaws',
+                                        'dustatt_modified_CF00',
+                                        'dustatt_modified_starburst'],
+                   'dust emission': ['casey2012', 'dale2014', 'dl2007',
+                                     'dl2014', 'themis'],
+                   'AGN': ['fritz2006', 'skirtor2016'],
+                   'radio': ['radio'],
+                   'restframe_parameters': ['restframe_parameters'],
+                   'redshift': ['redshifting']
+                  }
 
         comments = {'SFH': "ERROR! Choosing one SFH module is mandatory.",
                     'SSP': "ERROR! Choosing one SSP module is mandatory.",

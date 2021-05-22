@@ -12,7 +12,6 @@ This module implements the Schreiber et al. (2016) infra-red models.
 
 """
 
-from collections import OrderedDict
 import numpy as np
 from pcigale.data import Database
 from . import SedModule
@@ -28,8 +27,8 @@ class Schreiber2016(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ('tdust', (
+    parameter_list = {
+        'tdust': (
             'cigale_list(options=15. & 16. & 17. & 18. & 19. & 20. & 21. & '
             '22. & 23. & 24. & 25. & 26. & 27. & 28. & 29. & 30. & 31. & '
             '32. & 33. & 34. & 35. & 36. & 37. & 38. & 39. & 40. & 41. & '
@@ -38,19 +37,14 @@ class Schreiber2016(SedModule):
             "Dust temperature. "
             "Between 15 and 60K, with 1K step.",
             20.
-        )),
-        ('fpah', (
+        ),
+        'fpah': (
             'cigale_list(minvalue=0., maxvalue=1.)',
             "Mass fraction of PAH. "
             "Between 0 and 1.",
             0.05
-        ))
-    ])
-
-    out_parameter_list = OrderedDict([
-        ('tdust', 'Dust temperature'),
-        ('fpah', 'Mass fraction of PAH')
-    ])
+        )
+    }
 
     def _init_code(self):
         """Get the model out of the database"""

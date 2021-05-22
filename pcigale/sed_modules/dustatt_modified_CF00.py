@@ -24,8 +24,6 @@ Parameters available for analysis
 - attenuation.<FILTER>: total attenuation in the filter
 """
 
-from collections import OrderedDict
-
 import numpy as np
 
 from . import SedModule
@@ -70,35 +68,35 @@ class ModCF00Att(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ("Av_ISM", (
+    parameter_list = {
+        "Av_ISM": (
             "cigale_list(minvalue=0)",
             "V-band attenuation in the interstellar medium.",
             1.
-        )),
-        ("mu", (
+        ),
+        "mu": (
             "cigale_list(minvalue=.0001, maxvalue=1.)",
             "Av_ISM / (Av_BC+Av_ISM)",
             0.44
-        )),
-        ("slope_ISM", (
+        ),
+        "slope_ISM": (
             "cigale_list()",
             "Power law slope of the attenuation in the ISM.",
             -0.7
-        )),
-        ("slope_BC", (
+        ),
+        "slope_BC": (
             "cigale_list()",
             "Power law slope of the attenuation in the birth clouds.",
             -1.3
-        )),
-        ("filters", (
+        ),
+        "filters": (
             "string()",
             "Filters for which the attenuation will be computed and added to "
             "the SED information dictionary. You can give several filter "
             "names separated by a & (don't use commas).",
             "V_B90 & FUV"
-        ))
-    ])
+        )
+    }
 
     def _init_code(self):
         self.Av_ISM = float(self.parameters['Av_ISM'])

@@ -9,8 +9,6 @@ SKIRTOR 2016 (Stalevski et al., 2016) AGN dust torus emission module
 This module implements the SKIRTOR 2016 models.
 
 """
-from collections import OrderedDict
-
 import numpy as np
 import scipy.constants as cst
 
@@ -105,101 +103,101 @@ class SKIRTOR2016(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ('t', (
+    parameter_list = {
+        't': (
             "cigale_list(options=3 & 5 & 7 & 9 & 11)",
             "Average edge-on optical depth at 9.7 micron; the actual one along"
             "the line of sight may vary depending on the clumps distribution. "
             "Possible values are: 3, 5, 7, 9, and 11.",
             3
-        )),
-        ('pl', (
+        ),
+        'pl': (
             "cigale_list(options=0. & .5 & 1. & 1.5)",
             "Power-law exponent that sets radial gradient of dust density."
             "Possible values are: 0., 0.5, 1., and 1.5.",
             1.0
-        )),
-        ('q', (
+        ),
+        'q': (
             "cigale_list(options=0. & .5 & 1. & 1.5)",
             "Index that sets dust density gradient with polar angle."
             "Possible values are:  0., 0.5, 1., and 1.5.",
             1.0
-        )),
-        ('oa', (
+        ),
+        'oa': (
             'cigale_list(options=10 & 20 & 30 & 40 & 50 & 60 & 70 & 80)',
             "Angle measured between the equatorial plan and edge of the torus. "
             "Half-opening angle of the dust-free cone is 90-oa"
             "Possible values are: 10, 20, 30, 40, 50, 60, 70, and 80",
             40
-        )),
-        ('R', (
+        ),
+        'R': (
             'cigale_list(options=10 & 20 & 30)',
             "Ratio of outer to inner radius, R_out/R_in."
             "Possible values are: 10, 20, and 30",
             20
-        )),
-        ('Mcl', (
+        ),
+        'Mcl': (
             'cigale_list(options=0.97)',
             "fraction of total dust mass inside clumps. 0.97 means 97% of "
             "total mass is inside the clumps and 3% in the interclump dust. "
             "Possible values are: 0.97.",
             0.97
-        )),
-        ('i', (
+        ),
+        'i': (
             'cigale_list(options=0 & 10 & 20 & 30 & 40 & 50 & 60 & 70 & 80 & 90)',
             "inclination, i.e. viewing angle, i.e. position of the instrument "
             "w.r.t. the AGN axis. i=0: face-on, type 1 view; i=90: edge-on, "
             "type 2 view."
             "Possible values are: 0, 10, 20, 30, 40, 50, 60, 70, 80, and 90.",
             40
-        )),
-        ('disk_type', (
+        ),
+        'disk_type': (
             'integer(min=0, max=1)',
             "Disk spectrum: 0 for the regular Skirtor spectrum, 1 for the "
             "Schartmann (2005) spectrum.",
             0
-        )),
-        ('delta', (
+        ),
+        'delta': (
             'cigale_list()',
             "Power-law of index δ modifying the optical slop of the disk. "
             "Negative values make the slope steeper where as positive values "
             "make it shallower.",
             0.
-        )),
-        ('fracAGN', (
+        ),
+        'fracAGN': (
             'cigale_list(minvalue=0., maxvalue=1.)',
             "AGN fraction.",
             0.1
-        )),
-        ('lambda_fracAGN', (
+        ),
+        'lambda_fracAGN': (
             'string()',
             'Wavelength range in microns where to compute the AGN fraction. '
             'Note that it includes all the components, not just dust emission. '
             'To use the the total dust luminosity set to 0/0.',
             "0/0"
-        )),
-        ('law', (
+        ),
+        'law': (
             'cigale_list(dtype=int, options=0 & 1 & 2)',
             "Extinction law of the polar dust: "
             "0 (SMC), 1 (Calzetti 2000), or 2 (Gaskell et al. 2004)",
             0
-        )),
-        ('EBV', (
+        ),
+        'EBV': (
             'cigale_list(minvalue=0.)',
             "E(B-V) for the extinction in the polar direction in magnitudes.",
             0.1
-        )),
-        ('temperature', (
+        ),
+        'temperature': (
             'cigale_list(minvalue=0.)',
             "Temperature of the polar dust in K.",
             100.
-        )),
-        ("emissivity", (
+        ),
+        "emissivity": (
             "cigale_list(minvalue=0.)",
             "Emissivity index of the polar dust.",
             1.6
-        ))
-    ])
+        )
+    }
 
     def _init_code(self):
         """Get the template set out of the database"""

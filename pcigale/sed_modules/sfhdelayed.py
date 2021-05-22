@@ -16,8 +16,6 @@ formation.
 
 """
 
-from collections import OrderedDict
-
 import numpy as np
 
 from . import SedModule
@@ -34,45 +32,45 @@ class SFHDelayed(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ("tau_main", (
+    parameter_list = {
+        "tau_main": (
             "cigale_list()",
             "e-folding time of the main stellar population model in Myr.",
             2000.
-        )),
-        ("age_main", (
+        ),
+        "age_main": (
             "cigale_list(dtype=int, minvalue=0.)",
             "Age of the main stellar population in the galaxy in Myr. The "
             "precision is 1 Myr.",
             5000
-        )),
-        ("tau_burst", (
+        ),
+        "tau_burst": (
             "cigale_list()",
             "e-folding time of the late starburst population model in Myr.",
             50.
-        )),
-        ("age_burst", (
+        ),
+        "age_burst": (
             "cigale_list(dtype=int, minvalue=1.)",
             "Age of the late burst in Myr. The precision is 1 Myr.",
             20
-        )),
-        ("f_burst", (
+        ),
+        "f_burst": (
             "cigale_list(minvalue=0., maxvalue=0.9999)",
             "Mass fraction of the late burst population.",
             0.
-        )),
-        ("sfr_A", (
+        ),
+        "sfr_A": (
             "cigale_list(minvalue=0.)",
             "Multiplicative factor controlling the SFR if normalise is False. "
             "For instance without any burst: SFR(t)=sfr_A×t×exp(-t/τ)/τ²",
             1.
-        )),
-        ("normalise", (
+        ),
+        "normalise": (
             "boolean()",
             "Normalise the SFH to produce one solar mass.",
             True
-        )),
-    ])
+        ),
+    }
 
     def _init_code(self):
         self.tau_main = float(self.parameters["tau_main"])

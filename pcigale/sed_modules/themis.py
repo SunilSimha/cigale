@@ -10,8 +10,6 @@ This module implements the Jones et al (2017) infrared models.
 
 """
 
-from collections import OrderedDict
-
 import numpy as np
 
 from pcigale.data import Database
@@ -30,16 +28,16 @@ class THEMIS(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ('qhac', (
+    parameter_list = {
+        'qhac': (
             'cigale_list(options=0.02 & 0.06 & 0.10 & 0.14 & 0.17 & 0.20 & '
             '0.24 & 0.28 & 0.32 & 0.36 & 0.40)',
             "Mass fraction of hydrocarbon solids i.e., a-C(:H) smaller than "
             "1.5 nm, also known as HAC. Possible values are: 0.02, 0.06, "
             "0.10, 0.14, 0.17, 0.20, 0.24, 0.28, 0.32, 0.36, 0.40.",
             0.17
-        )),
-        ('umin', (
+        ),
+        'umin': (
             'cigale_list(options=0.10 & 0.12 & 0.15 & 0.17 & 0.20 & 0.25 & '
             '0.30 & 0.35 & 0.40 & 0.50 & 0.60 & 0.70 & 0.80 & 1.00 & 1.20 & '
             '1.50 & 1.70 & 2.00 & 2.50 & 3.00 & 3.50 & 4.00 & 5.00 & 6.00 & '
@@ -51,8 +49,8 @@ class THEMIS(SedModule):
             "3.500, 4.000, 5.000, 6.000, 7.000, 8.000, 10.00, 12.00, 15.00, "
             "17.00, 20.00, 25.00, 30.00, 35.00, 40.00, 50.00, 80.00.",
             1.0
-        )),
-        ('alpha', (
+        ),
+        'alpha': (
             'cigale_list(options=1.0 & 1.1 & 1.2 & 1.3 & 1.4 & 1.5 & 1.6 & '
             '1.7 & 1.8 & 1.9 & 2.0 & 2.1 & 2.2 & 2.3 & 2.4 & 2.5 & 2.6 & '
             '2.7 & 2.8 & 2.9 & 3.0)',
@@ -60,14 +58,14 @@ class THEMIS(SedModule):
             "1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, "
             "2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0.",
             2.0
-        )),
-        ('gamma', (
+        ),
+        'gamma': (
             'cigale_list(minvalue=0., maxvalue=1.)',
             "Fraction illuminated from Umin to Umax. Possible values between "
             "0 and 1.",
             0.1
-        ))
-    ])
+        )
+    }
 
     def _init_code(self):
         """Get the model out of the database"""

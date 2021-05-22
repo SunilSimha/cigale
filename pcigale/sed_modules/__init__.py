@@ -16,9 +16,7 @@ def complete_parameters(given_parameters, parameter_list):
     have no default value and is not present in given_parameters, raises an
     error. If a parameter is present in given_parameters and not in
     parameter_list, an exception is also raised.
-    Returns an ordered dictionary with the same key order as the parameter
-    list.
-
+    Returns a dicti
     Parameters
     ----------
     given_parameters: dictionary
@@ -29,8 +27,8 @@ def complete_parameters(given_parameters, parameter_list):
     Returns
     -------
     parameters: dict
-        Ordered dictionary combining the given parameters with the default
-        values for the missing ones.
+        Dictionary combining the given parameters with the default values for
+        the missing ones.
 
     Raises
     ------

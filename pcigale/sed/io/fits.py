@@ -3,8 +3,6 @@
 # Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
 # Author: Médéric Boquien
 
-from collections import OrderedDict
-
 from astropy.table import Table, Column
 import numpy as np
 
@@ -23,7 +21,7 @@ def save_sed_to_fits(sed, prefix, norm=1.):
         Normalisation factor of the SED
 
     """
-    info = OrderedDict()
+    info = {}
     for name in sed.info:
         if name in sed.mass_proportional_info:
             info[name] = str(norm * sed.info[name])

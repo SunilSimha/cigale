@@ -94,7 +94,7 @@ class ParametersManagerGrid(object):
 
         """
         # We make a copy of the dictionary as we are modifying it.
-        dictionary = collections.OrderedDict(dictionary)
+        dictionary = dict(dictionary)
 
         # First, we must ensure that all values are lists; when a value is a
         # single element, we put it in a list.

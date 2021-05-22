@@ -11,8 +11,6 @@ This module reads a SED spectrum from a file.
 
 """
 
-from collections import OrderedDict
-
 from utils.io import read_table
 from . import SedModule
 
@@ -22,24 +20,24 @@ class LoadSpecFile(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ("filename", (
+    parameter_list = {
+        "filename": (
             'string()',
             "Name of the file to load and to add to the SED table. This "
             "file must be loadable with astropy",
             None
-        )),
-        ("lambda_column", (
+        ),
+        "lambda_column": (
             'string()',
             "Name of the column containing the wavelength in nm.",
             None
-        )),
-        ("l_lambda_column", (
+        ),
+        "l_lambda_column": (
             'string()',
             "Name of the column containing the Lλ luminosity in W/nm.",
             None
-        ))
-    ])
+        )
+    }
 
     def process(self, sed):
         """Add the spectrum from the file to the SED object

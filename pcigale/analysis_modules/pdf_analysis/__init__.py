@@ -25,7 +25,6 @@ reduced χ²) is given for each observation.
 
 """
 
-from collections import OrderedDict
 import multiprocessing as mp
 
 import numpy as np
@@ -47,60 +46,60 @@ from ...managers.parameters import ParametersManager
 class PdfAnalysis(AnalysisModule):
     """PDF analysis module"""
 
-    parameter_list = OrderedDict([
-        ("variables", (
+    parameter_list = {
+        "variables": (
             "cigale_string_list()",
             "List of the physical properties to estimate. Leave empty to "
             "analyse all the physical properties (not recommended when there "
             "are many models).",
             ["sfh.sfr", "sfh.sfr10Myrs", "sfh.sfr100Myrs"]
-        )),
-        ("bands", (
+        ),
+        "bands": (
             "cigale_string_list()",
             "List of bands for which to estimate the fluxes. Note that this is "
             "independent from the fluxes actually fitted to estimate the "
             "physical properties.",
             None
-        )),
-        ("save_best_sed", (
+        ),
+        "save_best_sed": (
             "boolean()",
             "If true, save the best SED for each observation to a file.",
             False
-        )),
-        ("save_chi2", (
+        ),
+        "save_chi2": (
             "option('all', 'none', 'properties', 'fluxes')",
             "Save the raw chi2. It occupies ~15 MB/million models/variable. "
             "Allowed values are 'all', 'none', 'properties', and 'fluxes'.",
             "none"
-        )),
-        ("lim_flag", (
+        ),
+        "lim_flag": (
             "boolean()",
             "If true, for each object check whether upper limits are present "
             "and analyse them.",
             False
-        )),
-        ("mock_flag", (
+        ),
+        "mock_flag": (
             "boolean()",
             "If true, for each object we create a mock object "
             "and analyse them.",
             False
-        )),
-        ("redshift_decimals", (
+        ),
+        "redshift_decimals": (
             "integer()",
             "When redshifts are not given explicitly in the redshifting "
             "module, number of decimals to round the observed redshifts to "
             "compute the grid of models. To disable rounding give a negative "
             "value. Do not round if you use narrow-band filters.",
             2
-        )),
-        ("blocks", (
+        ),
+        "blocks": (
             "integer(min=1)",
             "Number of blocks to compute the models and analyse the "
             "observations. If there is enough memory, we strongly recommend "
             "this to be set to 1.",
             1
-        ))
-    ])
+        )
+    }
 
     def _compute_models(self, conf, obs, params, iblock):
         models = ModelsManager(conf, obs, params, iblock)

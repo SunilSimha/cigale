@@ -11,8 +11,6 @@ This module reads the star formation history in a file.
 
 """
 
-from collections import OrderedDict
-
 import numpy as np
 
 from utils.io import read_table
@@ -30,32 +28,32 @@ class SfhFromFile(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ("filename", (
+    parameter_list = {
+        "filename": (
             "string()",
             "Name of the file containing the SFH. The first column must be "
             "the time in Myr, starting from 0 with a step of 1 Myr. The other "
             "columns must contain the SFR in Msun/yr."
             "[Msun/yr].",
             None
-        )),
-        ("sfr_column", (
+        ),
+        "sfr_column": (
             "cigale_list(dtype=int)",
             "List of column indices of the SFR. The first SFR column has the "
             "index 1.",
             None
-        )),
-        ("age", (
+        ),
+        "age": (
             "cigale_list(dtype=int, minvalue=0.)",
             "Age in Myr at which the SFH will be looked at.",
             None
-        )),
-        ("normalise", (
+        ),
+        "normalise": (
             "boolean()",
             "Normalise the SFH to one solar mass produced at the given age.",
             True
-        ))
-    ])
+        )
+    }
 
     def _init_code(self):
         filename = self.parameters['filename']

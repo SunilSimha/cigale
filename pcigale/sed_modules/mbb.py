@@ -16,8 +16,6 @@ wavelength range.
 
 """
 
-from collections import OrderedDict
-
 import numpy as np
 import scipy.constants as cst
 
@@ -34,29 +32,29 @@ class MBB(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ("epsilon_mbb", (
+    parameter_list = {
+        "epsilon_mbb": (
             "cigale_list(minvalue=0., maxvalue=1.)",
             "Fraction [>= 0] of L_dust(energy balance) in the MBB",
             0.5
-        )),
-        ("t_mbb", (
+        ),
+        "t_mbb": (
             "cigale_list(minvalue=0.)",
             "Temperature of black body in K.",
             50.
-        )),
-        ("beta_mbb", (
+        ),
+        "beta_mbb": (
             "cigale_list()",
             "Emissivity index of modified black body.",
             1.5
-        )),
-        ("energy_balance", (
+        ),
+        "energy_balance": (
             "boolean()",
             "Energy balance checked?"
             "If False, Lum[MBB] not taken into account in energy balance",
             False
-        )),
-    ])
+        )
+    }
 
     def _init_code(self):
         """Build the model for a given set of parameters."""

@@ -18,7 +18,6 @@ the observed frame. For that use the param_postz module.
 
 """
 
-from collections import OrderedDict
 from itertools import chain
 
 import numpy as np
@@ -36,44 +35,44 @@ class RestframeParam(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ("beta_calz94", (
+    parameter_list = {
+        "beta_calz94": (
             "boolean()",
             "UV slope measured in the same way as in Calzetti et al. (1994).",
             False
-        )),
-        ("D4000", (
+        ),
+        "D4000": (
             "boolean()",
             "D4000 break using the Balogh et al. (1999) definition.",
             False
-        )),
-        ("IRX", (
+        ),
+        "IRX": (
             "boolean()",
             "IRX computed from the GALEX FUV filter and the dust luminosity.",
             False
-        )),
-        ("EW_lines", (
+        ),
+        "EW_lines": (
             "string()",
             "Central wavelength of the emission lines for which to compute "
             "the equivalent width. The half-bandwidth must be indicated "
             "after the '/' sign. For instance 656.3/1.0 means oth the nebular "
             "line and the continuum are integrated over 655.3-657.3 nm.",
             "500.7/1.0 & 656.3/1.0"
-        )),
-        ("luminosity_filters", (
+        ),
+        "luminosity_filters": (
             "string()",
             "Filters for which the rest-frame luminosity will be computed. "
             "You can give several filter names separated by a & (don't use "
             "commas).",
             "FUV & V_B90"
-        )),
-        ("colours_filters", (
+        ),
+        ("colours_filters": (
             "string()",
             "Rest-frame colours to be computed. You can give several colours "
             "separated by a & (don't use commas).",
             "FUV-NUV & NUV-r_prime"
-        ))
-    ])
+        )
+    }
 
     def calz94(self, sed):
         wl = sed.wavelength_grid

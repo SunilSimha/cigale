@@ -12,8 +12,6 @@ Populations.
 
 """
 
-from collections import OrderedDict
-
 import numpy as np
 
 from . import SedModule
@@ -29,27 +27,27 @@ class BC03(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ("imf", (
+    parameter_list = {
+        "imf": (
             "cigale_list(dtype=int, options=0. & 1.)",
             "Initial mass function: 0 (Salpeter) or 1 (Chabrier).",
             0
-        )),
-        ("metallicity", (
+        ),
+        "metallicity": (
             "cigale_list(options=0.0001 & 0.0004 & 0.004 & 0.008 & 0.02 & "
             "0.05)",
             "Metalicity. Possible values are: 0.0001, 0.0004, 0.004, 0.008, "
             "0.02, 0.05.",
             0.02
-        )),
-        ("separation_age", (
+        ),
+        "separation_age": (
             "cigale_list(dtype=int, minvalue=0)",
             "Age [Myr] of the separation between the young and the old star "
             "populations. The default value in 10^7 years (10 Myr). Set "
             "to 0 not to differentiate ages (only an old population).",
             10
-        ))
-    ])
+        )
+    }
 
     def _init_code(self):
         """Read the SSP from the database."""

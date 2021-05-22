@@ -13,8 +13,6 @@ in Charlot and Fall (2000) with a UV bump added.
 
 """
 
-from collections import OrderedDict
-
 import numpy as np
 
 from . import SedModule
@@ -110,46 +108,46 @@ class PowerLawAtt(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ("Av_young", (
+    parameter_list = {
+        "Av_young": (
             "cigale_list(minvalue=0.)",
             "V-band attenuation of the young population.",
             1.
-        )),
-        ("Av_old_factor", (
+        ),
+        "Av_old_factor": (
             "cigale_list(minvalue=0., maxvalue=1.)",
             "Reduction factor for the V-band attenuation of the old "
             "population compared to the young one (<1).",
             0.44
-        )),
-        ("uv_bump_wavelength", (
+        ),
+        "uv_bump_wavelength": (
             "cigale_list(minvalue=0.)",
             "Central wavelength of the UV bump in nm.",
             217.5
-        )),
-        ("uv_bump_width", (
+        ),
+        "uv_bump_width": (
             "cigale_list(minvalue=0.)",
             "Width (FWHM) of the UV bump in nm.",
             35.
-        )),
-        ("uv_bump_amplitude", (
+        ),
+        "uv_bump_amplitude": (
             "cigale_list(minvalue=0.)",
             "Amplitude of the UV bump. For the Milky Way: 0.75",
             0.
-        )),
-        ("powerlaw_slope", (
+        ),
+        "powerlaw_slope": (
             "cigale_list()",
             "Slope delta of the power law continuum.",
             -0.7
-        )),
-        ("filters", (
+        ),
+        "filters": (
             "string()",
             "Filters for which the attenuation will be computed and added to "
             "the SED information dictionary. You can give several filter "
             "names separated by a & (don't use commas).",
             "V_B90 & FUV"
-        ))
-    ])
+        )
+    }
 
     def _init_code(self):
         self.av = {}

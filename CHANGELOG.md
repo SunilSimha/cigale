@@ -28,6 +28,7 @@
 ### Optimised
 - The estimation of the physical properties and the related uncertainties has been made up to 50% faster. The final gain in the analysis speed accounting for all the steps depends on the number of properties to be evaluated and the number of models but can be over 25% when estimating many properties over a large parameter space. (Médéric Boquien)
 - Invalid models (e.g., when the stellar populations are older than the universe) are now ignored when handling upper limits. The speedup is very variable but can be substantial in case there are many invalid models. (Médéric Boquien)
+- Now that Python dictionaries are officially ordered, use regular dictionaries rather than collections.OrderedDict. It should translate into a very slight speedup and a slightly more readable code. (Médéric Boquien)
 
 ## 2020.0 (2020-06-29)
 ### Added

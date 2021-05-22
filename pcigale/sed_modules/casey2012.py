@@ -12,8 +12,6 @@ This module implements the Casey (2012) infra-red models.
 
 """
 
-from collections import OrderedDict
-
 import numpy as np
 import scipy.constants as cst
 
@@ -29,23 +27,23 @@ class Casey2012(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ("temperature", (
+    parameter_list = {
+        "temperature": (
             "cigale_list(minvalue=0.)",
             "Temperature of the dust in K.",
             35.
-        )),
-        ("beta", (
+        ),
+        "beta": (
             "cigale_list(minvalue=0.)",
             "Emissivity index of the dust.",
             1.6
-        )),
-        ("alpha", (
+        ),
+        "alpha": (
             "cigale_list(minvalue=0.)",
             "Mid-infrared powerlaw slope.",
             2.
-        ))
-    ])
+        )
+    }
 
     def _init_code(self):
         """Build the model for a given set of parameters."""

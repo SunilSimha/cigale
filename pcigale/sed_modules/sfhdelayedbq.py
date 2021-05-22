@@ -16,8 +16,6 @@ in Ciesla et al. (2017).
 
 """
 
-from collections import OrderedDict
-
 import numpy as np
 
 from . import SedModule
@@ -35,40 +33,40 @@ class SFHDelayedBQ(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ("tau_main", (
+    parameter_list = {
+        "tau_main": (
             "cigale_list()",
             "e-folding time of the main stellar population model in Myr.",
             2000.
-        )),
-        ("age_main", (
+        ),
+        "age_main": (
             "cigale_list(dtype=int, minvalue=0.)",
             "Age of the main stellar population in the galaxy in Myr. The "
             "precision is 1 Myr.",
             5000
-        )),
-        ("age_bq", (
+        ),
+        "age_bq": (
             "cigale_list(dtype=int)",
             "Age of the burst/quench episode. The precision is 1 Myr.",
             500.
-        )),
-        ("r_sfr", (
+        ),
+        "r_sfr": (
             "cigale_list(minvalue=0.)",
             "Ratio of the SFR after/before age_bq.",
             0.1
-        )),
-        ("sfr_A", (
+        ),
+        "sfr_A": (
             "cigale_list(minvalue=0.)",
             "Multiplicative factor controlling the SFR if normalise is False. "
             "For instance without any burst/quench: SFR(t)=sfr_A×t×exp(-t/τ)/τ²",
             1.
-        )),
-        ("normalise", (
+        ),
+        "normalise": (
             "boolean()",
             "Normalise the SFH to produce one solar mass.",
             True
-        ))
-    ])
+        )
+    }
 
     def _init_code(self):
         self.tau_main = float(self.parameters["tau_main"])

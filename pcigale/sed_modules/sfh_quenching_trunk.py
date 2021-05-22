@@ -14,8 +14,6 @@ constant.
 
 """
 
-from collections import OrderedDict
-
 import numpy as np
 
 from . import SedModule
@@ -28,26 +26,26 @@ class SfhQuenchTrunk(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ("quenching_age", (
+    parameter_list = {
+        "quenching_age": (
             "cigale_list(dtype=int, minvalue=0.)",
             "Look-back time when the quenching happens in Myr.",
             0
-        )),
-        ("quenching_factor", (
+        ),
+        "quenching_factor": (
             "cigale_list(minvalue=0., maxvalue=1.)",
             "Quenching factor applied to the SFH. After the quenching time, "
             "the SFR is multiplied by 1 - quenching factor and made constant. "
             "The factor must be between 0 (no quenching) and 1 (no more star "
             "formation).",
             0.
-        )),
-        ("normalise", (
+        ),
+        "normalise": (
             "boolean()",
             "Normalise the SFH to produce one solar mass.",
             True
-        ))
-    ])
+        )
+    }
 
     def _init_code(self):
         self.quenching_age = int(self.parameters["quenching_age"])

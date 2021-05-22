@@ -13,8 +13,6 @@ attenuation formulae, adding an UV-bump and a power law.
 
 """
 
-from collections import OrderedDict
-
 import numpy as np
 
 from . import SedModule
@@ -195,47 +193,47 @@ class CalzLeit(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ("E_BVs_young", (
+    parameter_list = {
+        "E_BVs_young": (
             "cigale_list(minvalue=0.)",
             "E(B-V)*, the colour excess of the stellar continuum light for "
             "the young population.",
             0.3
-        )),
-        ("E_BVs_old_factor", (
+        ),
+        "E_BVs_old_factor": (
             "cigale_list(minvalue=0., maxvalue=1.)",
             "Reduction factor for the E(B-V)* of the old population compared "
             "to the young one (<1).",
             1.0
-        )),
-        ("uv_bump_wavelength", (
+        ),
+        "uv_bump_wavelength": (
             "cigale_list(minvalue=0.)",
             "Central wavelength of the UV bump in nm.",
             217.5
-        )),
-        ("uv_bump_width", (
+        ),
+        "uv_bump_width": (
             "cigale_list()",
             "Width (FWHM) of the UV bump in nm.",
             35.
-        )),
-        ("uv_bump_amplitude", (
+        ),
+        "uv_bump_amplitude": (
             "cigale_list(minvalue=0.)",
             "Amplitude of the UV bump. For the Milky Way: 3.",
             0.
-        )),
-        ("powerlaw_slope", (
+        ),
+        "powerlaw_slope": (
             "cigale_list()",
             "Slope delta of the power law modifying the attenuation curve.",
             0.
-        )),
-        ("filters", (
+        ),
+        "filters": (
             "string()",
             "Filters for which the attenuation will be computed and added to "
             "the SED information dictionary. You can give several filter "
             "names separated by a & (don't use commas).",
             "B_B90 & V_B90 & FUV"
-        ))
-    ])
+        )
+    }
 
     def _init_code(self):
         """Get the filters from the database"""

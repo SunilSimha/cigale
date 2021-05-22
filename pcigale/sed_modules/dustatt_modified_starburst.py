@@ -13,8 +13,6 @@ attenuation formulae, adding an UV-bump and a power law.
 
 """
 
-from collections import OrderedDict
-
 import numpy as np
 
 from . import SedModule
@@ -301,48 +299,48 @@ class ModStarburstAtt(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ("E_BV_lines", (
+    parameter_list = {
+        "E_BV_lines": (
             "cigale_list(minvalue=0.)",
             "E(B-V)l, the colour excess of the nebular lines light for "
             "both the young and old population.",
             0.3
-        )),
-        ("E_BV_factor", (
+        ),
+        "E_BV_factor": (
             "cigale_list(minvalue=0., maxvalue=1.)",
             "Reduction factor to apply on E_BV_lines to compute E(B-V)s "
             "the stellar continuum attenuation. Both young and old population "
             "are attenuated with E(B-V)s. ",
             0.44
-        )),
-        ("uv_bump_wavelength", (
+        ),
+        "uv_bump_wavelength": (
             "cigale_list(minvalue=0.)",
             "Central wavelength of the UV bump in nm.",
             217.5
-        )),
-        ("uv_bump_width", (
+        ),
+        "uv_bump_width": (
             "cigale_list()",
             "Width (FWHM) of the UV bump in nm.",
             35.
-        )),
-        ("uv_bump_amplitude", (
+        ),
+        "uv_bump_amplitude": (
             "cigale_list(minvalue=0.)",
             "Amplitude of the UV bump. For the Milky Way: 3.",
             0.
-        )),
-        ("powerlaw_slope", (
+        ),
+        "powerlaw_slope": (
             "cigale_list()",
             "Slope delta of the power law modifying the attenuation curve.",
             0.
-        )),
-        ("Ext_law_emission_lines", (
+        ),
+        "Ext_law_emission_lines": (
             "cigale_list(dtype=int, options=1 & 2 & 3)",
             "Extinction law to use for attenuating the emissio  n lines flux. "
             "Possible values are: 1, 2, 3. 1: MW, 2: LMC, 3: SMC. MW is "
             "modelled using CCM89, SMC and LMC using Pei92.",
             1
-        )),
-        ("Rv", (
+        ),
+        "Rv": (
             "cigale_list()",
             "Ratio of total to selective extinction, A_V / E(B-V), "
             "for the extinction curve applied to emission lines."
@@ -350,15 +348,15 @@ class ModStarburstAtt(SedModule):
             "For SMC and LMC using Pei92 the value is automatically set to "
             "2.93 and 3.16 respectively, no matter the value you write.",
             3.1
-        )),
-        ("filters", (
+        ),
+        "filters": (
             "string()",
             "Filters for which the attenuation will be computed and added to "
             "the SED information dictionary. You can give several filter "
             "names separated by a & (don't use commas).",
             "B_B90 & V_B90 & FUV"
-        ))
-    ])
+        )
+    }
 
     def _init_code(self):
         """Get the filters from the database"""

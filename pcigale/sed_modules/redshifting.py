@@ -18,8 +18,6 @@ is changed, this module may need to be adapted.
 
 """
 
-from collections import OrderedDict
-
 import numpy as np
 from scipy.constants import parsec
 from scipy.special import factorial
@@ -146,14 +144,14 @@ class Redshifting(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ("redshift", (
+    parameter_list = {
+        "redshift": (
             "cigale_list(minvalue=0.)",
             "Redshift of the objects. Leave empty to use the redshifts from the"
             " input file.",
             None
-        ))
-    ])
+        )
+    }
 
     def _init_code(self):
         """Compute the age of the Universe at a given redshift

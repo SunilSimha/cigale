@@ -3,7 +3,6 @@
 # Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
 # Author: Médéric Boquien <mboquien@ast.cam.ac.uk>
 
-from collections import OrderedDict
 from copy import deepcopy
 
 import numpy as np
@@ -56,36 +55,36 @@ class NebularEmission(SedModule):
 
     """
 
-    parameter_list = OrderedDict([
-        ('logU', (
+    parameter_list = {
+        'logU': (
             'cigale_list(options=-4.0 & -3.9 & -3.8 & -3.7 & -3.6 & -3.5 & '
             '-3.4 & -3.3 & -3.2 & -3.1 & -3.0 & -2.9 & -2.8 & -2.7 & -2.6 & '
             '-2.5 & -2.4 & -2.3 & -2.2 & -2.1 & -2.0 & -1.9 & -1.8 & -1.7 & '
             '-1.6 & -1.5 & -1.4 & -1.3 & -1.2 & -1.1 & -1.0)',
             "Ionisation parameter",
             -2.
-        )),
-        ('f_esc', (
+        ),
+        'f_esc': (
             'cigale_list(minvalue=0., maxvalue=1.)',
             "Fraction of Lyman continuum photons escaping the galaxy",
             0.
-        )),
-        ('f_dust', (
+        ),
+        'f_dust': (
             'cigale_list(minvalue=0., maxvalue=1.)',
             "Fraction of Lyman continuum photons absorbed by dust",
             0.
-        )),
-        ('lines_width', (
+        ),
+        'lines_width': (
             'cigale_list(minvalue=0.)',
             "Line width in km/s",
             300.
-        )),
-        ('emission', (
+        ),
+        'emission': (
             'boolean()',
             "Include nebular emission.",
             True
-        ))
-    ])
+        )
+    }
 
     def _init_code(self):
         """Get the nebular emission lines out of the database and resample
