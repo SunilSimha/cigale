@@ -168,10 +168,10 @@ class NebularEmission(SedModule):
             self.absorbed_young = np.zeros(sed.wavelength_grid.size)
 
         self.absorbed_old[:self.idx_Ly_break] = -(
-            sed.get_lumin_contribution('stellar.old')[:self.idx_Ly_break] *
+            sed.luminosities['stellar.old'][:self.idx_Ly_break] *
             (1. - self.fesc))
         self.absorbed_young[:self.idx_Ly_break] = -(
-            sed.get_lumin_contribution('stellar.young')[:self.idx_Ly_break] *
+            sed.luminosities['stellar.young'][:self.idx_Ly_break] *
             (1. - self.fesc))
 
         sed.add_module(self.name, self.parameters)

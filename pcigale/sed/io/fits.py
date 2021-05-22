@@ -32,8 +32,8 @@ def save_sed_to_fits(sed, prefix, norm=1.):
     table['wavelength'] = Column(sed.wavelength_grid, unit="nm")
     table['Fnu'] = Column(norm * sed.fnu, unit="mJy")
     table['L_lambda_total'] = Column(norm * sed.luminosity, unit="W/nm")
-    for name in sed.contribution_names:
-        table[name] = Column(norm * sed.get_lumin_contribution(name),
+    for name in sed.luminosities:
+        table[name] = Column(norm * sed.luminosities[name],
                              unit="W/nm")
     table.write(f"{prefix}_best_model.fits")
 

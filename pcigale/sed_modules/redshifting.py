@@ -191,9 +191,13 @@ class Redshifting(SedModule):
             # We redshift directly the SED wavelength grid
             sed.wavelength_grid *= 1. + redshift
 
-            # We modify each luminosity contribution to keep energy constant
-            sed.luminosities *= 1. / (1. + redshift)
-            sed.luminosity *= 1. / (1. + redshift)
+            # We modify each luminosity contribution to keep energy constant.
+            # Because the luminosities are immutable, we need to create new
+            # arrays to replace them.
+            invzp1 = 1. / (1. + redshift)
+            sed.luminosities = {name: sed.luminosities[name] * invzp1
+                                for name in sed.luminosities}
+            sed.luminosity *= invzp1
 
         sed.add_info("universe.redshift", redshift)
         sed.add_info("universe.luminosity_distance", self.luminosity_distance,

@@ -111,12 +111,11 @@ class MBB(SedModule):
             # existing as:
             # luminosity_other_balance = -luminosity_other * (1-epsilon);
             # epsilon being the contribution of the present MBB to L_dust.
-            other_dust_contributions = [contrib for contrib in
-                                        sed.contribution_names if
-                                        "dust" in contrib]
+            other_dust_contributions = [contrib for contrib in sed.luminosities
+                                        if "dust" in contrib]
             for item in other_dust_contributions:
                 item_balance = item + '_balance'
-                lumin = sed.get_lumin_contribution(item)
+                lumin = sed.luminosities[item]
                 wavelength = sed.wavelength_grid
                 sed.add_info(item_balance, 1., True)
                 sed.add_contribution(item_balance, wavelength, -lumin *

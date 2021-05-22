@@ -143,8 +143,8 @@ class RestframeParam(SedModule):
                        for line in self.lines}
             self.w_lines[key] = w_lines
 
-        lumin_line = np.sum([sed.get_lumin_contribution(name)
-                             for name in sed.contribution_names
+        lumin_line = np.sum([sed.luminosities[name]
+                             for name in sed.luminosities
                              if 'nebular.lines' in name], axis=0)
         lumin_cont = sed.luminosity - lumin_line
 
@@ -217,7 +217,7 @@ class RestframeParam(SedModule):
             sed.add_info("param.IRX", np.log10(sed.info['dust.luminosity'] /
                          (fluxes['FUV'] * self.to_lumin * c / 154e-9)))
 
-        if 'nebular.lines_young' in sed.contribution_names:
+        if 'nebular.lines_young' in sed.luminosities:
             for line, EW in self.EW(sed).items():
                 sed.add_info(f"param.EW({line[0]}/{line[1]})", EW, unit='nm')
 

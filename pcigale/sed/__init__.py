@@ -14,13 +14,8 @@ Such SED is characterised by:
 
 - wavelength_grid: the grid of wavelengths [nm] used for the luminosities.
 
-- contribution_names: the list of the names of the luminosity contributions
-  making part of the SED.
-
-- luminosities: a two axis numpy array containing all the luminosity density
-  [W/nm] contributions to the SED. The index in the first axis corresponds to
-  the contribution (in the contribution_names list) and the index of the
-  second axis corresponds to the wavelength in the wavelength grid.
+- luminosities: a dictionary containing arrays of all the luminosity density
+  [W/nm] contributions to the SED.
 
 - info: a dictionary containing various information about the SED.
 
@@ -61,7 +56,6 @@ class SED(object):
         self.sfh = sfh
         self.modules = []
         self.wavelength_grid = None
-        self.contribution_names = []
         self.luminosity = None
         self.luminosities = None
         self.lines = dict()
@@ -195,14 +189,14 @@ class SED(object):
             The vector of the Lλ luminosities (in W/nm) of the module results.
 
         """
-        self.contribution_names.append(contribution_name)
-
         # If the SED luminosity table is empty, then there is nothing to
         # compute.
         if self.luminosity is None:
-            self.wavelength_grid = results_wavelengths.copy()
+            self.wavelength_grid = results_wavelengths
+            self.luminosities = {contribution_name: results_lumin}
+            # Make a copy so that changing the luminosity does not affect the
+            # component
             self.luminosity = results_lumin.copy()
-            self.luminosities = results_lumin[np.newaxis, :].copy()
         else:
             # If the added luminosity contribution changes the SED wavelength
             # grid, we interpolate everything on a common wavelength grid.
@@ -214,30 +208,15 @@ class SED(object):
                     utils.interpolate_lumin(self.wavelength_grid,
                                             self.luminosities,
                                             results_wavelengths,
-                                            results_lumin)
+                                            results_lumin,
+                                            contribution_name)
 
-                self.luminosity = self.luminosities.sum(0)
+                self.luminosity = np.sum(list(self.luminosities.values()),
+                                         axis=0)
             else:
-                self.luminosities = np.vstack((self.luminosities,
-                                               results_lumin))
+
+                self.luminosities[contribution_name] = results_lumin
                 self.luminosity += results_lumin
-
-    def get_lumin_contribution(self, name):
-        """Get the luminosity vector of a given contribution
-
-        Parameters
-        ----------
-        name: string
-            Name of the contribution
-
-        Returns
-        -------
-        luminosities: array of floats
-            Vector of the luminosity density contribution based on the SED
-            wavelength grid.
-
-        """
-        return self.luminosities[self.contribution_names.index(name)]
 
     def compute_fnu(self, filter_name):
         """
@@ -387,8 +366,10 @@ class SED(object):
         if self.wavelength_grid is not None:
             sed.wavelength_grid = self.wavelength_grid.copy()
             sed.luminosity = self.luminosity.copy()
+            # Copy only the dictionary but not the content. Individual
+            # components are considered immutable.
             sed.luminosities = self.luminosities.copy()
-        sed.contribution_names = self.contribution_names[:]
+
         sed.lines = self.lines.copy()
         sed.info = self.info.copy()
         sed.unit = self.unit  # No need to copy, the units will not change

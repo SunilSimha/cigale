@@ -421,11 +421,11 @@ class ModStarburstAtt(SedModule):
                 self.lineatt[k] = 10. ** (-.4 * v * self.ebvl)
 
         dust_lumin = 0.
-        contribs = [contrib for contrib in sed.contribution_names if
+        contribs = [contrib for contrib in sed.luminosities if
                     'absorption' not in contrib]
 
         for contrib in contribs:
-            luminosity = sed.get_lumin_contribution(contrib)
+            luminosity = sed.luminosities[contrib]
             if 'nebular' in contrib:
                 attenuation_spec = luminosity * (self.lineatt['nebular'] - 1.)
             else:

@@ -146,12 +146,12 @@ class ModCF00Att(SedModule):
         flux_noatt = {filt: sed.compute_fnu(filt) for filt in self.filter_list}
 
         dust_lumin = 0.
-        contribs = [contrib for contrib in sed.contribution_names if
+        contribs = [contrib for contrib in sed.luminosities if
                     'absorption' not in contrib]
 
         for contrib in contribs:
             age = contrib.split('.')[-1].split('_')[-1]
-            luminosity = sed.get_lumin_contribution(contrib)
+            luminosity = sed.luminosities[contrib]
 
             attenuation_spectrum = luminosity * (self.contatt[age] - 1.)
             dust_lumin -= np.trapz(attenuation_spectrum, wl)
