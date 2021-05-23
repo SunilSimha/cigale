@@ -14,6 +14,7 @@ os.environ["NUMEXPR_NUM_THREADS"] = "1"
 
 import argparse
 import multiprocessing as mp
+from pathlib import Path
 import sys
 
 from .session.configuration import Configuration
