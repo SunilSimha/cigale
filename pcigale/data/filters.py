@@ -7,7 +7,7 @@ import numpy as np
 from scipy.constants import c
 
 
-class Filter(object):
+class Filter:
     """A photometric filter with associated transmission data.
     """
 

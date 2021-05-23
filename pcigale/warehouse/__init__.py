@@ -8,7 +8,7 @@ from .. import sed_modules
 from .sedcache import SedCache
 
 
-class SedWarehouse(object):
+class SedWarehouse:
     """Create, cache and store SED
 
     This object is responsible for creating SED and storing them in a memory

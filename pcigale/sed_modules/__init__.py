@@ -65,7 +65,7 @@ def complete_parameters(given_parameters, parameter_list):
     return result
 
 
-class SedModule(object):
+class SedModule:
     """Abstract class, the pCigale SED creation modules are based on.
     """
 

@@ -5,7 +5,7 @@
 # Author: Laure Ciesla
 
 
-class Schreiber2016(object):
+class Schreiber2016:
     """Schreiber et al. (2016) dust models
 
     This class holds the data associated with the Schreiber et al. (2016)

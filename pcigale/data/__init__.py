@@ -308,7 +308,7 @@ class _THEMIS(BASE):
         self.lumin = model.lumin
 
 
-class Database(object):
+class Database:
     """Object giving access to pcigale database."""
 
     def __init__(self, writable=False):

@@ -10,7 +10,7 @@ from pathlib import Path
 import shutil
 
 
-class AnalysisModule(object):
+class AnalysisModule:
     """Abstract class, the pCigale analysis modules are based on.
     """
 

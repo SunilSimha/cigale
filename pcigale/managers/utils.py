@@ -24,7 +24,7 @@ def get_info(cls):
     return (info, sed.unit, sed.mass_proportional_info)
 
 
-class SharedArray(object):
+class SharedArray:
     """Class to create a shared array that can be read/written by parallel
     processes, were data related to the models is going to be stored. For
     memory efficiency reasons, we use RawArrays that will be passed in argument

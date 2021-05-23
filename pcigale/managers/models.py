@@ -18,7 +18,7 @@ from astropy.units import Unit
 from .utils import SharedArray, get_info
 
 
-class ModelsManager(object):
+class ModelsManager:
     """A ModelsManager contains the fluxes and the properties of all the
     models. In addition it contains all the information to understand how the
     models have been computed, what block of the grid of models they correspond

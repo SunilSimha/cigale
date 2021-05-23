@@ -11,7 +11,7 @@ import numpy as np
 from utils.io import read_table
 
 
-class ParametersManager(object):
+class ParametersManager:
     """Class to abstract the call to the relevant parameters manager depending
     how the physical parameters of the models are provided (directly in the
     pcigale.ini file ).
@@ -30,7 +30,7 @@ class ParametersManager(object):
             return ParametersManagerGrid(conf)
 
 
-class ParametersManagerGrid(object):
+class ParametersManagerGrid:
     """Class to generate a parameters manager for a systematic grid using the
     parameters given in the pcigale.ini file."""
 
@@ -139,7 +139,7 @@ class ParametersManagerGrid(object):
         return params
 
 
-class ParametersManagerFile(object):
+class ParametersManagerFile:
     """Class to generate a parameters manager for list of parameters given in an
     input file."""
 

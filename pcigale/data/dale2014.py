@@ -4,7 +4,7 @@
 # Author: Laure Ciesla
 
 
-class Dale2014(object):
+class Dale2014:
     """Dale et al (2014) IR templates containing an AGN component.
 
     This class holds the data associated with the Dale et al (2014)

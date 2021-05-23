@@ -5,7 +5,7 @@
 # Author: Médéric Boquien
 
 
-class DL2014(object):
+class DL2014:
     """2014 update of the Draine and Li (2007) dust models,
 
     This class holds the data associated with the updated Draine and Li (2007)

@@ -4,7 +4,7 @@
 # Author: Yannick Roehlly
 
 
-class Fritz2006(object):
+class Fritz2006:
     """Fritz et al. (2006) AGN dust torus emission model.
 
     This class holds the UV-optical data associated with a Fritz et al. (2006)

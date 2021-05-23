@@ -3,7 +3,7 @@
 # Author: Angelos Nersesian, Frederic Galliano, Anthony Jones, Pieter De Vis
 
 
-class THEMIS(object):
+class THEMIS:
     """Jones et al (2017) dust models,
 
     This class holds the data associated with the Jones et al (2017)

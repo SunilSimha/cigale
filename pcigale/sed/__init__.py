@@ -34,7 +34,7 @@ from .io.fits import save_sed_to_fits
 from ..data import Database
 
 
-class SED(object):
+class SED:
     """Spectral Energy Distribution with associated information
     """
 

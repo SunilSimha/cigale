@@ -13,7 +13,7 @@ from utils.io import read_table
 from .utils import get_info
 
 
-class ObservationsManager(object):
+class ObservationsManager:
     """Class to abstract the handling of the observations and provide a
     consistent interface for the rest of cigale to deal with observations.
 
@@ -28,7 +28,7 @@ class ObservationsManager(object):
             return ObservationsManagerVirtual(config, **kwargs)
 
 
-class ObservationsManagerPassbands(object):
+class ObservationsManagerPassbands:
     """Class to generate a manager for data files providing fluxes in
     passbands.
 
@@ -273,7 +273,7 @@ class ObservationsManagerPassbands(object):
                          delimiter=None)
 
 
-class ObservationsManagerVirtual(object):
+class ObservationsManagerVirtual:
     """Virtual observations manager when there is no observations file given
     as input. In that case we only use the list of bands given in the
     pcigale.ini file.
@@ -301,7 +301,7 @@ class ObservationsManagerVirtual(object):
         return 0
 
 
-class Observation(object):
+class Observation:
     """Class to take one row of the observations table and extract the list of
     fluxes, intensive properties, extensive properties and their errors, that
     are going to be considered in the fit.

@@ -20,7 +20,7 @@ import numpy as np
 from .utils import SharedArray
 
 
-class BayesResultsManager(object):
+class BayesResultsManager:
     """This class contains the results of the bayesian estimates of the
     physical properties of the analysed objects. It is constructed from a
     ModelsManager instance, which provides the required information on the
@@ -167,7 +167,7 @@ class BayesResultsManager(object):
         return merged
 
 
-class BestResultsManager(object):
+class BestResultsManager:
     """This class contains the physical properties of the best fit of the
     analysed objects. It is constructed from a ModelsManager instance, which
     provides the required information on the shape of the arrays. Because it
@@ -331,7 +331,7 @@ class BestResultsManager(object):
               f"χ²_red<0.5")
 
 
-class ResultsManager(object):
+class ResultsManager:
     """This class contains the physical properties (best fit and bayesian) of
     the analysed objects. It is constructed from a ModelsManager instance,
     which provides the required information to initialise the instances of

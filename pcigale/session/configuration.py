@@ -22,7 +22,7 @@ from ..warehouse import SedWarehouse
 from . import validation
 from pcigale.sed_modules.nebular import default_lines
 
-class Configuration(object):
+class Configuration:
     """This class manages the configuration of pcigale.
     """
 

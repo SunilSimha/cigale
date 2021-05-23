@@ -1,4 +1,4 @@
-class SKIRTOR2016(object):
+class SKIRTOR2016:
     """SKIRTOR (Stalevski et al., 2016) AGN dust torus emission model.
 
     This class holds the UV-optical data associated with a SKIRTORN AGN model

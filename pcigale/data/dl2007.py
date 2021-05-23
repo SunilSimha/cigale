@@ -5,7 +5,7 @@
 # Author: Médéric Boquien
 
 
-class DL2007(object):
+class DL2007:
     """Draine and Li (2007) dust models
 
     This class holds the data associated with the Draine and Li (2007)
