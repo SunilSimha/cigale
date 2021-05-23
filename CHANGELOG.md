@@ -30,6 +30,7 @@
 - Invalid models (e.g., when the stellar populations are older than the universe) are now ignored when handling upper limits. The speedup is very variable but can be substantial in case there are many invalid models. (Médéric Boquien)
 - Now that Python dictionaries are officially ordered, use regular dictionaries rather than collections.OrderedDict. It should translate into a very slight speedup and a slightly more readable code. (Médéric Boquien)
 - The storage of individual spectral physical components has been improved in order to require fewer memory allocations and copies. The exact gain depends somewhat on the parameter space but speedups of about 50% are typically seen. (Médéric Boquien)
+- The test to determine if we need to reinterpolate all the components when adding a new one has been made more efficient, yielding a speedup of 1.5-2.0%. (Médéric Boquien)
 
 ## 2020.0 (2020-06-29)
 ### Added
