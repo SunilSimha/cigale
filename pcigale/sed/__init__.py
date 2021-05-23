@@ -69,8 +69,8 @@ class SED:
         """
         if self._sfh is None:
             return None
-        else:
-            return np.copy(self._sfh)
+
+        return np.copy(self._sfh)
 
     @sfh.setter
     def sfh(self, value):
