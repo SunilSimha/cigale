@@ -19,7 +19,6 @@ is changed, this module may need to be adapted.
 """
 
 import numpy as np
-from scipy.constants import parsec
 from scipy.special import factorial
 from ..utils.cosmology import age, luminosity_distance
 

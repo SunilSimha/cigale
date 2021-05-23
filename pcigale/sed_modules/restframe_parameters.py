@@ -66,7 +66,7 @@ class RestframeParam(SedModule):
             "commas).",
             "FUV & V_B90"
         ),
-        ("colours_filters": (
+        "colours_filters": (
             "string()",
             "Rest-frame colours to be computed. You can give several colours "
             "separated by a & (don't use commas).",

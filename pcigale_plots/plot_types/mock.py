@@ -114,9 +114,6 @@ def _mock_worker(exact, estimated, param, logo, outdir):
     plt.minorticks_on()
 
     if logo is not False:
-        # Multiplying the dpi by 2 is a hack so the figure is small and not too
-        # pixelated
-        figwidth = figure.get_figwidth() * figure.dpi * 2.
         figure.figimage(logo, 0, 0, origin='upper',
                         zorder=0, alpha=1)
 

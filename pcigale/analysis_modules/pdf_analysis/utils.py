@@ -12,7 +12,6 @@ from astropy import log
 from ...utils.cosmology import luminosity_distance
 import numpy as np
 from scipy import optimize
-from scipy.constants import parsec
 from scipy.special import erf
 
 log.setLevel('ERROR')

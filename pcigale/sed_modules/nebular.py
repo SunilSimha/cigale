@@ -3,8 +3,6 @@
 # Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
 # Author: Médéric Boquien <mboquien@ast.cam.ac.uk>
 
-from copy import deepcopy
-
 import numpy as np
 import scipy.constants as cst
 
@@ -189,7 +187,6 @@ class NebularEmission(SedModule):
         if self.emission:
             NLy_old = sed.info['stellar.n_ly_old']
             NLy_young = sed.info['stellar.n_ly_young']
-            NLy_tot = NLy_old + NLy_young
             metallicity = sed.info['stellar.metallicity']
             lines = self.lines_template[metallicity]
             linesdict = self.linesdict[metallicity]
