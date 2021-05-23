@@ -7,7 +7,7 @@ from astropy.table import Table, Column
 import numpy as np
 
 
-def save_sed_to_fits(sed, prefix, norm=1.):
+def save_sed_to_fits(sed, prefix, norm=1.0):
     """
     Save a SED object to fits files
 
@@ -33,8 +33,7 @@ def save_sed_to_fits(sed, prefix, norm=1.):
     table['Fnu'] = Column(norm * sed.fnu, unit="mJy")
     table['L_lambda_total'] = Column(norm * sed.luminosity, unit="W/nm")
     for name in sed.luminosities:
-        table[name] = Column(norm * sed.luminosities[name],
-                             unit="W/nm")
+        table[name] = Column(norm * sed.luminosities[name], unit="W/nm")
     table.write(f"{prefix}_best_model.fits")
 
     if sed.sfh is not None:

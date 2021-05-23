@@ -16,8 +16,7 @@ from ..warehouse import SedWarehouse
 
 def get_info(cls):
     warehouse = SedWarehouse()
-    sed = warehouse.get_sed(cls.conf['sed_modules'],
-                            cls.params.from_index(0))
+    sed = warehouse.get_sed(cls.conf['sed_modules'], cls.params.from_index(0))
     info = list(sed.info.keys())
     info.sort()
 
@@ -37,6 +36,7 @@ class SharedArray:
     implementation and if new operations are done on these arrays, it may be
     necessary to define them here.
     """
+
     def __init__(self, size, dtype=ctypes.c_double):
         """The RawArray is stored in raw, which is protected by a setter and
         a getter. The array property returns raw as a regular Numpy array. It
