@@ -364,7 +364,7 @@ def interpolate_lumin(wl, lumin, wl_new, lumin_new, name_new):
         s = argsort_wl(wl_best)
         wl_best = wl_best[s]
         lumin_out = np.take(lumin_out, s, axis=-1)
-        luminosities = {name:lumin_out[i, :] for i, name in enumerate(lumin)}
+        luminosities = {name: lumin_out[i, :] for i, name in enumerate(lumin)}
     else:
         wl_best = wl
         luminosities = lumin.copy()
@@ -410,7 +410,7 @@ def flux_trapz(y, x, key):
     else:
         dx = np.diff(x)
         dx_cache[key] = dx
-    return np.dot(dx, y[1:]+y[:-1]) * .5
+    return np.dot(dx, y[1:] + y[:-1]) * .5
 
 
 def quick_interp_lum(x_new, x, y):
@@ -444,7 +444,7 @@ def quick_interp_lum(x_new, x, y):
         hi = np.searchsorted(x, x_new)
         # Clip them so that they are at least 1.
         # Removes mis-interpolation of x_new[n] = x[0]
-        hi = hi.clip(1, len(x)-1).astype(int)
+        hi = hi.clip(1, len(x) - 1).astype(int)
         lo = hi - 1
         frac_x = (x_new - x[lo]) / (x[hi] - x[lo])
         x_cache[key] = (lo, hi, frac_x)

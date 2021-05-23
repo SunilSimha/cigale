@@ -16,7 +16,7 @@ SqlAlchemy ORM to store the data in a unique SQLite3 database.
 """
 
 import pkg_resources
-from sqlalchemy import create_engine, exc, Column, String,  Float, PickleType
+from sqlalchemy import create_engine, exc, Column, String, Float, PickleType
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import class_mapper, sessionmaker
 import numpy as np
@@ -970,7 +970,7 @@ class Database:
             except exc.IntegrityError:
                 self.session.rollback()
                 raise DatabaseInsertError(
-                  'The Schreiber2016 template is already in the base.')
+                    'The Schreiber2016 template is already in the base.')
         else:
             raise Exception('The database is not writable.')
 

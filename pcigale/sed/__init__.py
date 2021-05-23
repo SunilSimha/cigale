@@ -25,7 +25,7 @@ Such SED is characterised by:
 """
 
 import numpy as np
-from numpy.core.multiarray import interp # Compiled version
+from numpy.core.multiarray import interp  # Compiled version
 from scipy.constants import parsec
 
 from . import utils
@@ -201,7 +201,7 @@ class SED:
             # If the added luminosity contribution changes the SED wavelength
             # grid, we interpolate everything on a common wavelength grid.
             if (results_wavelengths.size != self.wavelength_grid.size or
-                (np.count_nonzero(results_wavelengths != self.wavelength_grid) > 0)):
+                    (np.count_nonzero(results_wavelengths != self.wavelength_grid) > 0)):
                 # Interpolate each luminosity component to the new wavelength
                 # grid setting everything outside the wavelength domain to 0.
                 self.wavelength_grid, self.luminosities = \

@@ -15,6 +15,7 @@ import scipy.constants as cst
 from pcigale.data import Database
 from . import SedModule
 
+
 def k_ext(wavelength, ext_law):
     """
     Compute k(λ)=A(λ)/E(B-V) for a specified extinction law
@@ -52,10 +53,11 @@ def k_ext(wavelength, ext_law):
         Alam_Av = np.zeros(len(wavelength))
         # Attenuation for x = 1.6 -- 3.69
         mask = (x < 3.69)
-        Alam_Av[mask] = -0.8175 + 1.5848*x[mask] - 0.3774*x[mask]**2 + 0.0296*x[mask]**3
+        Alam_Av[mask] = -0.8175 + 1.5848 * x[mask] - 0.3774 * x[mask]**2 \
+            + 0.0296 * x[mask]**3
         # Attenuation for x = 3.69 -- 8
         mask = (x >= 3.69)
-        Alam_Av[mask] = 1.3468 + 0.0087*x[mask]
+        Alam_Av[mask] = 1.3468 + 0.0087 * x[mask]
         # Set negative values to zero
         Alam_Av[Alam_Av < 0.] = 0.
         # Convert A(λ)/A(V) to A(λ)/E(B-V)
@@ -64,25 +66,29 @@ def k_ext(wavelength, ext_law):
     else:
         raise KeyError("Extinction law is different from the expected ones")
 
+
 def disk(wl, limits, coefs):
     ss = np.searchsorted(wl, limits)
     wpl = [slice(lo, hi) for lo, hi in zip(ss[:-1], ss[1:])]
 
     norms = np.ones_like(coefs)
     for idx in range(1, coefs.size):
-        norms[idx] = norms[idx-1] * limits[idx] ** (coefs[idx-1] - coefs[idx])
+        norms[idx] = norms[idx - 1] * \
+            limits[idx] ** (coefs[idx - 1] - coefs[idx])
 
     spectrum = np.zeros_like(wl)
     for w, coef, norm in zip(wpl, coefs, norms):
         spectrum[w] = wl[w]**coef * norm
 
-    return spectrum  * (1. / np.trapz(spectrum, x=wl))
+    return spectrum * (1. / np.trapz(spectrum, x=wl))
+
 
 def schartmann2005_disk(wl, delta=0.):
     limits = np.array([1., 50., 125., 10000., 1e6])
     coefs = np.array([1.0, -0.2, -1.5 + delta, -4.0])
 
     return disk(wl, limits, coefs)
+
 
 def skirtor_disk(wl, delta=0.):
     limits = np.array([1., 10., 100., 5000., 1e6])
@@ -216,8 +222,8 @@ class SKIRTOR2016(SedModule):
         lambda_fracAGN = str(self.parameters["lambda_fracAGN"]).split('/')
         self.lambdamin_fracAGN = float(lambda_fracAGN[0]) * 1e3
         self.lambdamax_fracAGN = float(lambda_fracAGN[1]) * 1e3
-        if (self.lambdamin_fracAGN < 0 or
-            self.lambdamin_fracAGN  > self.lambdamax_fracAGN ):
+        if (self.lambdamin_fracAGN < 0
+                or self.lambdamin_fracAGN > self.lambdamax_fracAGN):
             raise ValueError("lambda_fracAGN incorrect. Constrain "
                              f"0 < {self.lambdamin_fracAGN} < "
                              f"{self.lambdamax_fracAGN} not respected.")
@@ -257,7 +263,7 @@ class SKIRTOR2016(SedModule):
         AGN1.disk = disk
 
         # Calculate the extinction
-        ext_fac = 10 ** (-.4*k_ext(self.SKIRTOR2016.wave, self.law) * self.EBV)
+        ext_fac = 10**(-.4 * k_ext(self.SKIRTOR2016.wave, self.law) * self.EBV)
 
         # Calculate the new AGN SED shape after extinction
         # The direct and scattered components (line-of-sight) are extincted for
@@ -281,8 +287,8 @@ class SKIRTOR2016(SedModule):
         # hence Lpolar = [7/18-1/6×sin²OA-2/9×sin³OA]×∫L(θ=0, λ)×(1-ext_fact(λ)) dλ.
         # Integrating over λ gives the bolometric luminosity
         sin_oa = np.sin(np.deg2rad(self.oa))
-        l_ext = (7./18. - sin_oa**2/6. - sin_oa**3*2./9.) * \
-                np.trapz(AGN1.disk * (1. - ext_fac), x=AGN1.wave)
+        l_ext = (7. / 18. - sin_oa**2. / 6. - sin_oa**3 * 2. / 9.) * \
+            np.trapz(AGN1.disk * (1. - ext_fac), x=AGN1.wave)
 
         # Casey (2012) modified black body model
         c = cst.c * 1e9
@@ -315,7 +321,7 @@ class SKIRTOR2016(SedModule):
             spec = np.interp(wl, self.SKIRTOR2016.wave,
                              self.SKIRTOR2016.dust + self.SKIRTOR2016.disk)
             self.AGNlumin = np.trapz(spec, x=wl)
-        elif (self.lambdamin_fracAGN  == 0.) & (self.lambdamax_fracAGN == 0.):
+        elif (self.lambdamin_fracAGN == 0.) & (self.lambdamax_fracAGN == 0.):
             self.AGNlumin = 1.
         elif self.lambdamin_fracAGN == self.lambdamax_fracAGN:
             self.AGNlumin = np.interp(self.lambdamin_fracAGN,
@@ -363,7 +369,7 @@ class SKIRTOR2016(SedModule):
                                      self.lambdamax_fracAGN])
             spec = np.interp(self.wl, sed.wavelength_grid, sed.luminosity)
             scale = np.trapz(spec, x=self.wl) / self.AGNlumin
-        elif (self.lambdamin_fracAGN  == 0.) and (self.lambdamax_fracAGN == 0.):
+        elif (self.lambdamin_fracAGN == 0.) and (self.lambdamax_fracAGN == 0.):
             scale = luminosity
         elif self.lambdamin_fracAGN == self.lambdamax_fracAGN:
             scale = np.interp(self.lambdamin_fracAGN, sed.wavelength_grid,

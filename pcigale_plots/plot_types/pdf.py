@@ -91,7 +91,7 @@ def _pdf_worker(obj_name, var_name, format, outdir):
         pdf_prob, pdf_grid = np.histogram(model_variable, Nhist,
                                           (min_hist, max_hist),
                                           weights=likelihood, density=True)
-        pdf_x = (pdf_grid[1:]+pdf_grid[:-1]) / 2.
+        pdf_x = (pdf_grid[1:] + pdf_grid[:-1]) / 2.
 
         pdf_grid = np.linspace(min_hist, max_hist, Npdf)
         pdf_prob = np.interp(pdf_grid, pdf_x, pdf_prob)

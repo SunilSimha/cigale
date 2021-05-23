@@ -119,10 +119,10 @@ def _sed_worker(obs, mod, filters, sed_type, logo, xrange, yrange, series,
                                for filt in filters.values()]) * 1e-3
         wavelength_spec = sed['wavelength'] * 1e-3
         obs_fluxes = np.array([obs[filt] for filt in filters.keys()])
-        obs_fluxes_err = np.array([obs[filt+'_err']
+        obs_fluxes_err = np.array([obs[filt + '_err']
                                    for filt in filters.keys()])
-        mod_fluxes = np.array([mod["best."+filt]
-                               if "best."+filt in mod.colnames else np.nan
+        mod_fluxes = np.array([mod["best." + filt]
+                               if "best." + filt in mod.colnames else np.nan
                                for filt in filters.keys()])
         if obs['redshift'] >= 0:
             z = float(obs['redshift'])
@@ -165,7 +165,7 @@ def _sed_worker(obs, mod, filters, sed_type, logo, xrange, yrange, series,
 
             # Stellar emission
             if ('stellar_attenuated' in series
-                and 'stellar.young' in sed.columns):
+                    and 'stellar.young' in sed.columns):
                 spectrum = (sed['stellar.young'][wsed] +
                             sed['stellar.old'][wsed])
 
@@ -183,7 +183,7 @@ def _sed_worker(obs, mod, filters, sed_type, logo, xrange, yrange, series,
                            linewidth=1.0)
 
             if ('stellar_unattenuated' in series
-                and 'stellar.young' in sed.columns):
+                    and 'stellar.young' in sed.columns):
                 ax1.loglog(wavelength_spec[wsed],
                            (sed['stellar.old'][wsed] +
                             sed['stellar.young'][wsed]),
@@ -289,8 +289,8 @@ def _sed_worker(obs, mod, filters, sed_type, logo, xrange, yrange, series,
                              label='Observed fluxes, no errors', capsize=0.)
             mask = np.where(obs_fluxes > 0.)
             ax2.errorbar(filters_wl[mask],
-                         (obs_fluxes[mask]-mod_fluxes[mask])/obs_fluxes[mask],
-                         yerr=obs_fluxes_err[mask]/obs_fluxes[mask],
+                         (obs_fluxes[mask] - mod_fluxes[mask]) / obs_fluxes[mask],
+                         yerr=obs_fluxes_err[mask] / obs_fluxes[mask],
                          marker='_', label="(Obs-Mod)/Obs", color='k',
                          capsize=0., ls='None', lw=1)
             ax2.plot([xmin, xmax], [0., 0.], ls='--', color='k')
@@ -359,7 +359,7 @@ def _sed_worker(obs, mod, filters, sed_type, logo, xrange, yrange, series,
                 # Multiplying the dpi by 2 is a hack so the figure is small
                 # and not too pixelated
                 figwidth = figure.get_figwidth() * figure.dpi * 2.
-                figure.figimage(logo, figwidth-logo.shape[0], 0,
+                figure.figimage(logo, figwidth - logo.shape[0], 0,
                                 origin='upper', zorder=0, alpha=1)
 
             figure.savefig(outdir / f"{obs['id']}_best_model.{format}",

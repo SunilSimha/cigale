@@ -80,13 +80,13 @@ class SfhPeriodic(SedModule):
         self.sfr = np.zeros_like(time_grid, dtype=np.float)
 
         if self.type_bursts == 0:
-            burst = np.exp(-time_grid/self.tau_bursts)
+            burst = np.exp(-time_grid / self.tau_bursts)
         elif self.type_bursts == 1:
-            burst = np.exp(-time_grid/self.tau_bursts) * \
-                    time_grid/self.tau_bursts**2
+            burst = np.exp(-time_grid / self.tau_bursts) * \
+                time_grid / self.tau_bursts**2
         elif self.type_bursts == 2:
             burst = np.zeros_like(time_grid)
-            burst[:int(self.tau_bursts)+1] = 1.
+            burst[:int(self.tau_bursts) + 1] = 1.
         else:
             raise Exception(f"Burst type {self.type_bursts} unknown.")
 

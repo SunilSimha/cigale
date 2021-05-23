@@ -56,14 +56,14 @@ def mock(config, nologo, outdir):
 
     for param in params:
         if param.endswith('_log'):
-            param = "best."+param
+            param = f"best.{param}"
             exact[param] = np.log10(exact[param[:-4]])
 
     logo = False if nologo else plt.imread(pkg_resources.resource_filename(__name__,
                                                                            "../resources/CIGALE.png"))
 
-    arguments = [(exact["best."+param], estimated["bayes."+param], param, logo, outdir)
-                 for param in params]
+    arguments = [(exact[f"best.{param}"], estimated[f"bayes.{param}"], param,
+                  logo, outdir) for param in params]
 
     counter = Counter(len(arguments))
     with mp.Pool(processes=config.configuration['cores'], initializer=pool_initializer,

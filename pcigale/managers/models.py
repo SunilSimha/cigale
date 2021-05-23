@@ -42,7 +42,7 @@ class ModelsManager:
         self.extpropnames = (self.allextpropnames & set(obs.extprops) |
                              self.allextpropnames & props_nolog)
         if 'bands' in conf['analysis_params']:
-            bandnames = set(obs.bands+conf['analysis_params']['bands'])
+            bandnames = set(obs.bands + conf['analysis_params']['bands'])
         else:
             bandnames = obs.bands
 

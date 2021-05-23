@@ -71,8 +71,8 @@ class DL2007(SedModule):
 
         # We also compute <U>
         self.umean = (1. - self.gamma) * self.umin + \
-                     self.gamma * np.log(self.umax / self.umin) / \
-                     (1. / self.umin  - 1. / self.umax)
+            self.gamma * np.log(self.umax / self.umin) / \
+            (1. / self.umin - 1. / self.umax)
 
         with Database() as database:
             self.model_minmin = database.get_dl2007(self.qpah, self.umin,
@@ -87,7 +87,7 @@ class DL2007(SedModule):
         # mass in W (kg of dust)¯¹, The gamma parameter does not affect the
         # fact that it is for 1 kg because it represents a mass fraction of
         # each component.
-        self.emissivity = np.trapz((1.-self.gamma) * self.model_minmin.lumin +
+        self.emissivity = np.trapz((1. - self.gamma) * self.model_minmin.lumin +
                                    self.gamma * self.model_minmax.lumin,
                                    x=self.model_minmin.wave)
 

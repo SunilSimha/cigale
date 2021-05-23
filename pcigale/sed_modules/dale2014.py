@@ -88,7 +88,7 @@ class Dale2014(SedModule):
         luminosity = sed.info['dust.luminosity']
 
         if self.fracAGN < 1.:
-            L_AGN = luminosity * (1./(1.-self.fracAGN) - 1.)
+            L_AGN = luminosity * (1. / (1. - self.fracAGN) - 1.)
         else:
             raise Exception("AGN fraction is exactly 1. Behaviour undefined.")
 

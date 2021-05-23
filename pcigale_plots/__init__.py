@@ -74,9 +74,9 @@ def main():
 
     sed_parser = subparsers.add_parser('sed', help=sed_action.__doc__)
     sed_parser.add_argument('--type', default='mJy',
-                             help='type of plot. Options are mJy (observed '
-                                  'frame in flux) and lum (rest-frame in '
-                                  'lumunosity).')
+                            help='type of plot. Options are mJy (observed '
+                                 'frame in flux) and lum (rest-frame in '
+                                 'lumunosity).')
     sed_parser.add_argument('--nologo', action='store_true')
     sed_parser.add_argument('--format', default='pdf', help=fmtstr)
     sed_parser.add_argument('--outdir', default='out')

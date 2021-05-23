@@ -85,12 +85,12 @@ class Sfh2Exp(SedModule):
         sfr_burst = np.exp(-time_grid_burst / self.tau_burst)
 
         # Height of the late burst to have the desired produced mass fraction
-        sfr_burst *= (self.f_burst / (1.-self.f_burst) * np.sum(self.sfr) /
+        sfr_burst *= (self.f_burst / (1. - self.f_burst) * np.sum(self.sfr) /
                       np.sum(sfr_burst))
 
         # We add the age burst exponential for ages superior to age -
         # burst_age
-        self.sfr[-(time_grid_burst[-1]+1):] += sfr_burst
+        self.sfr[-(time_grid_burst[-1] + 1):] += sfr_burst
 
         # Compute the galaxy mass and normalise the SFH to 1 solar mass
         # produced if asked to.

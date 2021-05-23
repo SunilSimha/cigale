@@ -86,7 +86,6 @@ class SaveFluxes(AnalysisModule):
             print("Saving the models ....")
             models.save(f"models-block-{iblock}")
 
-
     def process(self, conf):
         """Process with the savedfluxes analysis.
 

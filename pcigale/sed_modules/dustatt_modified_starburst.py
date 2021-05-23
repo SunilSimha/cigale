@@ -172,7 +172,7 @@ def a_vs_ebv(wavelength, bump_wave, bump_width, bump_ampl, power_slope):
                 uv_bump(wl_BV, bump_wave, bump_width, bump_ampl))
     EBV = ((k_calzetti2000(wl_BV) * power_law(wl_BV, power_slope)) +
            uv_bump(wl_BV, bump_wave, bump_width, bump_ampl))
-    attenuation *= (EBV_calz[1]-EBV_calz[0]) / (EBV[1]-EBV[0])
+    attenuation *= (EBV_calz[1] - EBV_calz[0]) / (EBV[1] - EBV[0])
 
     return attenuation
 
@@ -210,7 +210,7 @@ def ccm(wave, Rv):
                                           wn - 1.82))
     fcond3 = lambda wn: 1.0 * (Rv * (1.752 - 0.316 * wn -
                                (0.104 / ((wn - 4.67)**2 + 0.341))) +
-                              (-3.090 + 1.825 * wn +
+                               (-3.090 + 1.825 * wn +
                                (1.206 / ((wn - 4.62)**2 + 0.263))))
     fcond4 = lambda wn: 1.0 * (Rv * (1.752 - 0.316 * wn -
                                      (0.104 / ((wn - 4.67)**2 + 0.341)) +
@@ -221,7 +221,7 @@ def ccm(wave, Rv):
                                 np.polyval([0.1207, 0.2130, 0., 0.],
                                            wn - 5.9)))
     fcond5 = lambda wn: 1.0 * (Rv * (np.polyval([-0.070, 0.137, -0.628, -1.073],
-                                                wn-8.)) +
+                                                wn - 8.)) +
                                np.polyval([0.374, -0.420, 4.257, 13.670],
                                           wn - 8.))
 
@@ -407,15 +407,15 @@ class ModStarburstAtt(SedModule):
             linewl = np.array([sed.lines[k][0] for k in names])
             if self.ext_law_emLines == 1:
                 self.lineatt['nebular'] = ccm(wl, self.Rv)
-                for name,  att in zip(names, ccm(linewl, self.Rv)):
+                for name, att in zip(names, ccm(linewl, self.Rv)):
                     self.lineatt[name] = att
             elif self.ext_law_emLines == 2:
                 self.lineatt['nebular'] = Pei92(wl, law='smc')
-                for name,  att in zip(names, Pei92(linewl, law='smc')):
+                for name, att in zip(names, Pei92(linewl, law='smc')):
                     self.lineatt[name] = att
             elif self.ext_law_emLines == 3:
                 self.lineatt['nebular'] = Pei92(wl, law='lmc')
-                for name,  att in zip(names, Pei92(linewl, law='lmc')):
+                for name, att in zip(names, Pei92(linewl, law='lmc')):
                     self.lineatt[name] = att
             for k, v in self.lineatt.items():
                 self.lineatt[k] = 10. ** (-.4 * v * self.ebvl)

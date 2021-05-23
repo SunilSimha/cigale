@@ -75,7 +75,7 @@ class ParametersManagerGrid:
         k = len(l) // nb
         step = k + nz - k % nz
 
-        return [l[i * step: (i+1) * step] for i in range(nb)]
+        return [l[i * step: (i + 1) * step] for i in range(nb)]
 
     def _param_dict_combine(self, dictionary):
         """Given a dictionary associating to each key an array, returns all the
@@ -195,7 +195,7 @@ class ParametersManagerFile:
         """
         step = len(l) // nb
         if step > 0:
-            return [l[i * step: (i+1) * step] for i in range(nb)]
+            return [l[i * step: (i + 1) * step] for i in range(nb)]
 
         raise ValueError("The number of blocks must be no more than the number"
                          "of models.")

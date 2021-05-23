@@ -91,23 +91,23 @@ class M2005(SedModule):
         sed.add_info('stellar.mass_neutron_young', info_young[3], True,
                      unit='solMass')
         sed.add_info('stellar.mass_black_hole_young', info_young[4], True,
-                      unit='solMass')
+                     unit='solMass')
         sed.add_info('stellar.lum_young', lum_young, True, unit='W')
 
         sed.add_info('stellar.mass_total_old', info_old[0], True,
                      unit='solMass')
         sed.add_info('stellar.mass_alive_old', info_old[1], True,
-                      unit='solMass')
+                     unit='solMass')
         sed.add_info('stellar.mass_white_dwarf_old', info_old[2], True,
-                      unit='solMass')
+                     unit='solMass')
         sed.add_info('stellar.mass_neutron_old', info_old[3], True,
-                      unit='solMass')
+                     unit='solMass')
         sed.add_info('stellar.mass_black_hole_old', info_old[4], True,
-                      unit='solMass')
+                     unit='solMass')
         sed.add_info('stellar.lum_old', lum_old, True, unit='W')
 
-        sed.add_info('stellar.mass_total', info_all[0], True,  unit='solMass')
-        sed.add_info('stellar.mass_alive', info_all[1], True,  unit='solMass')
+        sed.add_info('stellar.mass_total', info_all[0], True, unit='solMass')
+        sed.add_info('stellar.mass_alive', info_all[1], True, unit='solMass')
         sed.add_info('stellar.mass_white_dwarf', info_all[2], True,
                      unit='solMass')
         sed.add_info('stellar.mass_neutron', info_all[3], True, unit='solMass')

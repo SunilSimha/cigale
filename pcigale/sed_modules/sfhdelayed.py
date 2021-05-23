@@ -93,12 +93,12 @@ class SFHDelayed(SedModule):
         sfr_burst = np.exp(-t_burst / self.tau_burst)
 
         # Height of the late burst to have the desired produced mass fraction
-        sfr_burst *= (self.f_burst / (1.-self.f_burst) * np.sum(self.sfr) /
+        sfr_burst *= (self.f_burst / (1. - self.f_burst) * np.sum(self.sfr) /
                       np.sum(sfr_burst))
 
         # We add the age burst exponential for ages superior to age_main -
         # age_burst
-        self.sfr[-(t_burst[-1]+1):] += sfr_burst
+        self.sfr[-(t_burst[-1] + 1):] += sfr_burst
 
         # Compute the integral of the SFH and normalise it to 1 solar mass
         # if asked to.
@@ -129,6 +129,7 @@ class SFHDelayed(SedModule):
         sed.add_info("sfh.age_burst", self.age_burst, unit='Myr')
         sed.add_info("sfh.tau_burst", self.tau_burst, unit='Myr')
         sed.add_info("sfh.f_burst", self.f_burst)
+
 
 # SedModule to be returned by get_module
 Module = SFHDelayed

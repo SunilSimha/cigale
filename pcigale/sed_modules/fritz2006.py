@@ -130,7 +130,7 @@ class Fritz2006(SedModule):
         sed.add_info('agn.fracAGN', self.fracAGN)
 
         # Compute the AGN luminosity
-        agn_power = luminosity * (1./(1.-self.fracAGN) - 1.)
+        agn_power = luminosity * (1. / (1. - self.fracAGN) - 1.)
         l_agn_dust = agn_power
         l_agn_disk = agn_power * self.l_agn_disk
 
@@ -142,6 +142,7 @@ class Fritz2006(SedModule):
                              agn_power * self.fritz2006.lumin_therm)
         sed.add_contribution('agn.fritz2006_disk', self.fritz2006.wave,
                              agn_power * self.fritz2006.lumin_disk)
+
 
 # SedModule to be returned by get_module
 Module = Fritz2006

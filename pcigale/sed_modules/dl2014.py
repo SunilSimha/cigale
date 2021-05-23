@@ -83,16 +83,16 @@ class DL2014(SedModule):
         self.umean = (1. - self.gamma) * self.umin
         if self.alpha == 1.0:
             self.umean += self.gamma * (self.umax - self.umin) / \
-                          np.log(self.umax / self.umin)
+                np.log(self.umax / self.umin)
         elif self.alpha == 2.0:
             self.umean += self.gamma * np.log(self.umax / self.umin) / \
-                          (1. / self.umin  - 1. / self.umax)
+                (1. / self.umin - 1. / self.umax)
         else:
             oma = 1. - self.alpha
             tma = 2. - self.alpha
             self.umean += self.gamma * oma / tma * \
-                          (self.umin**tma - self.umax**tma) / \
-                          (self.umin**oma - self.umax**oma)
+                (self.umin**tma - self.umax**tma) / \
+                (self.umin**oma - self.umax**oma)
 
         with Database() as database:
             self.model_minmin = database.get_dl2014(self.qpah, self.umin,
@@ -107,7 +107,7 @@ class DL2014(SedModule):
         # mass in W (kg of dust)¯¹, The gamma parameter does not affect the
         # fact that it is for 1 kg because it represents a mass fraction of
         # each component.
-        self.emissivity = np.trapz((1.-self.gamma) * self.model_minmin.lumin +
+        self.emissivity = np.trapz((1. - self.gamma) * self.model_minmin.lumin +
                                    self.gamma * self.model_minmax.lumin,
                                    x=self.model_minmin.wave)
 

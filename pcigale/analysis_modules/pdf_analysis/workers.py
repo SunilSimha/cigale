@@ -142,7 +142,7 @@ def analysis(idx, obs):
         z = np.array(
             gbl_models.conf['sed_modules_params']['redshifting']['redshift'])
         length = gbl_models.nm
-        zidx = np.abs(obs.redshift-z).argmin()
+        zidx = np.abs(obs.redshift - z).argmin()
         wz = slice(zidx * length, (zidx + 1) * length, 1)
         corr_dz = compute_corr_dz(z[zidx], obs)
     else:  # We do not know the redshift so we use the full grid
@@ -179,7 +179,7 @@ def analysis(idx, obs):
             gbl_results.bayes.intmean[prop][idx] = mean
             gbl_results.bayes.interror[prop][idx] = std
             if (gbl_models.conf['analysis_params']['save_chi2'] in
-                ['all', 'properties']):
+                    ['all', 'properties']):
                 save_chi2(obs, prop, gbl_models, chi2, _(values))
 
         for prop in gbl_results.bayes.extmean:
@@ -194,7 +194,7 @@ def analysis(idx, obs):
             gbl_results.bayes.extmean[prop][idx] = mean
             gbl_results.bayes.exterror[prop][idx] = std
             if (gbl_models.conf['analysis_params']['save_chi2'] in
-                ['all', 'properties']):
+                    ['all', 'properties']):
                 save_chi2(obs, prop, gbl_models, chi2,
                           _(values * scaling * corr_dz))
 
@@ -205,7 +205,7 @@ def analysis(idx, obs):
             gbl_results.bayes.fluxmean[band][idx] = mean
             gbl_results.bayes.fluxerror[band][idx] = std
             if (gbl_models.conf['analysis_params']['save_chi2'] in
-                ['all', 'fluxes']):
+                    ['all', 'fluxes']):
                 save_chi2(obs, band, gbl_models, chi2, values * scaling)
 
         best_idx_z = np.nanargmin(chi2)
@@ -214,6 +214,7 @@ def analysis(idx, obs):
         gbl_results.best.index[idx] = gbl_models.index[wz][best_idx_z]
 
     gbl_counter.inc()
+
 
 def bestfit(oidx, obs):
     """Worker process to compute and save the best fit.
@@ -242,7 +243,7 @@ def bestfit(oidx, obs):
             # on the grid redshift. Because of the difference in redshift the
             # distance is different and must be reflected in the scaling
             corr_scaling = compute_corr_dz(model_z, obs) / \
-                           compute_corr_dz(obs.redshift, obs)
+                compute_corr_dz(obs.redshift, obs)
         else:  # The model redshift is always exact in redhisfting mode
             corr_scaling = 1.
 
@@ -269,7 +270,7 @@ def bestfit(oidx, obs):
 
         for prop in gbl_results.best.extprop:
             gbl_results.best.extprop[prop][oidx] = sed.info[prop] * scaling \
-                                                       * corr_dz
+                * corr_dz
 
         if gbl_conf['analysis_params']["save_best_sed"]:
             sed.to_fits(Path('out') / f"{obs.id}", scaling * corr_dz)

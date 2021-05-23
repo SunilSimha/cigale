@@ -169,10 +169,10 @@ class TwoPowerLawAtt(SedModule):
         if len(self.lineatt) == 0:
             names = [k for k in sed.lines]
             linewl = np.array([sed.lines[k][0] for k in names])
-            old_curve =  10. ** (-.4 * alambda_av(linewl, self.slope_ISM) *
-                                 self.Av_ISM)
-            young_curve = 10. ** (-.4 * alambda_av(linewl, self.slope_BC) *
-                                  self.Av_BC) * old_curve
+            old_curve = 10.**(-.4 * alambda_av(linewl, self.slope_ISM) *
+                              self.Av_ISM)
+            young_curve = 10.**(-.4 * alambda_av(linewl, self.slope_BC) *
+                                self.Av_BC) * old_curve
 
             for name, old, young in zip(names, old_curve, young_curve):
                 self.lineatt[name] = (old, young)

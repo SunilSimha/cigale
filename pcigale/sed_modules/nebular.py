@@ -38,6 +38,7 @@ default_lines = ['Ly-alpha',
                  'SII-673.1'
                  ]
 
+
 class NebularEmission(SedModule):
     """
     Module computing the nebular emission from the ultraviolet to the
@@ -111,9 +112,9 @@ class NebularEmission(SedModule):
             with Database() as db:
                 metallicities = db.get_nebular_continuum_parameters()['metallicity']
                 self.lines_template = {m: db.get_nebular_lines(m, self.logU)
-                                    for m in metallicities}
+                                       for m in metallicities}
                 self.cont_template = {m: db.get_nebular_continuum(m, self.logU)
-                                    for m in metallicities}
+                                      for m in metallicities}
 
             self.linesdict = {m: dict(zip(self.lines_template[m].name,
                                           zip(self.lines_template[m].wave,
@@ -125,16 +126,17 @@ class NebularEmission(SedModule):
                 for line_wave in lines.wave:
                     width = line_wave * self.lines_width * 1e3 / cst.c
                     new_wave = np.concatenate((new_wave,
-                                            np.linspace(line_wave - 3. * width,
-                                                        line_wave + 3. * width,
-                                                        9)))
+                                               np.linspace(line_wave - 3. * width,
+                                                           line_wave + 3. * width,
+                                                           9)))
                 new_wave.sort()
                 new_flux = np.zeros_like(new_wave)
+                log2 = np.log(2)
                 for line_flux, line_wave in zip(lines.ratio, lines.wave):
                     width = line_wave * self.lines_width * 1e3 / cst.c
-                    new_flux += (line_flux * np.exp(- 4. * np.log(2.) *
+                    new_flux += (line_flux * np.exp(- 4. * log2 *
                                 (new_wave - line_wave) ** 2. / (width * width)) /
-                                (width * np.sqrt(np.pi / np.log(2.)) / 2.))
+                                (width * np.sqrt(np.pi / log2) / 2.))
                 lines.wave = new_wave
                 lines.ratio = new_flux
 

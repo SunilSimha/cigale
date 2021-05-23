@@ -138,8 +138,8 @@ class RestframeParam(SedModule):
         if key in self.w_lines:
             w_lines = self.w_lines[key]
         else:
-            w_lines = {line: np.where((wl >= line[0]-line[1]) &
-                                      (wl <= line[0]+line[1]))
+            w_lines = {line: np.where((wl >= line[0] - line[1]) &
+                                      (wl <= line[0] + line[1]))
                        for line in self.lines}
             self.w_lines[key] = w_lines
 
@@ -155,7 +155,7 @@ class RestframeParam(SedModule):
             key = (wl_line.size, sed.info['nebular.lines_width'], line[0], 0.)
             EW[line] = (flux_trapz(lumin_line[w_line], wl_line, key) /
                         flux_trapz(lumin_cont[w_line], wl_line, key) *
-                        (wl_line[-1]-wl_line[0]))
+                        (wl_line[-1] - wl_line[0]))
 
         return EW
 
@@ -226,7 +226,7 @@ class RestframeParam(SedModule):
                          fluxes[filt] * self.to_lumin, True, unit='W/Hz')
         for filt1, filt2 in self.colours:
             sed.add_info(f"param.restframe_{filt1}-{filt2}",
-                         2.5 * np.log10(fluxes[filt2]/fluxes[filt1]),
+                         2.5 * np.log10(fluxes[filt2] / fluxes[filt1]),
                          unit='mag')
 
 

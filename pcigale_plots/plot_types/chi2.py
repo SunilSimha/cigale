@@ -70,7 +70,7 @@ def _chi2_worker(obj_name, var_name, format, outdir):
         data = np.memmap(fname, dtype=np.float64, shape=(2, data.size // 2))
         ax.scatter(data[1, :], data[0, :], color='k', s=.1)
     ax.set_xlabel(var_name)
-    ax.set_ylabel("Reduced $\chi^2$")
+    ax.set_ylabel(r"Reduced $\chi^2$")
     ax.set_ylim(0., )
     ax.minorticks_on()
     figure.suptitle(f"Reduced $\chi^2$ distribution of {var_name} for "

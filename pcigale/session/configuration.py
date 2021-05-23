@@ -22,6 +22,7 @@ from ..warehouse import SedWarehouse
 from . import validation
 from pcigale.sed_modules.nebular import default_lines
 
+
 class Configuration:
     """This class manages the configuration of pcigale.
     """
@@ -104,12 +105,12 @@ class Configuration:
         self.config['sed_modules'] = []
         self.config.comments['sed_modules'] = ([""] +
             ["Available modules to compute the models. The order must be kept."
-            ] +
+             ] +
             ["SFH:"] +
             ["* sfh2exp (double exponential)"] +
             ["* sfhdelayed (delayed SFH with optional exponential burst)"] +
             ["* sfhdelayedbq (delayed SFH with optional constant burst/quench)"
-            ] +
+             ] +
             ["* sfhfromfile (arbitrary SFH read from an input file)"] +
             ["* sfhperiodic (periodic SFH, exponential, rectangle or delayed"
              ")"] +
@@ -323,7 +324,7 @@ class Configuration:
                    'radio': ['radio'],
                    'restframe_parameters': ['restframe_parameters'],
                    'redshift': ['redshifting']
-                  }
+                   }
 
         comments = {'SFH': "ERROR! Choosing one SFH module is mandatory.",
                     'SSP': "ERROR! Choosing one SSP module is mandatory.",

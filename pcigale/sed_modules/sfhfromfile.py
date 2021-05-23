@@ -69,7 +69,7 @@ class SfhFromFile(SedModule):
         time_grid = table.columns[0].data.astype(np.int)
         if time_grid[0] != 0:
             raise Exception("The time grid must start from 0.")
-        if np.all(time_grid[1:]-time_grid[:-1] == 1) == False:
+        if np.all(time_grid[1:] - time_grid[:-1] == 1) == False:
             raise Exception("The time step must be 1 Myr. Computed models will"
                             " be wrong.")
 

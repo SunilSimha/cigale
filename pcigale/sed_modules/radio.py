@@ -71,23 +71,22 @@ class Radio(SedModule):
         self.wave = np.logspace(5., 9., 1000)
 
         # We compute the SF synchrotron emission normalised at 21cm
-        self.lumin_nonthermal_sf = (1./self.wave)**(-self.alpha_sf + 2.) / \
-                                   (1./2.1e8)**(-self.alpha_sf + 2.)
+        self.lumin_nonthermal_sf = (1. / self.wave)**(-self.alpha_sf + 2.) / \
+                                   (1. / 2.1e8)**(-self.alpha_sf + 2.)
 
         # Normalisation factor from the FIR/radio correlation to apply to the
         # IR luminosity
-        S21cm = (1. / (10.**self.qir_sf*3.75e12)) * (c/(2.1e8)**2)
+        S21cm = (1. / (10.**self.qir_sf * 3.75e12)) * (c / 2.1e8**2.)
         self.lumin_nonthermal_sf *= S21cm
 
         # We compute the AGN emission normalized at 5 GHz
-        self.lumin_agn = (1./self.wave)**(-self.alpha_agn + 2.) / \
-                         (5e9/c)**(-self.alpha_agn + 2.)
+        self.lumin_agn = (1. / self.wave)**(-self.alpha_agn + 2.) / \
+                         (5e9 / c)**(-self.alpha_agn + 2.)
 
         # Normalisation factor from the 2500 A-5 GHz relation to apply to the
         # AGN 2500 A Lnu
-        S5GHz = self.R_agn * 5e9**2/c
+        S5GHz = self.R_agn * 5e9**2. / c
         self.lumin_agn *= S5GHz
-
 
     def process(self, sed):
         """Add the radio contribution.

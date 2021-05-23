@@ -85,7 +85,7 @@ class SFHDelayedBQ(SedModule):
 
         # Add the burst/quench
         t_bq = self.age_main - self.age_bq
-        self.sfr[t>=t_bq] = self.r_sfr * self.sfr[t_bq-1]
+        self.sfr[t >= t_bq] = self.r_sfr * self.sfr[t_bq - 1]
 
         # Compute the galaxy mass and normalise the SFH to 1 solar mass
         # produced if asked to.
@@ -96,7 +96,6 @@ class SFHDelayedBQ(SedModule):
         else:
             self.sfr *= sfr_A
             self.sfr_integrated *= sfr_A
-
 
     def process(self, sed):
         """
@@ -116,6 +115,7 @@ class SFHDelayedBQ(SedModule):
         sed.add_info("sfh.tau_main", self.tau_main, unit='Myr')
         sed.add_info("sfh.age_bq", self.age_bq, unit='Myr')
         sed.add_info("sfh.r_sfr", self.r_sfr)
+
 
 # CreationModule to be returned by get_module
 Module = SFHDelayedBQ

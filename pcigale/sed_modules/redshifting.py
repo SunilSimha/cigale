@@ -52,7 +52,7 @@ def igm_transmission(wavelength, redshift):
     lambda_n = np.empty(n_transitions_max)
     z_n = np.empty((n_transitions_max, len(wavelength)))
     for n in range(2, n_transitions_max):
-        lambda_n[n] = lambda_limit / (1. - 1. / float(n*n))
+        lambda_n[n] = lambda_limit / (1. - 1. / float(n * n))
         z_n[n, :] = (wavelength / lambda_n[n]) - 1.
 
     # From Table 1 in Meiksin (2006), only n >= 3 are relevant.
@@ -64,10 +64,10 @@ def igm_transmission(wavelength, redshift):
     # Here n = 2 => tau_2 = tau_alpha
     tau_n = np.zeros((n_transitions_max, len(wavelength)))
     if redshift <= 4:
-        tau_a = 0.00211 * np.power(1. + redshift,  3.7)
+        tau_a = 0.00211 * np.power(1. + redshift, 3.7)
         tau_n[2, :] = 0.00211 * np.power(1. + z_n[2, :], 3.7)
     elif redshift > 4:
-        tau_a = 0.00058 * np.power(1. + redshift,  4.5)
+        tau_a = 0.00058 * np.power(1. + redshift, 4.5)
         tau_n[2, :] = 0.00058 * np.power(1. + z_n[2, :], 4.5)
 
     # Then, tau_n is the mean optical depth value for transitions
@@ -85,7 +85,7 @@ def igm_transmission(wavelength, redshift):
                            np.power(0.25 * (1. + z_n[n, :]), (1. / 3.)))
         else:
             tau_n[n, :] = (tau_n[9, :] * 720. /
-                           (float(n) * (float(n*n - 1.))))
+                           (float(n) * (float(n * n - 1.))))
 
     for n in range(2, n_transitions_max):
         # If z_n>=redshift or z_n<0, the photon cannot be absorbed by Lyman n→1
@@ -102,16 +102,16 @@ def igm_transmission(wavelength, redshift):
     term1 = gamma - np.exp(-1.)
 
     n = np.arange(n_transitions_low - 1)
-    term2 = np.sum(np.power(-1., n) / (factorial(n) * (2*n - 1)))
+    term2 = np.sum(np.power(-1., n) / (factorial(n) * (2 * n - 1)))
 
-    term3 = ((1.+redshift) * np.power(wavelength[w]/lambda_limit, 1.5) -
-             np.power(wavelength[w]/lambda_limit, 2.5))
+    term3 = ((1. + redshift) * np.power(wavelength[w] / lambda_limit, 1.5) -
+             np.power(wavelength[w] / lambda_limit, 2.5))
 
     term4 = np.sum(np.array(
-        [((2.*np.power(-1., n) / (factorial(n) * ((6*n - 5)*(2*n - 1)))) *
-          ((1.+redshift) ** (2.5-(3 * n)) *
-           (wavelength[w]/lambda_limit) ** (3*n) -
-           (wavelength[w]/lambda_limit) ** 2.5))
+        [((2. * np.power(-1., n) / (factorial(n) * ((6 * n - 5) * (2 * n - 1)))) *
+          ((1. + redshift) ** (2.5 - (3 * n)) *
+           (wavelength[w] / lambda_limit) ** (3 * n) -
+           (wavelength[w] / lambda_limit) ** 2.5))
          for n in np.arange(1, n_transitions_low)]), axis=0)
 
     tau_l_lls = np.zeros_like(wavelength)
@@ -182,7 +182,7 @@ class Redshifting(SedModule):
 
         # If the SED is already redshifted, raise an error.
         if ('universe.redshift' in sed.info and
-            sed.info['universe.redshift'] > 0.):
+                sed.info['universe.redshift'] > 0.):
             raise Exception(f"The SED is already redshifted (z="
                             f"{sed.info['universe.redshift']}).")
 

@@ -110,10 +110,10 @@ class BayesResultsManager:
                     for prop in merged.exterror}
         fluxmean = {band: np.array([result.fluxmean[band]
                                    for result in results])
-                   for band in merged.fluxmean}
+                    for band in merged.fluxmean}
         fluxerror = {band: np.array([result.fluxerror[band]
                                     for result in results])
-                    for band in merged.fluxerror}
+                     for band in merged.fluxerror}
         weight = np.array([result.weight for result in results])
 
         totweight = np.nansum(weight, axis=0)
@@ -128,7 +128,7 @@ class BayesResultsManager:
             # datapoints has been substituted with the weights. In short we
             # exploit the fact that Var(X) = E(Var(X)) + Var(E(X)).
             merged.interror[prop][:] = np.sqrt(np.nansum(
-                weight * (interror[prop]**2. + (intmean[prop]-merged.intmean[prop])**2), axis=0) / totweight)
+                weight * (interror[prop]**2. + (intmean[prop] - merged.intmean[prop])**2), axis=0) / totweight)
 
         for prop in merged.extmean:
             merged.extmean[prop][:] = np.nansum(
@@ -140,7 +140,7 @@ class BayesResultsManager:
             # datapoints has been substituted with the weights. In short we
             # exploit the fact that Var(X) = E(Var(X)) + Var(E(X)).
             merged.exterror[prop][:] = np.sqrt(np.nansum(
-                weight * (exterror[prop]**2. + (extmean[prop]-merged.extmean[prop])**2), axis=0) / totweight)
+                weight * (exterror[prop]**2. + (extmean[prop] - merged.extmean[prop])**2), axis=0) / totweight)
 
         for prop in merged.extmean:
             if prop.endswith('_log'):
@@ -161,8 +161,7 @@ class BayesResultsManager:
             # datapoints has been substituted with the weights. In short we
             # exploit the fact that Var(X) = E(Var(X)) + Var(E(X)).
             merged.fluxerror[band][:] = np.sqrt(np.nansum(
-                weight * (fluxerror[band]**2. + (fluxmean[band]-merged.fluxmean[band])**2), axis=0) / totweight)
-
+                weight * (fluxerror[band]**2. + (fluxmean[band] - merged.fluxmean[band])**2), axis=0) / totweight)
 
         return merged
 
@@ -406,24 +405,24 @@ class ResultsManager:
             else:
                 unit = Unit(self.unit[prop])
             table.add_column(Column(self.bayes.intmean[prop],
-                                    name="bayes."+prop, unit=unit))
+                                    name="bayes." + prop, unit=unit))
             table.add_column(Column(self.bayes.interror[prop],
-                                    name="bayes."+prop+"_err", unit=unit))
+                                    name="bayes." + prop + "_err", unit=unit))
         for prop in sorted(self.bayes.extmean):
             if prop.endswith('_log'):
                 unit = LogUnit(self.unit[prop[:-4]])
             else:
                 unit = Unit(self.unit[prop])
             table.add_column(Column(self.bayes.extmean[prop],
-                                    name="bayes."+prop, unit=unit))
+                                    name="bayes." + prop, unit=unit))
             table.add_column(Column(self.bayes.exterror[prop],
-                                    name="bayes."+prop+"_err", unit=unit))
+                                    name="bayes." + prop + "_err", unit=unit))
         for band in sorted(self.bayes.fluxmean):
             unit = self.fluxunit(band)
             table.add_column(Column(self.bayes.fluxmean[band],
-                                    name="bayes."+band, unit=unit))
+                                    name="bayes." + band, unit=unit))
             table.add_column(Column(self.bayes.fluxerror[band],
-                                    name="bayes."+band+"_err",
+                                    name="bayes." + band + "_err",
                                     unit=unit))
 
         table.add_column(Column(self.best.chi2, name="best.chi_square"))
@@ -434,16 +433,16 @@ class ResultsManager:
 
         for prop in sorted(self.best.intprop):
             table.add_column(Column(self.best.intprop[prop],
-                                    name="best."+prop,
+                                    name="best." + prop,
                                     unit=Unit(self.unit[prop])))
         for prop in sorted(self.best.extprop):
             table.add_column(Column(self.best.extprop[prop],
-                                    name="best."+prop,
+                                    name="best." + prop,
                                     unit=Unit(self.unit[prop])))
 
         for band in self.best.flux:
             table.add_column(Column(self.best.flux[band],
-                                    name="best."+band,
+                                    name="best." + band,
                                     unit=self.fluxunit(band)))
 
         out = Path('out')

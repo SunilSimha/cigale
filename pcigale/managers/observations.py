@@ -162,7 +162,7 @@ class ObservationsManagerPassbands:
                 colerr = Column(data=np.fabs(self.table[item] * defaulterror),
                                 name=error)
                 self.table.add_column(colerr,
-                                      index=self.table.colnames.index(item)+1)
+                                      index=self.table.colnames.index(item) + 1)
                 print(f"Warning: {defaulterror * 100}% of {item} taken as "
                       f"errors.")
 
@@ -225,7 +225,7 @@ class ObservationsManagerPassbands:
             error = item + '_err'
             w = np.where(self.table[error] >= 0.)
             self.table[error][w] = np.sqrt(self.table[error][w]**2. + (
-                self.table[item][w]*modelerror)**2.)
+                self.table[item][w] * modelerror)**2.)
 
     def generate_mock(self, fits):
         """Replaces the actual observations with a mock catalogue. It is

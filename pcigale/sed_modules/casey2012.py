@@ -71,7 +71,7 @@ class Casey2012(SedModule):
 
         self.lumin_blackbody = (conv * (1. - np.exp(-(lambda_0 / self.wave)
                                 ** beta)) * (c / self.wave) ** 3. / (np.exp(
-                                cst.h * c / (self.wave * cst.k * T)) - 1.))
+                                    cst.h * c / (self.wave * cst.k * T)) - 1.))
         self.lumin_powerlaw = (conv * Npl * (self.wave / lambda_c) ** alpha *
                                np.exp(-(self.wave / lambda_c) ** 2.))
 
