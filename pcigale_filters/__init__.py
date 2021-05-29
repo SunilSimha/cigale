@@ -97,6 +97,8 @@ def worker_plot(fname):
     else:
         unit = "nm"
 
+    _filter.tr *= 1. / np.max(_filter.tr)
+
     plt.clf()
     plt.plot(_filter.trans_table[0], _filter.trans_table[1], color='k')
     plt.xlim(_filter.trans_table[0][0], _filter.trans_table[0][-1])
