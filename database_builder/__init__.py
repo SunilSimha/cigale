@@ -9,7 +9,7 @@ from scipy import interpolate
 import scipy.constants as cst
 from astropy.table import Table
 
-from pcigale.data import (Database, SimpleDatabase, Filter, Fritz2006, Dale2014,
+from pcigale.data import (Database, SimpleDatabase, Filter, Dale2014,
                           NebularLines, NebularContinuum, SKIRTOR2016,
                           Schreiber2016, THEMIS)
 
@@ -593,21 +593,21 @@ def build_dl2014():
     db.close()
 
 
-def build_fritz2006(base):
-    models = []
-    fritz2006_dir = Path(__file__).parent / 'fritz2006'
+def build_fritz2006():
+    path = Path(__file__).parent / "fritz2006"
+    db = SimpleDatabase("fritz2006", writable=True)
 
     # Parameters of Fritz+2006
-    psy = [0.001, 10.100, 20.100, 30.100, 40.100, 50.100, 60.100, 70.100,
-           80.100, 89.990]  # Viewing angle in degrees
-    opening_angle = ["20", "40", "60"]  # Theta = 2*(90 - opening_angle)
+    psy = ["0.001", "10.100", "20.100", "30.100", "40.100", "50.100", "60.100",
+           "70.100", "80.100", "89.990"]  # Viewing angle in degrees
+    opening_angle = [20, 40, 60]  # Theta = 2*(90 - opening_angle)
     gamma = ["0.0", "2.0", "4.0", "6.0"]
     beta = ["-1.00", "-0.75", "-0.50", "-0.25", "0.00"]
     tau = ["0.1", "0.3", "0.6", "1.0", "2.0", "3.0", "6.0", "10.0"]
-    r_ratio = ["10", "30", "60", "100", "150"]
+    r_ratio = [10, 30, 60, 100, 150]
 
     # Read and convert the wavelength
-    filename = fritz2006_dir / "ct20al0.0be-1.00ta0.1rm10.tot"
+    filename = path / "ct20al0.0be-1.00ta0.1rm10.tot"
     with filename.open() as datafile:
         data = "".join(datafile.readlines()[-178:])
     wave = np.genfromtxt(io.BytesIO(data.encode()), usecols=(0))
@@ -624,7 +624,7 @@ def build_fritz2006(base):
                    for rm in r_ratio)
 
     for params in iter_params:
-        filename = fritz2006_dir / "ct{}al{}be{}ta{}rm{}.tot".format(*params)
+        filename = path / "ct{}al{}be{}ta{}rm{}.tot".format(*params)
         print(f"Importing {filename}...")
         try:
             with filename.open() as datafile:
@@ -652,11 +652,13 @@ def build_fritz2006(base):
             lumin_scatt /= norm
             lumin_agn /= norm
 
-            models.append(Fritz2006(params[4], params[3], params[2],
-                                         params[1], params[0], psy[n], wave,
-                                         lumin_therm, lumin_scatt, lumin_agn))
 
-    base.add_fritz2006(models)
+            db.add({"r_ratio": float(params[4]), "tau": float(params[3]),
+                    "beta": float(params[2]), "gamma": float(params[1]),
+                    "opening_angle": float(params[0]), "psy": float(psy[n])},
+                   {"wl": wave, "spec_therm": lumin_therm,
+                    "spec_scatt": lumin_scatt, "spec_agn": lumin_agn})
+    db.close()
 
 def build_skirtor2016(base):
     models = []
@@ -892,7 +894,7 @@ def build_base(bc03res='lr'):
     print('#' * 78)
 
     print("6- Importing Fritz et al. (2006) models\n")
-    build_fritz2006(base)
+    build_fritz2006()
     print("\nDONE\n")
     print('#' * 78)
 

@@ -27,7 +27,6 @@ import numpy as np
 
 from .filters import Filter
 from .dale2014 import Dale2014
-from .fritz2006 import Fritz2006
 from .nebular_continuum import NebularContinuum
 from .nebular_lines import NebularLines
 from .schreiber2016 import Schreiber2016
@@ -88,35 +87,6 @@ class _Dale2014(BASE):
         self.alpha = iragn.alpha
         self.wave = iragn.wave
         self.lumin = iragn.lumin
-
-
-class _Fritz2006(BASE):
-    """Storage for Fritz et al. (2006) models
-    """
-
-    __tablename__ = 'fritz2006'
-    r_ratio = Column(Float, primary_key=True)
-    tau = Column(Float, primary_key=True)
-    beta = Column(Float, primary_key=True)
-    gamma = Column(Float, primary_key=True)
-    opening_angle = Column(Float, primary_key=True)
-    psy = Column(Float, primary_key=True)
-    wave = Column(PickleType)
-    lumin_therm = Column(PickleType)
-    lumin_scatt = Column(PickleType)
-    lumin_agn = Column(PickleType)
-
-    def __init__(self, agn):
-        self.r_ratio = agn.r_ratio
-        self.tau = agn.tau
-        self.beta = agn.beta
-        self.gamma = agn.gamma
-        self.opening_angle = agn.opening_angle
-        self.psy = agn.psy
-        self.wave = agn.wave
-        self.lumin_therm = agn.lumin_therm
-        self.lumin_scatt = agn.lumin_scatt
-        self.lumin_agn = agn.lumin_agn
 
 
 class _SKIRTOR2016(BASE):
@@ -329,93 +299,6 @@ class Database:
             dictionary of parameters and their values
         """
         return self._get_parameters(_Dale2014)
-
-    def add_fritz2006(self, models):
-        """
-        Add a Fritz et al. (2006) AGN model to the database.
-
-        Parameters
-        ----------
-        models: list of pcigale.data.Fritz2006 objects
-
-        """
-        if self.is_writable:
-            for model in models:
-                self.session.add(_Fritz2006(model))
-            try:
-                self.session.commit()
-            except exc.IntegrityError:
-                self.session.rollback()
-                raise DatabaseInsertError(
-                    'The agn model is already in the base.')
-        else:
-            raise Exception('The database is not writable.')
-
-    def get_fritz2006(self, r_ratio, tau, beta, gamma, opening_angle, psy):
-        """
-        Get the Fritz et al. (2006) AGN model corresponding to the number.
-
-        Parameters
-        ----------
-        r_ratio: float
-            Ratio of the maximum and minimum radii of the dust torus.
-        tau: float
-            Tau at 9.7µm
-        beta: float
-            Beta
-        gamma: float
-            Gamma
-        opening_angle: float
-            Opening angle of the dust torus.
-        psy: float
-            Angle between AGN axis and line of sight.
-        wave: array of float
-            Wavelength grid in nm.
-        lumin_therm: array of float
-            Luminosity density of the dust torus at each wavelength in W/nm.
-        lumin_scatt: array of float
-            Luminosity density of the scattered emission at each wavelength
-            in W/nm.
-        lumin_agn: array of float
-            Luminosity density of the central AGN at each wavelength in W/nm.
-
-
-        Returns
-        -------
-        agn: pcigale.data.Fritz2006
-            The AGN model.
-
-        Raises
-        ------
-        DatabaseLookupError: if the requested template is not in the database.
-
-        """
-        result = (self.session.query(_Fritz2006).
-                  filter(_Fritz2006.r_ratio == r_ratio).
-                  filter(_Fritz2006.tau == tau).
-                  filter(_Fritz2006.beta == beta).
-                  filter(_Fritz2006.gamma == gamma).
-                  filter(_Fritz2006.opening_angle == opening_angle).
-                  filter(_Fritz2006.psy == psy).
-                  first())
-        if result:
-            return Fritz2006(result.r_ratio, result.tau, result.beta,
-                             result.gamma, result.opening_angle, result.psy,
-                             result.wave, result.lumin_therm,
-                             result.lumin_scatt, result.lumin_agn)
-        else:
-            raise DatabaseLookupError(
-                "The Fritz2006 model is not in the database.")
-
-    def get_fritz2006_parameters(self):
-        """Get parameters for the Fritz 2006 AGN models.
-
-        Returns
-        -------
-        paramaters: dictionary
-            dictionary of parameters and their values
-        """
-        return self._get_parameters(_Fritz2006)
 
     def add_skirtor2016(self, models):
         """
