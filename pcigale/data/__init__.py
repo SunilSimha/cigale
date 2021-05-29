@@ -27,7 +27,6 @@ import numpy as np
 
 from .filters import Filter
 from .dale2014 import Dale2014
-from .dl2007 import DL2007
 from .dl2014 import DL2014
 from .fritz2006 import Fritz2006
 from .nebular_continuum import NebularContinuum
@@ -90,25 +89,6 @@ class _Dale2014(BASE):
         self.alpha = iragn.alpha
         self.wave = iragn.wave
         self.lumin = iragn.lumin
-
-
-class _DL2007(BASE):
-    """Storage for Draine and Li (2007) IR models
-    """
-
-    __tablename__ = 'DL2007_models'
-    qpah = Column(Float, primary_key=True)
-    umin = Column(Float, primary_key=True)
-    umax = Column(Float, primary_key=True)
-    wave = Column(PickleType)
-    lumin = Column(PickleType)
-
-    def __init__(self, model):
-        self.qpah = model.qpah
-        self.umin = model.umin
-        self.umax = model.umax
-        self.wave = model.wave
-        self.lumin = model.lumin
 
 
 class _DL2014(BASE):
@@ -304,74 +284,6 @@ class Database:
         manager.
         """
         self.session.close_all()
-
-    def add_dl2007(self, models):
-        """
-        Add a list of Draine and Li (2007) models to the database.
-
-        Parameters
-        ----------
-        models: list of pcigale.data.DL2007 objects
-
-        """
-        if self.is_writable:
-            for model in models:
-                self.session.add(_DL2007(model))
-            try:
-                self.session.commit()
-            except exc.IntegrityError:
-                self.session.rollback()
-                raise DatabaseInsertError(
-                    'The DL07 model is already in the base.')
-        else:
-            raise Exception('The database is not writable.')
-
-    def get_dl2007(self, qpah, umin, umax):
-        """
-        Get the Draine and Li (2007) model corresponding to the given set of
-        parameters.
-
-        Parameters
-        ----------
-        qpah: float
-            Mass fraction of PAH
-        umin: float
-            Minimum radiation field
-        umax: float
-            Maximum radiation field
-
-        Returns
-        -------
-        model: pcigale.data.DL2007
-            The Draine and Li (2007) model.
-
-        Raises
-        ------
-        DatabaseLookupError: if the requested model is not in the database.
-
-        """
-        result = (self.session.query(_DL2007).
-                  filter(_DL2007.qpah == qpah).
-                  filter(_DL2007.umin == umin).
-                  filter(_DL2007.umax == umax).
-                  first())
-        if result:
-            return DL2007(result.qpah, result.umin, result.umax, result.wave,
-                          result.lumin)
-        else:
-            raise DatabaseLookupError(
-                f"The DL2007 model for qpah <{qpah}>, umin <{umin}>, and umax "
-                f"<{umax}> is not in the database.")
-
-    def get_dl2007_parameters(self):
-        """Get parameters for the DL2007 models.
-
-        Returns
-        -------
-        paramaters: dictionary
-            dictionary of parameters and their values
-        """
-        return self._get_parameters(_DL2007)
 
     def add_dl2014(self, models):
         """

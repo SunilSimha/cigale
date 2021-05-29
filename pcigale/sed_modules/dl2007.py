@@ -8,7 +8,7 @@ This module implements the Draine and Li (2007) infra-red models.
 
 import numpy as np
 
-from pcigale.data import Database
+from pcigale.data import SimpleDatabase as Database
 from . import SedModule
 
 
@@ -68,11 +68,11 @@ class DL2007(SedModule):
             self.gamma * np.log(self.umax / self.umin) / \
             (1. / self.umin - 1. / self.umax)
 
-        with Database() as database:
-            self.model_minmin = database.get_dl2007(self.qpah, self.umin,
-                                                    self.umin)
-            self.model_minmax = database.get_dl2007(self.qpah, self.umin,
-                                                    self.umax)
+        with Database("dl2007") as db:
+            self.model_minmin = db.get(qpah=self.qpah, umin=self.umin,
+                                       umax=self.umin)
+            self.model_minmax = db.get(qpah=self.qpah, umin=self.umin,
+                                       umax=self.umax)
 
         # The models in memory are in W/nm for 1 kg of dust. At the same time
         # we need to normalize them to 1 W here to easily scale them from the
@@ -81,14 +81,14 @@ class DL2007(SedModule):
         # mass in W (kg of dust)¯¹, The gamma parameter does not affect the
         # fact that it is for 1 kg because it represents a mass fraction of
         # each component.
-        self.emissivity = np.trapz((1. - self.gamma) * self.model_minmin.lumin +
-                                   self.gamma * self.model_minmax.lumin,
-                                   x=self.model_minmin.wave)
+        self.emissivity = np.trapz((1. - self.gamma) * self.model_minmin.spec +
+                                   self.gamma * self.model_minmax.spec,
+                                   x=self.model_minmin.wl)
 
         # We want to be able to display the respective contributions of both
         # components, therefore we keep they separately.
-        self.model_minmin.lumin *= (1. - self.gamma) / self.emissivity
-        self.model_minmax.lumin *= self.gamma / self.emissivity
+        self.model_minmin.spec *= (1. - self.gamma) / self.emissivity
+        self.model_minmax.spec *= self.gamma / self.emissivity
 
     def process(self, sed):
         """Add the IR re-emission contributions
@@ -113,10 +113,10 @@ class DL2007(SedModule):
         # emissivity in W/kg of dust.
         sed.add_info('dust.mass', luminosity / self.emissivity, True, unit='kg')
 
-        sed.add_contribution('dust.Umin_Umin', self.model_minmin.wave,
-                             luminosity * self.model_minmin.lumin)
-        sed.add_contribution('dust.Umin_Umax', self.model_minmax.wave,
-                             luminosity * self.model_minmax.lumin)
+        sed.add_contribution('dust.Umin_Umin', self.model_minmin.wl,
+                             luminosity * self.model_minmin.spec)
+        sed.add_contribution('dust.Umin_Umax', self.model_minmax.wl,
+                             luminosity * self.model_minmax.spec)
 
 
 # SedModule to be returned by get_module

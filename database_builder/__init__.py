@@ -10,8 +10,8 @@ import scipy.constants as cst
 from astropy.table import Table
 
 from pcigale.data import (Database, SimpleDatabase, Filter, Fritz2006, Dale2014,
-                          DL2007, DL2014, NebularLines, NebularContinuum,
-                          SKIRTOR2016, Schreiber2016, THEMIS)
+                          DL2014, NebularLines, NebularContinuum, SKIRTOR2016,
+                          Schreiber2016, THEMIS)
 
 
 def read_bc03_ssp(filename):
@@ -448,9 +448,9 @@ def build_dale2014(base):
     base.add_dale2014(models)
 
 
-def build_dl2007(base):
-    models = []
-    dl2007_dir = Path(__file__).parent / 'dl2007'
+def build_dl2007():
+    path = Path(__file__).parent / 'dl2007'
+    db = SimpleDatabase("dl2007", writable=True)
 
     qpah = {
         "00": 0.47,
@@ -473,7 +473,7 @@ def build_dl2007(base):
             "40": 0.0102, "50": 0.0103, "60": 0.0104}
 
     # Here we obtain the wavelength beforehand to avoid reading it each time.
-    filename = dl2007_dir / "U1e3" / "U1e3_1e3_MW3.1_00.txt"
+    filename = path / "U1e3" / "U1e3_1e3_MW3.1_00.txt"
     with filename.open() as datafile:
         data = "".join(datafile.readlines()[-1001:])
 
@@ -488,8 +488,7 @@ def build_dl2007(base):
 
     for model in sorted(qpah.keys()):
         for umin in uminimum:
-            filename = dl2007_dir / f"U{umin}" / \
-                f"U{umin}_{umin}_MW3.1_{model}.txt"
+            filename = path / f"U{umin}" / f"U{umin}_{umin}_MW3.1_{model}.txt"
             print(f"Importing {filename}...")
             with filename.open() as datafile:
                 data = "".join(datafile.readlines()[-1001:])
@@ -499,9 +498,11 @@ def build_dl2007(base):
             # Conversion from Jy cm² sr¯¹ H¯¹to W nm¯¹ (kg of dust)¯¹
             lumin *= conv/MdMH[model]
 
-            models.append(DL2007(qpah[model], umin, umin, wave, lumin))
+            db.add({"qpah": float(qpah[model]), "umin": float(umin),
+                    "umax": float(umin)},
+                   {"wl": wave, "spec": lumin})
             for umax in umaximum:
-                filename = dl2007_dir / f"U{umin}" / \
+                filename = path / f"U{umin}" / \
                     f"U{umin}_{umax}_MW3.1_{model}.txt"
                 print(f"Importing {filename}...")
                 with filename.open() as datafile:
@@ -513,8 +514,10 @@ def build_dl2007(base):
                 # Conversion from Jy cm² sr¯¹ H¯¹to W nm¯¹ (kg of dust)¯¹
                 lumin *= conv/MdMH[model]
 
-                models.append(DL2007(qpah[model], umin, umax, wave, lumin))
-    base.add_dl2007(models)
+                db.add({"qpah": float(qpah[model]), "umin": float(umin),
+                        "umax": float(umax)},
+                       {"wl": wave, "spec": lumin})
+    db.close()
 
 
 def build_dl2014(base):
@@ -876,7 +879,7 @@ def build_base(bc03res='lr'):
     print('#' * 78)
 
     print("4- Importing Draine and Li (2007) models\n")
-    build_dl2007(base)
+    build_dl2007()
     print("\nDONE\n")
     print('#' * 78)
 
