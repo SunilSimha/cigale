@@ -26,7 +26,6 @@ from sqlalchemy.orm import class_mapper, sessionmaker
 import numpy as np
 
 from .filters import Filter
-from .themis import THEMIS
 
 DATABASE_FILE = pkg_resources.resource_filename(__name__, 'data.db')
 
@@ -65,27 +64,6 @@ class _Filter(BASE):
         self.description = f.description
         self.trans_table = f.trans_table
         self.pivot_wavelength = f.pivot_wavelength
-
-
-class _THEMIS(BASE):
-    """Storage for the Jones et al (2017) IR models
-    """
-
-    __tablename__ = 'THEMIS_models'
-    qhac = Column(Float, primary_key=True)
-    umin = Column(Float, primary_key=True)
-    umax = Column(Float, primary_key=True)
-    alpha = Column(Float, primary_key=True)
-    wave = Column(PickleType)
-    lumin = Column(PickleType)
-
-    def __init__(self, model):
-        self.qhac = model.qhac
-        self.umin = model.umin
-        self.umax = model.umax
-        self.alpha = model.alpha
-        self.wave = model.wave
-        self.lumin = model.lumin
 
 
 class Database:
@@ -127,68 +105,6 @@ class Database:
         """
         self.session.close_all()
 
-    def add_themis(self, models):
-        """
-        Add a list of Jones et al (2017) models to the database.
-
-        Parameters
-        ----------
-        models: list of pcigale.data.THEMIS objects
-
-        """
-        if self.is_writable:
-            for model in models:
-                self.session.add(_THEMIS(model))
-            try:
-                self.session.commit()
-            except exc.IntegrityError:
-                self.session.rollback()
-                raise DatabaseInsertError(
-                    'Error.')
-        else:
-            raise Exception('The database is not writable.')
-
-    def get_themis(self, qhac, umin, umax, alpha):
-        """
-        Get the Jones et al (2017) model corresponding to the given set of
-        parameters.
-
-        Parameters
-        ----------
-        qhac: float
-            Mass fraction of hydrocarbon solids i.e., a-C(:H) smaller than
-        1.5 nm, also known as HAC
-        umin: float
-            Minimum radiation field
-        umin: float
-            Maximum radiation field
-        alpha: float
-            Powerlaw slope dU/dM∝U¯ᵅ
-
-        Returns
-        -------
-        model: pcigale.data.THEMIS
-            The Jones et al (2017) model.
-
-        Raises
-        ------
-        DatabaseLookupError: if the requested model is not in the database.
-
-        """
-        result = (self.session.query(_THEMIS).
-                  filter(_THEMIS.qhac == qhac).
-                  filter(_THEMIS.umin == umin).
-                  filter(_THEMIS.umax == umax).
-                  filter(_THEMIS.alpha == alpha).
-                  first())
-        if result:
-            return THEMIS(result.qhac, result.umin, result.umax, result.alpha,
-                          result.wave, result.lumin)
-        else:
-            raise DatabaseLookupError(
-                f"The THEMIS model for qhac <{qhac}>, umin <{umin}>, umax "
-                f"<{umax}>, and alpha <{alpha}> is not in the database.")
-
     def _get_parameters(self, schema):
         """Generic function to get parameters from an arbitrary schema.
 
@@ -219,16 +135,6 @@ class Database:
                 raise DatabaseInsertError('The filter is already in the base.')
         else:
             raise Exception('The database is not writable.')
-
-    def get_themis_parameters(self):
-        """Get parameters for the THEMIS models.
-
-        Returns
-        -------
-        paramaters: dictionary
-            dictionary of parameters and their values
-        """
-        return self._get_parameters(_THEMIS)
 
     def add_filters(self, pcigale_filters):
         """

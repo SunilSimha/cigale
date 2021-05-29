@@ -9,7 +9,7 @@ from scipy import interpolate
 import scipy.constants as cst
 from astropy.table import Table
 
-from pcigale.data import Database, SimpleDatabase, Filter, THEMIS
+from pcigale.data import Database, SimpleDatabase, Filter
 
 
 def read_bc03_ssp(filename):
@@ -798,9 +798,9 @@ def build_schreiber2016():
     db.close()
 
 
-def build_themis(base):
-    models = []
-    themis_dir = Path(__file__).parent / 'themis'
+def build_themis():
+    path = Path(__file__).parent / "themis"
+    db = SimpleDatabase("themis", writable=True)
 
     # Mass fraction of hydrocarbon solids i.e., a-C(:H) smaller than 1.5 nm,
     # also known as HAC
@@ -825,7 +825,7 @@ def build_themis(base):
             "080": 7.4e-3, "090": 7.4e-3, "100": 7.4e-3}
 
     # Here we obtain the wavelength beforehand to avoid reading it each time.
-    filename = themis_dir / "U0.100_0.100_MW3.1_000" / "spec_1.0.dat"
+    filename = path / "U0.100_0.100_MW3.1_000" / "spec_1.0.dat"
     with filename.open() as datafile:
         data = "".join(datafile.readlines()[-576:])
 
@@ -839,8 +839,7 @@ def build_themis(base):
 
     for model in sorted(qhac.keys()):
         for umin in uminimum:
-            filename = themis_dir / f"U{umin}_{umin}_MW3.1_{model}" / \
-                "spec_1.0.dat"
+            filename = path / f"U{umin}_{umin}_MW3.1_{model}" / "spec_1.0.dat"
             print(f"Importing {filename}...")
             with open(filename) as datafile:
                 data = "".join(datafile.readlines()[-576:])
@@ -849,9 +848,11 @@ def build_themis(base):
             # Conversion from Jy cm² sr¯¹ H¯¹to W nm¯¹ (kg of dust)¯¹
             lumin *= conv / MdMH[model]
 
-            models.append(THEMIS(qhac[model], umin, umin, 1.0, wave, lumin))
+            db.add({"qhac": float(qhac[model]), "umin": float(umin),
+                    "umax": float(umin), "alpha": 1.0},
+                   {"wl": wave, "spec": lumin})
             for al in alpha:
-                filename = themis_dir / f"U{umin}_1e7_MW3.1_{model}" / \
+                filename = path / f"U{umin}_1e7_MW3.1_{model}" / \
                     f"spec_{al}.dat"
                 print(f"Importing {filename}...")
                 with open(filename) as datafile:
@@ -861,9 +862,10 @@ def build_themis(base):
                 # Conversion from Jy cm² sr¯¹ H¯¹to W nm¯¹ (kg of dust)¯¹
                 lumin *= conv/MdMH[model]
 
-                models.append(THEMIS(qhac[model], umin, 1e7, al, wave, lumin))
-
-    base.add_themis(models)
+                db.add({"qhac": float(qhac[model]), "umin": float(umin),
+                        "umax": 1e7, "alpha": float(al)},
+                       {"wl": wave, "spec": lumin})
+    db.close()
 
 
 def build_base(bc03res='lr'):
@@ -922,7 +924,7 @@ def build_base(bc03res='lr'):
     print('#' * 78)
 
     print("11- Importing Jones et al (2017) models)\n")
-    build_themis(base)
+    build_themis()
     print("\nDONE\n")
     print('#' * 78)
 
