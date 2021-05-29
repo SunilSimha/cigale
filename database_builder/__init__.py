@@ -128,49 +128,50 @@ def read_bc03_ssp(filename):
 
 def build_filters(base):
     filters = []
-    filters_dir = Path(__file__).parent / 'filters'
-    pathlen = len(filters_dir.parts)
-    for filter_file in filters_dir.rglob('*'):
-        if filter_file.suffix not in [".dat", ".pb"]:
+    path = Path(__file__).parent / 'filters'
+    pathlen = len(path.parts)
+
+    for file in path.rglob('*'):
+        if file.suffix not in [".dat", ".pb"]:
             continue
 
-        with filter_file.open() as filter_file_read:
-            _ = filter_file_read.readline() # We use the filename for the name
-            filter_type = filter_file_read.readline().strip('# \n\t')
-            if "gazpar" in str(filter_file):
-                _ = filter_file_read.readline() # We do not use the calib type
-                filter_name = '.'.join(filter_file.with_suffix('').parts[pathlen + 1:])
+        with file.open() as f:
+            _ = f.readline() # We use the filename for the name
+            type_ = f.readline().strip('# \n\t')
+            if "gazpar" in str(file):
+                _ = f.readline() # We do not use the calib type
+                name = '.'.join(file.with_suffix('').parts[pathlen + 1:])
             else:
-                filter_name = '.'.join(filter_file.with_suffix('').parts[pathlen:])
-            filter_desc = filter_file_read.readline().strip('# \n\t')
+                name = '.'.join(file.with_suffix('').parts[pathlen:])
+            desc = f.readline().strip('# \n\t')
 
-        filter_table = np.genfromtxt(filter_file)
+        table = np.genfromtxt(file)
         # The table is transposed to have table[0] containing the wavelength
         # and table[1] containing the transmission.
-        filter_table = filter_table.transpose()
+        table = table.transpose()
 
         # We convert the wavelength from Å to nm.
-        filter_table[0] *= 0.1
+        table[0] *= 0.1
 
         # We convert to energy if needed
-        if filter_type == 'photon':
-            filter_table[1] *= filter_table[0]
-        elif filter_type != 'energy':
-            raise ValueError("Filter transmission type can only be "
-                             "'energy' or 'photon'.")
+        if type_ == 'photon':
+            table[1] *= table[0]
+        elif type_ != 'energy':
+            raise ValueError("Filter transmission type can only be 'energy' or "
+                             "'photon'.")
 
-        print(f"Importing {filter_name}... ({filter_table.shape[1]} points)")
+        print(f"Importing {name}... ({table.shape[1]} points)")
 
-        new_filter = Filter(filter_name, filter_desc, filter_table)
+        new_filter = Filter(name, desc, table)
 
         # We normalise the filter and compute the pivot wavelength. If the
         # filter is a pseudo-filter used to compute line fluxes, it should not
         # be normalised.
-        if not filter_name.startswith('PSEUDO'):
+        if not name.startswith('PSEUDO'):
             new_filter.normalise()
         else:
             new_filter.pivot_wavelength = np.mean(
-                filter_table[0][filter_table[1] > 0]
+                table[0][table[1] > 0]
             )
         filters.append(new_filter)
 
