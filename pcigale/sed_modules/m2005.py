@@ -41,6 +41,63 @@ class M2005(SedModule):
         )
     }
 
+    def convolve(self, sfh):
+        """Convolve the SSP with a Star Formation History
+
+        Convolves the SSP and the associated info with the SFH.
+
+        Parameters
+        ----------
+        sfh: array of floats
+            Star Formation History in Msun/yr.
+
+        Returns
+        -------
+        spec_young: array of floats
+            Spectrum in W/nm of the young stellar populations.
+        spec_old: array of floats
+            Same as spec_young but for the old stellar populations.
+        info_young: array of floats
+            Contains the info for the young stellar populations:
+            * 0: total stellar mass
+            * 1: alive stellar mass
+            * 2: white dwarf stars mass
+            * 3: neutron stars mass
+            * 4: black holes mass
+        info_old: array of floats
+            Same as info_young but for the old stellar populations.
+        info_all: array of floats
+            Same as info_young but for the entire stellar population. Also
+            contains 5: stellar mass-weighted age
+
+        """
+        # We cut the SSP to the maximum age considered to simplify the
+        # computation.
+        info_table = self.ssp.info_table[:5, :sfh.size]
+        spec_table = self.ssp.spec_table[:, :sfh.size]
+
+        # As both the SFH and the SSP (limited to the age of the SFH) data now
+        # share the same time grid, the convolution is just a matter of
+        # reverting one and computing the sum of the one to one product; this
+        # is done using the dot product. The 1e6 factor is because the SFH is
+        # in solar mass per year.
+        info_young = 1e6 * np.dot(info_table[:, :self.separation_age],
+                                  sfh[-self.separation_age:][::-1])
+        spec_young = 1e6 * np.dot(spec_table[:, :self.separation_age],
+                                  sfh[-self.separation_age:][::-1])
+
+        info_old = 1e6 * np.dot(info_table[:, self.separation_age:],
+                                sfh[:-self.separation_age][::-1])
+        spec_old = 1e6 * np.dot(spec_table[:, self.separation_age:],
+                                sfh[:-self.separation_age][::-1])
+
+        info_all = info_young + info_old
+        info_all = np.append(info_all, np.average(self.ssp.time_grid[:sfh.size],
+                                                  weights=info_table[1, :] *
+                                                  sfh[::-1]))
+
+        return spec_young, spec_old, info_young, info_old, info_all
+
     def _init_code(self):
         """Read the SSP from the database."""
         self.imf = int(self.parameters["imf"])
@@ -65,7 +122,7 @@ class M2005(SedModule):
             SED object.
 
         """
-        out = self.ssp.convolve(sed.sfh, self.separation_age)
+        out = self.convolve(sed.sfh)
         spec_young, spec_old, info_young, info_old, info_all = out
         lum_young, lum_old = np.trapz([spec_young, spec_old],
                                       self.ssp.wavelength_grid)
