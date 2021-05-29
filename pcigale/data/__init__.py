@@ -26,7 +26,6 @@ from sqlalchemy.orm import class_mapper, sessionmaker
 import numpy as np
 
 from .filters import Filter
-from .bc03 import BC03
 from .dale2014 import Dale2014
 from .dl2007 import DL2007
 from .dl2014 import DL2014
@@ -74,28 +73,6 @@ class _Filter(BASE):
         self.description = f.description
         self.trans_table = f.trans_table
         self.pivot_wavelength = f.pivot_wavelength
-
-
-class _BC03(BASE):
-    """Storage for Bruzual and Charlot 2003 SSP
-    """
-
-    __tablename__ = "bc03"
-
-    imf = Column(String, primary_key=True)
-    metallicity = Column(Float, primary_key=True)
-    time_grid = Column(PickleType)
-    wavelength_grid = Column(PickleType)
-    info_table = Column(PickleType)
-    spec_table = Column(PickleType)
-
-    def __init__(self, ssp):
-        self.imf = ssp.imf
-        self.metallicity = ssp.metallicity
-        self.time_grid = ssp.time_grid
-        self.wavelength_grid = ssp.wavelength_grid
-        self.info_table = ssp.info_table
-        self.spec_table = ssp.spec_table
 
 
 class _Dale2014(BASE):
@@ -327,70 +304,6 @@ class Database:
         manager.
         """
         self.session.close_all()
-
-    def add_bc03(self, ssp_bc03):
-        """
-        Add a Bruzual and Charlot 2003 SSP to pcigale database
-
-        Parameters
-        ----------
-        ssp: pcigale.data.SspBC03
-
-        """
-        if self.is_writable:
-            ssp = _BC03(ssp_bc03)
-            self.session.add(ssp)
-            try:
-                self.session.commit()
-            except exc.IntegrityError:
-                self.session.rollback()
-                raise DatabaseInsertError('The SSP is already in the base.')
-        else:
-            raise Exception('The database is not writable.')
-
-    def get_bc03(self, imf, metallicity):
-        """
-        Query the database for the Bruzual and Charlot 2003 SSP corresponding
-        to the given initial mass function and metallicity.
-
-        Parameters
-        ----------
-        imf: string
-            Initial mass function (salp for Salpeter, chab for Chabrier)
-        metallicity: float
-            0.02 for Solar metallicity
-        Returns
-        -------
-        ssp: pcigale.data.BC03
-            The BC03 object.
-
-        Raises
-        ------
-        DatabaseLookupError: if the requested SSP is not in the database.
-
-        """
-        result = self.session.query(_BC03)\
-            .filter(_BC03.imf == imf)\
-            .filter(_BC03.metallicity == metallicity)\
-            .first()
-        if result:
-            return BC03(result.imf, result.metallicity, result.time_grid,
-                        result.wavelength_grid, result.info_table,
-                        result.spec_table)
-        else:
-            raise DatabaseLookupError(
-                f"The BC03 SSP for imf <{imf}> and metallicity <{metallicity}> "
-                f"is not in the database.")
-
-    def get_bc03_parameters(self):
-        """Get parameters for the Bruzual & Charlot 2003 stellar models.
-
-        Returns
-        -------
-        paramaters: dictionary
-            dictionary of parameters and their values
-        """
-        return self._get_parameters(_BC03)
 
     def add_dl2007(self, models):
         """

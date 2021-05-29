@@ -10,7 +10,7 @@ Populations.
 import numpy as np
 
 from . import SedModule
-from ..data import Database
+from ..data import SimpleDatabase as Database
 
 
 class BC03(SedModule):
@@ -76,23 +76,23 @@ class BC03(SedModule):
         """
         # We cut the SSP to the maximum age considered to simplify the
         # computation. We take only the first three elements from the
-        # info_table as the others do not make sense when convolved with the
+        # info table as the others do not make sense when convolved with the
         # SFH (break strength).
-        info_table = self.ssp.info_table[:, :sfh.size]
-        spec_table = self.ssp.spec_table[:, :sfh.size]
+        info = self.ssp.info[:, :sfh.size]
+        spec = self.ssp.spec[:, :sfh.size]
 
         # The convolution is just a matter of reverting the SFH and computing
         # the sum of the data from the SSP one to one product. This is done
         # using the dot product. The 1e6 factor is because the SFH is in solar
         # mass per year.
-        info_young = 1e6 * np.dot(info_table[:, :self.separation_age],
+        info_young = 1e6 * np.dot(info[:, :self.separation_age],
                                   sfh[-self.separation_age:][::-1])
-        spec_young = 1e6 * np.dot(spec_table[:, :self.separation_age],
+        spec_young = 1e6 * np.dot(spec[:, :self.separation_age],
                                   sfh[-self.separation_age:][::-1])
 
-        info_old = 1e6 * np.dot(info_table[:, self.separation_age:],
+        info_old = 1e6 * np.dot(info[:, self.separation_age:],
                                 sfh[:-self.separation_age][::-1])
-        spec_old = 1e6 * np.dot(spec_table[:, self.separation_age:],
+        spec_old = 1e6 * np.dot(spec[:, self.separation_age:],
                                 sfh[:-self.separation_age][::-1])
 
         info_all = info_young + info_old
@@ -101,22 +101,22 @@ class BC03(SedModule):
         info_old = dict(zip(["m_star", "m_gas", "n_ly"], info_old))
         info_all = dict(zip(["m_star", "m_gas", "n_ly"], info_all))
 
-        info_all['age_mass'] = np.average(self.ssp.time_grid[:sfh.size],
-                                          weights=info_table[0, :] * sfh[::-1])
+        info_all['age_mass'] = np.average(self.ssp.t[:sfh.size],
+                                          weights=info[0, :] * sfh[::-1])
 
         return spec_young, spec_old, info_young, info_old, info_all
 
     def _init_code(self):
         """Read the SSP from the database."""
         self.imf = int(self.parameters["imf"])
-        self.metallicity = float(self.parameters["metallicity"])
+        self.Z = float(self.parameters["metallicity"])
         self.separation_age = int(self.parameters["separation_age"])
 
-        with Database() as database:
+        with Database("bc03") as db:
             if self.imf == 0:
-                self.ssp = database.get_bc03('salp', self.metallicity)
+                self.ssp = db.get(imf='salp', Z=self.Z)
             elif self.imf == 1:
-                self.ssp = database.get_bc03('chab', self.metallicity)
+                self.ssp = db.get(imf='chab', Z=self.Z)
             else:
                 raise Exception(f"IMF #{self.imf} unknown")
 
@@ -134,7 +134,7 @@ class BC03(SedModule):
 
         # We compute the Lyman continuum luminosity as it is important to
         # compute the energy absorbed by the dust before ionising gas.
-        wave = self.ssp.wavelength_grid
+        wave = self.ssp.wl
         w = np.where(wave <= 91.1)
         lum_lyc_young, lum_lyc_old = np.trapz([spec_young[w], spec_old[w]],
                                               wave[w])
@@ -145,7 +145,7 @@ class BC03(SedModule):
         sed.add_module(self.name, self.parameters)
 
         sed.add_info("stellar.imf", self.imf)
-        sed.add_info("stellar.metallicity", self.metallicity)
+        sed.add_info("stellar.metallicity", self.Z)
         sed.add_info("stellar.old_young_separation_age", self.separation_age,
                      unit='Myr')
 

@@ -9,9 +9,9 @@ from scipy import interpolate
 import scipy.constants as cst
 from astropy.table import Table
 
-from pcigale.data import (Database, SimpleDatabase, Filter, BC03, Fritz2006,
-                          Dale2014, DL2007, DL2014, NebularLines,
-                          NebularContinuum, SKIRTOR2016, Schreiber2016, THEMIS)
+from pcigale.data import (Database, SimpleDatabase, Filter, Fritz2006, Dale2014,
+                          DL2007, DL2014, NebularLines, NebularContinuum,
+                          SKIRTOR2016, Schreiber2016, THEMIS)
 
 
 def read_bc03_ssp(filename):
@@ -306,8 +306,9 @@ def build_m2005():
     db.close()
 
 
-def build_bc2003(base, res):
-    bc03_dir = Path(__file__).parent / 'bc03'
+def build_bc2003(res):
+    path = Path(__file__).parent / 'bc03'
+    db = SimpleDatabase("bc03", writable=True)
 
     # Time grid (1 Myr to 14 Gyr with 1 Myr step)
     time_grid = np.arange(1, 14000)
@@ -324,9 +325,9 @@ def build_bc2003(base, res):
     }
 
     for key, imf in itertools.product(metallicity, ["salp", "chab"]):
-        ssp_filename = bc03_dir / f"bc2003_{res}_{key}_{imf}_ssp.ised_ASCII"
-        color3_filename = bc03_dir / f"bc2003_lr_{key}_{imf}_ssp.3color"
-        color4_filename = bc03_dir / f"bc2003_lr_{key}_{imf}_ssp.4color"
+        ssp_filename = path / f"bc2003_{res}_{key}_{imf}_ssp.ised_ASCII"
+        color3_filename = path / f"bc2003_lr_{key}_{imf}_ssp.3color"
+        color4_filename = path / f"bc2003_lr_{key}_{imf}_ssp.4color"
 
         print(f"Importing {ssp_filename}...")
 
@@ -382,14 +383,10 @@ def build_bc2003(base, res):
         ssp_lumin = np.vstack([ssp_lumin_interp[:argmin+1, :],
                                ssp_lumin_resamp])
 
-        base.add_bc03(BC03(
-            imf,
-            metallicity[key],
-            time_grid,
-            ssp_wave,
-            color_table,
-            ssp_lumin
-        ))
+        db.add({"imf": imf, "Z": metallicity[key]},
+               {"t": time_grid, "wl": ssp_wave, "info": color_table,
+                "spec": ssp_lumin})
+    db.close()
 
 
 def build_dale2014(base):
@@ -874,7 +871,7 @@ def build_base(bc03res='lr'):
     print('#' * 78)
 
     print("3- Importing Bruzual and Charlot 2003 SSP\n")
-    build_bc2003(base, bc03res)
+    build_bc2003(bc03res)
     print("\nDONE\n")
     print('#' * 78)
 
