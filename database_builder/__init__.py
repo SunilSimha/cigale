@@ -9,8 +9,7 @@ from scipy import interpolate
 import scipy.constants as cst
 from astropy.table import Table
 
-from pcigale.data import (Database, SimpleDatabase, Filter, Schreiber2016,
-                          THEMIS)
+from pcigale.data import Database, SimpleDatabase, Filter, THEMIS
 
 
 def read_bc03_ssp(filename):
@@ -768,15 +767,15 @@ def build_nebular():
     db.close()
 
 
-def build_schreiber2016(base):
-    models = []
-    schreiber2016_dir = Path(__file__).parent / 'schreiber2016'
+def build_schreiber2016():
+    path = Path(__file__).parent / "schreiber2016"
+    db = SimpleDatabase("schreiber2016", writable=True)
 
-    filename = schreiber2016_dir / 'g15_pah.fits'
+    filename = path / "g15_pah.fits"
     print(f"Importing {filename}...")
     pah = Table.read(filename)
 
-    filename = schreiber2016_dir / 'g15_dust.fits'
+    filename = path / "g15_dust.fits"
     print(f"Importing {filename}...")
     dust = Table.read(filename)
 
@@ -791,10 +790,12 @@ def build_schreiber2016(base):
         lumin_dust = dust['SED'][0, tsed, :].data / wave
         lumin_pah = pah['SED'][0, tsed, :].data / wave
 
-        models.append(Schreiber2016(0, td, wave, lumin_dust))
-        models.append(Schreiber2016(1, td, wave, lumin_pah))
+        db.add({"type": 0, "tdust": float(td)},
+               {"wl": wave, "spec": lumin_dust})
+        db.add({"type": 1, "tdust": float(td)},
+               {"wl": wave, "spec": lumin_pah})
 
-    base.add_schreiber2016(models)
+    db.close()
 
 
 def build_themis(base):
@@ -916,7 +917,7 @@ def build_base(bc03res='lr'):
     print('#' * 78)
 
     print("10- Importing Schreiber et al (2016) models\n")
-    build_schreiber2016(base)
+    build_schreiber2016()
     print("\nDONE\n")
     print('#' * 78)
 

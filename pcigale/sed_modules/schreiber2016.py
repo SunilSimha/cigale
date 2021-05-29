@@ -7,7 +7,7 @@ This module implements the Schreiber et al. (2016) infra-red models.
 """
 
 import numpy as np
-from pcigale.data import Database
+from pcigale.data import SimpleDatabase as Database
 from . import SedModule
 
 
@@ -45,9 +45,9 @@ class Schreiber2016(SedModule):
 
         self.tdust = float(self.parameters["tdust"])
         self.fpah = float(self.parameters["fpah"])
-        with Database() as database:
-            self.model_dust = database.get_schreiber2016(0, self.tdust)
-            self.model_pah = database.get_schreiber2016(1, self.tdust)
+        with Database("schreiber2016") as db:
+            self.model_dust = db.get(type=0, tdust=self.tdust)
+            self.model_pah = db.get(type=1, tdust=self.tdust)
 
         # The models in memory are in W/nm/kg. At the same time we
         # need to normalize them to 1 W here to easily scale them from the
@@ -56,14 +56,14 @@ class Schreiber2016(SedModule):
         # mass in W kg¯¹, The gamma parameter does not affect the fact that it
         # is for 1 kg because it represents a mass fraction of each component.
 
-        self.emissivity = np.trapz((1. - self.fpah) * self.model_dust.lumin +
-                                   self.fpah * self.model_pah.lumin,
-                                   x=self.model_dust.wave)
+        self.emissivity = np.trapz((1. - self.fpah) * self.model_dust.spec +
+                                   self.fpah * self.model_pah.spec,
+                                   x=self.model_dust.wl)
 
         # We want to be able to display the respective contributions of both
         # components, therefore we keep they separately.
-        self.model_dust.lumin *= (1. - self.fpah) / self.emissivity
-        self.model_pah.lumin *= self.fpah / self.emissivity
+        self.model_dust.spec *= (1. - self.fpah) / self.emissivity
+        self.model_pah.spec *= self.fpah / self.emissivity
 
     def process(self, sed):
         """Add the IR re-emission contributions
@@ -87,10 +87,10 @@ class Schreiber2016(SedModule):
         # with the exact model. Fix that later. Maybe directly in the database.
         sed.add_info('dust.mass', luminosity / self.emissivity, True, unit='kg')
 
-        sed.add_contribution('dust.dust_continuum', self.model_dust.wave,
-                             luminosity * self.model_dust.lumin)
-        sed.add_contribution('dust.pah', self.model_pah.wave,
-                             luminosity * self.model_pah.lumin)
+        sed.add_contribution('dust.dust_continuum', self.model_dust.wl,
+                             luminosity * self.model_dust.spec)
+        sed.add_contribution('dust.pah', self.model_pah.wl,
+                             luminosity * self.model_pah.spec)
 
 
 # SedModule to be returned by get_module
