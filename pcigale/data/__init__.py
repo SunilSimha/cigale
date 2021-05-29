@@ -26,7 +26,6 @@ from sqlalchemy.orm import class_mapper, sessionmaker
 import numpy as np
 
 from .filters import Filter
-from .m2005 import M2005
 from .bc03 import BC03
 from .dale2014 import Dale2014
 from .dl2007 import DL2007
@@ -75,28 +74,6 @@ class _Filter(BASE):
         self.description = f.description
         self.trans_table = f.trans_table
         self.pivot_wavelength = f.pivot_wavelength
-
-
-class _M2005(BASE):
-    """Storage for Maraston 2005 SSP
-    """
-
-    __tablename__ = 'maraston2005'
-
-    imf = Column(String, primary_key=True)
-    metallicity = Column(Float, primary_key=True)
-    time_grid = Column(PickleType)
-    wavelength_grid = Column(PickleType)
-    info_table = Column(PickleType)
-    spec_table = Column(PickleType)
-
-    def __init__(self, ssp):
-        self.imf = ssp.imf
-        self.metallicity = ssp.metallicity
-        self.time_grid = ssp.time_grid
-        self.wavelength_grid = ssp.wavelength_grid
-        self.info_table = ssp.info_table
-        self.spec_table = ssp.spec_table
 
 
 class _BC03(BASE):
@@ -350,71 +327,6 @@ class Database:
         manager.
         """
         self.session.close_all()
-
-    def add_m2005(self, ssp_m2005):
-        """
-        Add a Maraston 2005 SSP to pcigale database
-
-        Parameters
-        ----------
-        ssp: pcigale.base.M2005
-
-        """
-        if self.is_writable:
-            ssp = _M2005(ssp_m2005)
-            self.session.add(ssp)
-            try:
-                self.session.commit()
-            except exc.IntegrityError:
-                self.session.rollback()
-                raise DatabaseInsertError('The SSP is already in the base.')
-        else:
-            raise Exception('The database is not writable.')
-
-    def get_m2005(self, imf, metallicity):
-        """
-        Query the database for a Maraston 2005 SSP corresponding to the given
-        initial mass function and metallicity.
-
-        Parameters
-        ----------
-        imf: string
-            Initial mass function (ss for Salpeter, kr for Kroupa)
-        metallicity: float
-            [Z/H] = Log10(Z/Zsun) - Log10(H/Hsun)
-
-        Returns
-        -------
-        ssp: pcigale.base.M2005
-            The M2005 object.
-
-        Raises
-        ------
-        DatabaseLookupError: if the requested SSP is not in the database.
-
-        """
-        result = self.session.query(_M2005)\
-            .filter(_M2005.imf == imf)\
-            .filter(_M2005.metallicity == metallicity)\
-            .first()
-        if result:
-            return M2005(result.imf, result.metallicity, result.time_grid,
-                         result.wavelength_grid, result.info_table,
-                         result.spec_table)
-        else:
-            raise DatabaseLookupError(
-                f"The M2005 SSP for imf <{imf}> and metallicity <{metallicity}>"
-                f" is not in the database.")
-
-    def get_m2005_parameters(self):
-        """Get parameters for the Maraston 2005 stellar models.
-
-        Returns
-        -------
-        paramaters: dictionary
-            dictionary of parameters and their values
-        """
-        return self._get_parameters(_M2005)
 
     def add_bc03(self, ssp_bc03):
         """

@@ -9,7 +9,7 @@ from scipy import interpolate
 import scipy.constants as cst
 from astropy.table import Table
 
-from pcigale.data import (Database, Filter, M2005, BC03, Fritz2006,
+from pcigale.data import (Database, SimpleDatabase, Filter, BC03, Fritz2006,
                           Dale2014, DL2007, DL2014, NebularLines,
                           NebularContinuum, SKIRTOR2016, Schreiber2016, THEMIS)
 
@@ -208,8 +208,9 @@ def build_filters(base):
 
     base.add_filters(filters)
 
-def build_m2005(base):
-    m2005_dir = Path(__file__).parent / 'maraston2005'
+def build_m2005():
+    path = Path(__file__).parent / "maraston2005"
+    db = SimpleDatabase("m2005", writable=True)
 
     # Age grid (1 Myr to 13.7 Gyr with 1 Myr step)
     time_grid = np.arange(1, 13701)
@@ -217,11 +218,10 @@ def build_m2005(base):
 
     # Transpose the table to have access to each value vector on the first
     # axis
-    kroupa_mass = np.genfromtxt(m2005_dir / 'stellarmass.kroupa').transpose()
-    salpeter_mass = \
-        np.genfromtxt(m2005_dir / 'stellarmass.salpeter').transpose()
+    kroupa_mass = np.genfromtxt(path / 'stellarmass.kroupa').transpose()
+    salpeter_mass = np.genfromtxt(path / 'stellarmass.salpeter').transpose()
 
-    for spec_file in m2005_dir.glob('*.rhb'):
+    for spec_file in path.glob('*.rhb'):
         print(f"Importing {spec_file}...")
 
         spec_table = np.genfromtxt(spec_file).transpose()
@@ -300,8 +300,10 @@ def build_m2005(base):
                        0.0: 0.02,
                        0.35: 0.04}[metallicity]
 
-        base.add_m2005(M2005(imf, metallicity, time_grid, ssp_wave,
-                             mass_table, ssp_lumin))
+        db.add({"imf": imf, "Z": metallicity},
+               {"t": time_grid, "wl": ssp_wave, "info": mass_table,
+                "spec": ssp_lumin})
+    db.close()
 
 
 def build_bc2003(base, res):
@@ -867,7 +869,7 @@ def build_base(bc03res='lr'):
     print('#' * 78)
 
     print("2- Importing Maraston 2005 SSP\n")
-    build_m2005(base)
+    build_m2005()
     print("\nDONE\n")
     print('#' * 78)
 
