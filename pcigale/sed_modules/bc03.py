@@ -44,6 +44,68 @@ class BC03(SedModule):
         )
     }
 
+    def convolve(self, sfh):
+        """Convolve the SSP with a Star Formation History
+
+        Given an SFH, this method convolves the info table and the SSP
+        luminosity spectrum.
+
+        Parameters
+        ----------
+        sfh: array of floats
+            Star Formation History in Msun/yr.
+
+        Returns
+        -------
+        spec_young: array of floats
+            Spectrum in W/nm of the young stellar populations.
+        spec_old: array of floats
+            Same as spec_young but for the old stellar populations.
+        info_young: dictionary
+            Dictionary containing various information from the *.?color tables
+            for the young stellar populations:
+            * "m_star": Total mass in stars in Msun
+            * "m_gas": Mass returned to the ISM by evolved stars in Msun
+            * "n_ly": rate of H-ionizing photons (s-1)
+        info_old : dictionary
+            Same as info_young but for the old stellar populations.
+        info_all: dictionary
+            Same as info_young but for the entire stellar population. Also
+            contains "age_mass", the stellar mass-weighted age
+
+        """
+        # We cut the SSP to the maximum age considered to simplify the
+        # computation. We take only the first three elements from the
+        # info_table as the others do not make sense when convolved with the
+        # SFH (break strength).
+        info_table = self.ssp.info_table[:, :sfh.size]
+        spec_table = self.ssp.spec_table[:, :sfh.size]
+
+        # The convolution is just a matter of reverting the SFH and computing
+        # the sum of the data from the SSP one to one product. This is done
+        # using the dot product. The 1e6 factor is because the SFH is in solar
+        # mass per year.
+        info_young = 1e6 * np.dot(info_table[:, :self.separation_age],
+                                  sfh[-self.separation_age:][::-1])
+        spec_young = 1e6 * np.dot(spec_table[:, :self.separation_age],
+                                  sfh[-self.separation_age:][::-1])
+
+        info_old = 1e6 * np.dot(info_table[:, self.separation_age:],
+                                sfh[:-self.separation_age][::-1])
+        spec_old = 1e6 * np.dot(spec_table[:, self.separation_age:],
+                                sfh[:-self.separation_age][::-1])
+
+        info_all = info_young + info_old
+
+        info_young = dict(zip(["m_star", "m_gas", "n_ly"], info_young))
+        info_old = dict(zip(["m_star", "m_gas", "n_ly"], info_old))
+        info_all = dict(zip(["m_star", "m_gas", "n_ly"], info_all))
+
+        info_all['age_mass'] = np.average(self.ssp.time_grid[:sfh.size],
+                                          weights=info_table[0, :] * sfh[::-1])
+
+        return spec_young, spec_old, info_young, info_old, info_all
+
     def _init_code(self):
         """Read the SSP from the database."""
         self.imf = int(self.parameters["imf"])
@@ -67,7 +129,7 @@ class BC03(SedModule):
             SED object.
 
         """
-        out = self.ssp.convolve(sed.sfh, self.separation_age)
+        out = self.convolve(sed.sfh)
         spec_young, spec_old, info_young, info_old, info_all = out
 
         # We compute the Lyman continuum luminosity as it is important to
