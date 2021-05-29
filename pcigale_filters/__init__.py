@@ -84,11 +84,24 @@ def worker_plot(fname):
     """
     with Database() as base:
         _filter = base.get_filter(fname)
+
+    if _filter.pivot_wavelength >= 1e3 and _filter.pivot_wavelength < 1e6:
+        _filter.trans_table[0] *= 1e-3
+        unit = "μm"
+    elif _filter.pivot_wavelength >= 1e6 and _filter.pivot_wavelength < 1e7:
+        _filter.trans_table[0] *= 1e-6
+        unit = "mm"
+    elif _filter.pivot_wavelength >= 1e7:
+        _filter.trans_table[0] *= 1e-7
+        unit = "cm"
+    else:
+        unit = "nm"
+
     plt.clf()
     plt.plot(_filter.trans_table[0], _filter.trans_table[1], color='k')
     plt.xlim(_filter.trans_table[0][0], _filter.trans_table[0][-1])
     plt.minorticks_on()
-    plt.xlabel('Wavelength [nm]')
+    plt.xlabel(f'Wavelength [{unit}]')
     plt.ylabel('Relative transmission')
     plt.title(f"{fname} filter")
     plt.tight_layout()
