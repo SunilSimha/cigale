@@ -26,7 +26,6 @@ from sqlalchemy.orm import class_mapper, sessionmaker
 import numpy as np
 
 from .filters import Filter
-from .dale2014 import Dale2014
 from .nebular_continuum import NebularContinuum
 from .nebular_lines import NebularLines
 from .schreiber2016 import Schreiber2016
@@ -69,23 +68,6 @@ class _Filter(BASE):
         self.description = f.description
         self.trans_table = f.trans_table
         self.pivot_wavelength = f.pivot_wavelength
-
-
-class _Dale2014(BASE):
-    """Storage for Dale et al (2014) infra-red templates
-    """
-
-    __tablename__ = 'dale2014_templates'
-    fracAGN = Column(Float, primary_key=True)
-    alpha = Column(String, primary_key=True)
-    wave = Column(PickleType)
-    lumin = Column(PickleType)
-
-    def __init__(self, iragn):
-        self.fracAGN = iragn.fracAGN
-        self.alpha = iragn.alpha
-        self.wave = iragn.wave
-        self.lumin = iragn.lumin
 
 
 class _NebularLines(BASE):
@@ -200,73 +182,6 @@ class Database:
         manager.
         """
         self.session.close_all()
-
-    def add_dale2014(self, models):
-        """
-        Add Dale et al (2014) templates the collection.
-
-        Parameters
-        ----------
-        models: list of pcigale.data.Dale2014 objects
-
-        """
-
-        if self.is_writable:
-            for model in models:
-                self.session.add(_Dale2014(model))
-            try:
-                self.session.commit()
-            except exc.IntegrityError:
-                self.session.rollback()
-                raise DatabaseInsertError(
-                    'The Dale2014 template is already in the base.')
-        else:
-            raise Exception('The database is not writable.')
-
-    def get_dale2014(self, frac_agn, alpha):
-        """
-        Get the Dale et al (2014) template corresponding to the given set of
-        parameters.
-
-        Parameters
-        ----------
-        frac_agn: float
-            contribution of the AGN to the IR luminosity
-        alpha: float
-            alpha corresponding to the updated Dale & Helou (2002) star
-            forming template.
-
-        Returns
-        -------
-        template: pcigale.data.Dale2014
-            The Dale et al. (2014) IR template.
-
-        Raises
-        ------
-        DatabaseLookupError: if the requested template is not in the database.
-
-        """
-        result = (self.session.query(_Dale2014).
-                  filter(_Dale2014.fracAGN == frac_agn).
-                  filter(_Dale2014.alpha == alpha).
-                  first())
-        if result:
-            return Dale2014(result.fracAGN, result.alpha, result.wave,
-                            result.lumin)
-        else:
-            raise DatabaseLookupError(
-                f"The Dale2014 template for frac_agn <{frac_agn}> and alpha "
-                f"<{alpha}> is not in the database.")
-
-    def get_dale2014_parameters(self):
-        """Get parameters for the Dale 2014 models.
-
-        Returns
-        -------
-        paramaters: dictionary
-            dictionary of parameters and their values
-        """
-        return self._get_parameters(_Dale2014)
 
     def add_nebular_lines(self, models):
         """

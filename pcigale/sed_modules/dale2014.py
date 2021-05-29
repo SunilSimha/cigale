@@ -6,7 +6,7 @@ This module implements the Dale (2014) infra-red models.
 
 """
 
-from pcigale.data import Database
+from pcigale.data import SimpleDatabase as Database
 from . import SedModule
 
 
@@ -65,9 +65,9 @@ class Dale2014(SedModule):
         self.fracAGN = float(self.parameters["fracAGN"])
         self.alpha = float(self.parameters["alpha"])
 
-        with Database() as database:
-            self.model_sb = database.get_dale2014(0.00, self.alpha)
-            self.model_quasar = database.get_dale2014(1.00, 0.0)
+        with Database("dale2014") as db:
+            self.model_sb = db.get(fracAGN=0.0, alpha=self.alpha)
+            self.model_quasar = db.get(fracAGN=1.0, alpha=0.0)
 
     def process(self, sed):
         """Add the IR re-emission contributions
@@ -91,11 +91,11 @@ class Dale2014(SedModule):
         sed.add_info("agn.fracAGN_dale2014", self.fracAGN)
         sed.add_info("dust.alpha", self.alpha)
 
-        sed.add_contribution('dust', self.model_sb.wave,
-                             luminosity * self.model_sb.lumin)
+        sed.add_contribution('dust', self.model_sb.wl,
+                             luminosity * self.model_sb.spec)
         if self.fracAGN != 0.:
-            sed.add_contribution('agn', self.model_quasar.wave,
-                                 L_AGN * self.model_quasar.lumin)
+            sed.add_contribution('agn', self.model_quasar.wl,
+                                 L_AGN * self.model_quasar.spec)
 
 
 # SedModule to be returned by get_module
