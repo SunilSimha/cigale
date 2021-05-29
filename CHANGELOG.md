@@ -9,6 +9,7 @@
 ### Changed
 - The IGM absorption from Meiksin has been modified to include the dependence of the hydrogen absorption cross section (~λ^2.75) so that the universe becomes transparent again at very short wavelengths. (Guang Yang, adapted by Médéric Boquien)
 - The `fluxes` module has been removed as it has been superseded by the `bands` parameter of the `pdf\_analysis` module. (Médéric Boquien)
+- The `del` command of `pcigale-filters` has been eliminated in preparation to the change of database. (Médéric Boquien)
 ### Fixed
 - Ensure that `pcigale-plots` correctly detects the `skirtor2016` AGN models. (Médéric Boquien, reported by Guang Yang)
 - Correct a typo in the `themis` module. (Médéric Boquien, reported by Alexandros Maragkoudakis)

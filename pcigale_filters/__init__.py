@@ -74,19 +74,6 @@ def add_filters(fnames):
             base.add_filter(new_filter)
 
 
-def del_filters(fnames):
-    """Delete filters from the pcigale database
-    """
-    with Database(writable=True) as base:
-        names = base.get_filter_names()
-        for fname in fnames:
-            if fname in names:
-                base.del_filter(fname)
-                print(f"Removing filter {fname}")
-            else:
-                print("Filter {fname} not in the database")
-
-
 def worker_plot(fname):
     """Worker to plot filter transmission curves in parallel
 
@@ -138,10 +125,6 @@ def main():
     add_parser.add_argument('names', nargs='+', help="List of file names")
     add_parser.set_defaults(parser='add')
 
-    del_parser = subparsers.add_parser('del', help=del_filters.__doc__)
-    del_parser.add_argument('names', nargs='+', help="List of filter names")
-    del_parser.set_defaults(parser='del')
-
     plot_parser = subparsers.add_parser('plot', help=plot_filters.__doc__)
     plot_parser.add_argument('names', nargs='*', help="List of filter names")
     plot_parser.set_defaults(parser='plot')
@@ -154,7 +137,5 @@ def main():
             list_filters()
         elif args.parser == 'add':
             add_filters(args.names)
-        elif args.parser == 'del':
-            del_filters(args.names)
         elif args.parser == 'plot':
             plot_filters(args.names)

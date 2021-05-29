@@ -1140,26 +1140,6 @@ class Database:
         else:
             raise Exception('The database is not writable.')
 
-    def del_filter(self, name):
-        """
-        Delete a filter from the pcigale database.
-
-        Parameters
-        ----------
-        name: name of the filter to be deleted
-        """
-        if self.is_writable:
-            if name in self.get_filter_names():
-                (self.session.query(_Filter).
-                 filter(_Filter.name == name).delete())
-                try:
-                    self.session.commit()
-                except exc.IntegrityError:
-                    raise Exception('The database is not writable.')
-        else:
-            raise DatabaseLookupError(
-                f"The filter <{name}> is not in the database")
-
     def get_filter(self, name):
         """
         Get a specific filter from the collection
