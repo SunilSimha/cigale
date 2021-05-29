@@ -1,5 +1,4 @@
 from itertools import repeat
-from collections import OrderedDict
 
 from astropy.table import Table
 import matplotlib
@@ -10,7 +9,7 @@ import multiprocessing as mp
 import numpy as np
 import pkg_resources
 from scipy.constants import c
-from pcigale.data import Database
+from pcigale.data import SimpleDatabase as Database
 from utils.io import read_table
 import matplotlib.gridspec as gridspec
 from utils.counter import Counter
@@ -47,10 +46,10 @@ def sed(config, sed_type, nologo, xrange, yrange, series, format, outdir):
     obs = read_table(outdir.parent / config.configuration['data_file'])
     mod = Table.read(outdir / BEST_RESULTS)
 
-    with Database() as base:
-        filters = OrderedDict([(name, base.get_filter(name))
-                               for name in config.configuration['bands']
-                               if not (name.endswith('_err') or name.startswith('line'))])
+    with Database("filters") as db:
+        filters = {name: db.get(name=name)
+                   for name in config.configuration['bands']
+                   if not (name.endswith('_err') or name.startswith('line'))}
 
     if nologo is True:
         logo = False
@@ -80,7 +79,7 @@ def _sed_worker(obs, mod, filters, sed_type, logo, xrange, yrange, series,
         Data from the input file regarding one object.
     mod: Table row
         Data from the best model of one object.
-    filters: ordered dictionary of Filter objects
+    filters: dict
         The observed fluxes in each filter.
     sed_type: string
         Type of SED to plot. It can either be "mJy" (flux in mJy and observed
@@ -107,7 +106,7 @@ def _sed_worker(obs, mod, filters, sed_type, logo, xrange, yrange, series,
     if id_best_model_file.is_file():
         sed = Table.read(id_best_model_file)
 
-        filters_wl = np.array([filt.pivot_wavelength
+        filters_wl = np.array([filt.pivot
                                for filt in filters.values()]) * 1e-3
         wavelength_spec = sed['wavelength'] * 1e-3
         obs_fluxes = np.array([obs[filt] for filt in filters.keys()])

@@ -25,8 +25,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import class_mapper, sessionmaker
 import numpy as np
 
-from .filters import Filter
-
 DATABASE_FILE = pkg_resources.resource_filename(__name__, 'data.db')
 
 ENGINE = create_engine('sqlite:///' + DATABASE_FILE, echo=False)
@@ -46,24 +44,6 @@ class DatabaseInsertError(Exception):
     A custom exception raised when one tries to insert in the database
     something that is already in it.
     """
-
-
-class _Filter(BASE):
-    """ Storage for filters
-    """
-
-    __tablename__ = 'filters'
-
-    name = Column(String, primary_key=True)
-    description = Column(String)
-    trans_table = Column(PickleType)
-    pivot_wavelength = Column(Float)
-
-    def __init__(self, f):
-        self.name = f.name
-        self.description = f.description
-        self.trans_table = f.trans_table
-        self.pivot_wavelength = f.pivot_wavelength
 
 
 class Database:
@@ -117,88 +97,6 @@ class Database:
         return {k.name: np.sort(
                 [v[0] for v in set(self.session.query(schema).values(k))])
                 for k in class_mapper(schema).primary_key}
-
-    def add_filter(self, pcigale_filter):
-        """
-        Add a filter to pcigale database.
-
-        Parameters
-        ----------
-        pcigale_filter: pcigale.data.Filter
-        """
-        if self.is_writable:
-            self.session.add(_Filter(pcigale_filter))
-            try:
-                self.session.commit()
-            except exc.IntegrityError:
-                self.session.rollback()
-                raise DatabaseInsertError('The filter is already in the base.')
-        else:
-            raise Exception('The database is not writable.')
-
-    def add_filters(self, pcigale_filters):
-        """
-        Add a list of filters to the pcigale database.
-
-        Parameters
-        ----------
-        pcigale_filters: list of pcigale.data.Filter objects
-        """
-        if self.is_writable:
-            for pcigale_filter in pcigale_filters:
-                self.session.add(_Filter(pcigale_filter))
-            try:
-                self.session.commit()
-            except exc.IntegrityError:
-                self.session.rollback()
-                raise DatabaseInsertError('The filter is already in the base.')
-        else:
-            raise Exception('The database is not writable.')
-
-    def get_filter(self, name):
-        """
-        Get a specific filter from the collection
-
-        Parameters
-        ----------
-        name: string
-            Name of the filter
-
-        Returns
-        -------
-        filter: pcigale.base.Filter
-            The Filter object.
-
-        Raises
-        ------
-        DatabaseLookupError: if the requested filter is not in the database.
-
-        """
-        result = (self.session.query(_Filter).
-                  filter(_Filter.name == name).
-                  first())
-        if result:
-            return Filter(result.name, result.description, result.trans_table,
-                          result.pivot_wavelength)
-        else:
-            raise DatabaseLookupError(
-                f"The filter <{name}> is not in the database")
-
-    def get_filter_names(self):
-        """Get the list of the name of the filters in the database.
-
-        Returns
-        -------
-        names: list
-            list of the filter names
-        """
-        return [n[0] for n in self.session.query(_Filter.name).all()]
-
-    def parse_filters(self):
-        """Generator to parse the filter database."""
-        for filt in self.session.query(_Filter):
-            yield Filter(filt.name, filt.description, filt.trans_table,
-                         filt.pivot_wavelength)
 
     def parse_m2005(self):
         """Generator to parse the Maraston 2005 SSP database."""

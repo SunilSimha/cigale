@@ -26,7 +26,7 @@ from scipy.constants import parsec
 from . import utils
 from .io.vo import save_sed_to_vo
 from .io.fits import save_sed_to_fits
-from ..data import Database
+from ..data import SimpleDatabase as Database
 
 
 class SED:
@@ -270,18 +270,19 @@ class SED:
         if key in self.cache_filters:
             wavelength_r, transmission_r, lambda_piv = self.cache_filters[key]
         else:
-            with Database() as db:
-                filter_ = db.get_filter(filter_name)
-            trans_table = filter_.trans_table
-            lambda_piv = filter_.pivot_wavelength
-            lambda_min = trans_table[0][0]
-            lambda_max = trans_table[0][-1]
+            with Database("filters") as db:
+                filter_ = db.get(name=filter_name)
+            wl = filter_.wl
+            tr = filter_.tr
+            lambda_piv = filter_.pivot
+            lambda_min = wl[0]
+            lambda_max = wl[-1]
             if filter_name.startswith('linefilter.'):
                 if 'universe.redshift' in self.info:
                     zp1 = 1. + self.info['universe.redshift']
                 else:
                     zp1 = 1.
-                trans_table[0] *= zp1
+                wl *= zp1
                 lambda_piv *= zp1
                 lambda_min *= zp1
                 lambda_max *= zp1
@@ -297,9 +298,8 @@ class SED:
             # filter one.
             w = np.where((wavelength >= lambda_min) &
                          (wavelength <= lambda_max))
-            wavelength_r = utils.best_grid(wavelength[w], trans_table[0], key)
-            transmission_r = interp(wavelength_r, trans_table[0],
-                                    trans_table[1])
+            wavelength_r = utils.best_grid(wavelength[w], wl, key)
+            transmission_r = interp(wavelength_r, wl, tr)
 
             self.cache_filters[key] = (wavelength_r, transmission_r,
                                        lambda_piv)

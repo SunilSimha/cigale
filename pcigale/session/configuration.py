@@ -166,8 +166,8 @@ class Configuration:
             sys.exit(1)
 
         # Getting the list of the filters available in pcigale database
-        with Database() as base:
-            filter_list = base.get_filter_names()
+        with Database("filters") as db:
+            filter_list = db.parameters["names"]
         filter_list += [f'line.{line}' for line in default_lines]
 
         if self.config['data_file'] != '':

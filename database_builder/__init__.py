@@ -9,7 +9,7 @@ from scipy import interpolate
 import scipy.constants as cst
 from astropy.table import Table
 
-from pcigale.data import Database, SimpleDatabase, Filter
+from pcigale.data import Database, SimpleDatabase
 
 
 def read_bc03_ssp(filename):
@@ -123,29 +123,9 @@ def read_bc03_ssp(filename):
     # we remove t=0 from the SSP.
     return time_grid[1:], wavelength, luminosity[:, 1:]
 
-
-def normalise_filters(trans_table):
-    """
-    Compute the pivot wavelength of the filter and normalise the filter
-    to compute the flux in Fν (mJy) in cigale.
-    """
-    pivot_wavelength = np.sqrt(np.trapz(self.trans_table[1],
-                                        self.trans_table[0]) /
-                               np.trapz(self.trans_table[1] /
-                                        self.trans_table[0] ** 2,
-                                        self.trans_table[0]))
-
-    # The factor 10²⁰ is so that we get the fluxes directly in mJy when we
-    # integrate with the wavelength in units of nm and the spectrum in
-    # units of W/m²/nm.
-    self.trans_table[1] = 1e20 * self.trans_table[1] / (
-        c * np.trapz(self.trans_table[1] / self.trans_table[0]**2,
-                     self.trans_table[0]))
-
-
-def build_filters(base):
-    filters = []
+def build_filters():
     path = Path(__file__).parent / 'filters'
+    db = SimpleDatabase("filters", writable=True)
     pathlen = len(path.parts)
 
     for file in path.rglob('*'):
@@ -162,49 +142,36 @@ def build_filters(base):
                 name = '.'.join(file.with_suffix('').parts[pathlen:])
             desc = f.readline().strip('# \n\t')
 
-        table = np.genfromtxt(file)
-        # The table is transposed to have table[0] containing the wavelength
-        # and table[1] containing the transmission.
-        table = table.transpose()
+        wl, tr = np.genfromtxt(file, unpack=True)
 
         # We convert the wavelength from Å to nm.
-        table[0] *= 0.1
+        wl *= 0.1
 
         # We convert to energy if needed
         if type_ == 'photon':
-            table[1] *= table[0]
+            tr *= wl
         elif type_ != 'energy':
             raise ValueError("Filter transmission type can only be 'energy' or "
                              "'photon'.")
 
-        print(f"Importing {name}... ({table.shape[1]} points)")
-
-        new_filter = Filter(name, desc, table)
+        print(f"Importing {name}... ({wl.size} points)")
 
         # We normalise the filter and compute the pivot wavelength. If the
         # filter is a pseudo-filter used to compute line fluxes, it should not
         # be normalised.
         if not name.startswith('PSEUDO'):
-            new_filter.pivot_wavelength = np.sqrt(np.trapz(new_filter.trans_table[1],
-                                                  new_filter.trans_table[0]) /
-                                                  np.trapz(new_filter.trans_table[1] /
-                                                           new_filter.trans_table[0] ** 2,
-                                                           new_filter.trans_table[0]))
+            pivot = np.sqrt(np.trapz(tr, wl) / np.trapz(tr / wl**2, wl))
 
             # The factor 10²⁰ is so that we get the fluxes directly in mJy when
             # we integrate with the wavelength in units of nm and the spectrum
             # in units of W/m²/nm.
-            new_filter.trans_table[1] = 1e20 * new_filter.trans_table[1] / (
-                cst.c * np.trapz(new_filter.trans_table[1] /
-                                 new_filter.trans_table[0]**2,
-                                 new_filter.trans_table[0]))
+            tr *= 1e20 / (cst.c * np.trapz(tr / wl**2, wl))
         else:
-            new_filter.pivot_wavelength = np.mean(
-                table[0][table[1] > 0]
-            )
-        filters.append(new_filter)
+            pivot = np.mean(wl[tr > 0.])
+        db.add({"name": name},
+               {"wl": wl, "tr": tr, "pivot": pivot, "desc": desc})
 
-    base.add_filters(filters)
+    db.close()
 
 def build_m2005():
     path = Path(__file__).parent / "maraston2005"
@@ -874,7 +841,7 @@ def build_base(bc03res='lr'):
 
     print('#' * 78)
     print("1- Importing filters...\n")
-    build_filters(base)
+    build_filters()
     print("\nDONE\n")
     print('#' * 78)
 
