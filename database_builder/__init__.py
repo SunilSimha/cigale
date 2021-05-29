@@ -10,7 +10,7 @@ import scipy.constants as cst
 from astropy.table import Table
 
 from pcigale.data import (Database, SimpleDatabase, Filter, Fritz2006, Dale2014,
-                          DL2014, NebularLines, NebularContinuum, SKIRTOR2016,
+                          NebularLines, NebularContinuum, SKIRTOR2016,
                           Schreiber2016, THEMIS)
 
 
@@ -520,9 +520,9 @@ def build_dl2007():
     db.close()
 
 
-def build_dl2014(base):
-    models = []
-    dl2014_dir = Path(__file__).parent / 'dl2014'
+def build_dl2014():
+    path = Path(__file__).parent / 'dl2014'
+    db = SimpleDatabase("dl2014", writable=True)
 
     qpah = {"000": 0.47, "010": 1.12, "020": 1.77, "030": 2.50, "040": 3.19,
             "050": 3.90, "060": 4.58, "070": 5.26, "080": 5.95, "090": 6.63,
@@ -545,7 +545,7 @@ def build_dl2014(base):
             "080": 0.0106, "090": 0.0107, "100": 0.0108}
 
     # Here we obtain the wavelength beforehand to avoid reading it each time.
-    filename = dl2014_dir / "U0.100_0.100_MW3.1_000" / "spec_1.0.dat"
+    filename = path / "U0.100_0.100_MW3.1_000" / "spec_1.0.dat"
     with filename.open() as datafile:
         data = "".join(datafile.readlines()[-1001:])
     wave = np.genfromtxt(io.BytesIO(data.encode()), usecols=(0))
@@ -559,8 +559,7 @@ def build_dl2014(base):
 
     for model in sorted(qpah.keys()):
         for umin in uminimum:
-            filename = dl2014_dir / f"U{umin}_{umin}_MW3.1_{model}"/ \
-                "spec_1.0.dat"
+            filename = path / f"U{umin}_{umin}_MW3.1_{model}" / "spec_1.0.dat"
             print(f"Importing {filename}...")
             with filename.open() as datafile:
                 data = "".join(datafile.readlines()[-1001:])
@@ -571,10 +570,12 @@ def build_dl2014(base):
             # Conversion from Jy cm² sr¯¹ H¯¹to W nm¯¹ (kg of dust)¯¹
             lumin *= conv/MdMH[model]
 
-            models.append(DL2014(qpah[model], umin, umin, 1.0, wave, lumin))
+            db.add({"qpah": float(qpah[model]), "umin": float(umin),
+                    "umax": float(umin), "alpha": 1.0},
+                   {"wl": wave, "spec": lumin})
 
             for al in alpha:
-                filename = dl2014_dir / f"U{umin}_1e7_MW3.1_{model}" / \
+                filename = path / f"U{umin}_1e7_MW3.1_{model}" / \
                     f"spec_{al}.dat"
                 print(f"Importing {filename}...")
                 with filename.open() as datafile:
@@ -586,9 +587,11 @@ def build_dl2014(base):
                 # Conversion from Jy cm² sr¯¹ H¯¹to W nm¯¹ (kg of dust)¯¹
                 lumin *= conv/MdMH[model]
 
-                models.append(DL2014(qpah[model], umin, 1e7, al, wave, lumin))
+                db.add({"qpah": float(qpah[model]), "umin": float(umin),
+                        "umax": 1e7, "alpha": float(al)},
+                       {"wl": wave, "spec": lumin})
+    db.close()
 
-    base.add_dl2014(models)
 
 def build_fritz2006(base):
     models = []
@@ -883,8 +886,8 @@ def build_base(bc03res='lr'):
     print("\nDONE\n")
     print('#' * 78)
 
-    print("5- Importing the updated Draine and Li (2007 models)\n")
-    build_dl2014(base)
+    print("5- Importing the updated Draine and Li (2007) models\n")
+    build_dl2014()
     print("\nDONE\n")
     print('#' * 78)
 
