@@ -10,8 +10,7 @@ import scipy.constants as cst
 from astropy.table import Table
 
 from pcigale.data import (Database, SimpleDatabase, Filter, Dale2014,
-                          NebularLines, NebularContinuum, SKIRTOR2016,
-                          Schreiber2016, THEMIS)
+                          NebularLines, NebularContinuum, Schreiber2016, THEMIS)
 
 
 def read_bc03_ssp(filename):
@@ -660,11 +659,11 @@ def build_fritz2006():
                     "spec_scatt": lumin_scatt, "spec_agn": lumin_agn})
     db.close()
 
-def build_skirtor2016(base):
-    models = []
-    skirtor2016_dir = Path(__file__).parent / 'skirtor2016'
+def build_skirtor2016():
+    path = Path(__file__).parent / "skirtor2016"
+    db = SimpleDatabase("skirtor2016", writable=True)
 
-    params = [f.stem.split('_')[:-1] for f in skirtor2016_dir.glob('*')]
+    params = [f.stem.split('_')[:-1] for f in path.glob('*')]
 
     # Parameters of SKIRTOR 2016
     t = list({param[0][1:] for param in params})
@@ -685,7 +684,7 @@ def build_skirtor2016(base):
                    for p7 in i)
 
     for params in iter_params:
-        filename = skirtor2016_dir / \
+        filename = path / \
                 "t{}_p{}_q{}_oa{}_R{}_Mcl{}_i{}_sed.dat".format(*params)
         print(f"Importing {filename}...")
 
@@ -701,11 +700,12 @@ def build_skirtor2016(base):
         disk /= norm
         dust /= norm
 
-        models.append(SKIRTOR2016(params[0], params[1], params[2], params[3],
-                                  params[4], params[5], params[6], norm, wl,
-                                  disk, dust))
-
-    base.add_skirtor2016(models)
+        db.add({"t": int(params[0]), "pl": float(params[1]),
+                "q": float(params[2]), "oa": int(params[3]),
+                "R": int(params[4]), "Mcl": float(params[5]),
+                "i": int(params[6])},
+               {"norm": norm, "wl": wl, "disk": disk, "dust": dust})
+    db.close()
 
 def build_nebular(base):
     models_lines = []
@@ -899,7 +899,7 @@ def build_base(bc03res='lr'):
     print('#' * 78)
 
     print("7- Importing SKIRTOR 2016 models\n")
-    build_skirtor2016(base)
+    build_skirtor2016()
     print("\nDONE\n")
     print('#' * 78)
 

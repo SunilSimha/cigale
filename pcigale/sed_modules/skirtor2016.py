@@ -8,7 +8,7 @@ This module implements the SKIRTOR 2016 models.
 import numpy as np
 import scipy.constants as cst
 
-from pcigale.data import Database
+from pcigale.data import SimpleDatabase as Database
 from . import SedModule
 
 
@@ -228,12 +228,12 @@ class SKIRTOR2016(SedModule):
         self.temperature = float(self.parameters["temperature"])
         self.emissivity = float(self.parameters["emissivity"])
 
-        with Database() as base:
-            self.SKIRTOR2016 = base.get_skirtor2016(self.t, self.pl, self.q,
-                                                    self.oa, self.R, self.Mcl,
-                                                    self.i)
-            AGN1 = base.get_skirtor2016(self.t, self.pl, self.q, self.oa,
-                                        self.R, self.Mcl, 0.)
+        with Database("skirtor2016") as db:
+            self.SKIRTOR2016 = db.get(t=self.t, pl=self.pl, q=self.q,
+                                      oa=self.oa, R=self.R, Mcl=self.Mcl,
+                                      i=self.i)
+            AGN1 = db.get(t=self.t, pl=self.pl, q=self.q, oa=self.oa, R=self.R,
+                          Mcl=self.Mcl, i=0)
         # Re-normalize AGN1, to be consistent with the intrinsic AGN
         # luminosity of SKIRTOR2016
         AGN1.disk *= AGN1.norm / self.SKIRTOR2016.norm
@@ -247,19 +247,19 @@ class SKIRTOR2016(SedModule):
         # the actual absorbed luminosity, probably because very little radiation
         # can escape the torus
         if self.disk_type == 0:
-            disk = skirtor_disk(self.SKIRTOR2016.wave, delta=self.delta)
+            disk = skirtor_disk(self.SKIRTOR2016.wl, delta=self.delta)
         elif self.disk_type == 1:
-            disk = schartmann2005_disk(self.SKIRTOR2016.wave, delta=self.delta)
+            disk = schartmann2005_disk(self.SKIRTOR2016.wl, delta=self.delta)
         else:
             raise ValueError("The parameter disk_type must be 0 or 1.")
-        disk *= np.trapz(AGN1.disk, x=AGN1.wave)
+        disk *= np.trapz(AGN1.disk, x=AGN1.wl)
 
         self.SKIRTOR2016.disk = np.nan_to_num(disk * self.SKIRTOR2016.disk /
                                               AGN1.disk)
         AGN1.disk = disk
 
         # Calculate the extinction
-        ext_fac = 10**(-.4 * k_ext(self.SKIRTOR2016.wave, self.law) * self.EBV)
+        ext_fac = 10**(-.4 * k_ext(self.SKIRTOR2016.wl, self.law) * self.EBV)
 
         # Calculate the new AGN SED shape after extinction
         # The direct and scattered components (line-of-sight) are extincted for
@@ -284,44 +284,44 @@ class SKIRTOR2016(SedModule):
         # Integrating over λ gives the bolometric luminosity
         sin_oa = np.sin(np.deg2rad(self.oa))
         l_ext = (7. / 18. - sin_oa**2. / 6. - sin_oa**3 * 2. / 9.) * \
-            np.trapz(AGN1.disk * (1. - ext_fac), x=AGN1.wave)
+            np.trapz(AGN1.disk * (1. - ext_fac), x=AGN1.wl)
 
         # Casey (2012) modified black body model
         c = cst.c * 1e9
         lambda_0 = 200e3
-        conv = c / self.SKIRTOR2016.wave ** 2.
-        hc_lkt = cst.h * c / (self.SKIRTOR2016.wave * cst.k * self.temperature)
+        conv = c / self.SKIRTOR2016.wl ** 2.
+        hc_lkt = cst.h * c / (self.SKIRTOR2016.wl * cst.k * self.temperature)
         err_settings = np.seterr(over='ignore')  # ignore exp overflow
         blackbody = conv * \
-            (1. - np.exp(-(lambda_0 / self.SKIRTOR2016.wave) ** self.emissivity)) * \
-            (c / self.SKIRTOR2016.wave) ** 3. / (np.exp(hc_lkt) - 1.)
+            (1. - np.exp(-(lambda_0 / self.SKIRTOR2016.wl) ** self.emissivity)) * \
+            (c / self.SKIRTOR2016.wl) ** 3. / (np.exp(hc_lkt) - 1.)
         np.seterr(**err_settings)  # Restore the previous settings
-        blackbody *= l_ext / np.trapz(blackbody, x=self.SKIRTOR2016.wave)
+        blackbody *= l_ext / np.trapz(blackbody, x=self.SKIRTOR2016.wl)
 
         # Add the black body to dust thermal emission
         self.SKIRTOR2016.dust += blackbody
 
         # Normalize direct, scatter, and thermal components
-        norm = 1. / np.trapz(self.SKIRTOR2016.dust, x=self.SKIRTOR2016.wave)
+        norm = 1. / np.trapz(self.SKIRTOR2016.dust, x=self.SKIRTOR2016.wl)
         self.SKIRTOR2016.dust *= norm
         self.SKIRTOR2016.disk *= norm
 
         # Integrate AGN luminosity for different components
-        self.lumin_disk = np.trapz(self.SKIRTOR2016.disk, x=self.SKIRTOR2016.wave)
+        self.lumin_disk = np.trapz(self.SKIRTOR2016.disk, x=self.SKIRTOR2016.wl)
 
         if self.lambdamin_fracAGN < self.lambdamax_fracAGN:
-            w = np.where((self.SKIRTOR2016.wave >= self.lambdamin_fracAGN) &
-                         (self.SKIRTOR2016.wave <= self.lambdamax_fracAGN))
-            wl = np.hstack([self.lambdamin_fracAGN, self.SKIRTOR2016.wave[w],
+            w = np.where((self.SKIRTOR2016.wl >= self.lambdamin_fracAGN) &
+                         (self.SKIRTOR2016.wl <= self.lambdamax_fracAGN))
+            wl = np.hstack([self.lambdamin_fracAGN, self.SKIRTOR2016.wl[w],
                             self.lambdamax_fracAGN])
-            spec = np.interp(wl, self.SKIRTOR2016.wave,
+            spec = np.interp(wl, self.SKIRTOR2016.wl,
                              self.SKIRTOR2016.dust + self.SKIRTOR2016.disk)
             self.AGNlumin = np.trapz(spec, x=wl)
         elif (self.lambdamin_fracAGN == 0.) & (self.lambdamax_fracAGN == 0.):
             self.AGNlumin = 1.
         elif self.lambdamin_fracAGN == self.lambdamax_fracAGN:
             self.AGNlumin = np.interp(self.lambdamin_fracAGN,
-                                      self.SKIRTOR2016.wave,
+                                      self.SKIRTOR2016.wl,
                                       self.SKIRTOR2016.dust +
                                       self.SKIRTOR2016.disk)
         # Store the SED wavelengths
@@ -374,15 +374,15 @@ class SKIRTOR2016(SedModule):
         agn_power = scale * (1. / (1. - self.fracAGN) - 1.)
         lumin_dust = agn_power
         lumin_disk = agn_power * np.trapz(self.SKIRTOR2016.disk,
-                                          x=self.SKIRTOR2016.wave)
+                                          x=self.SKIRTOR2016.wl)
 
         sed.add_info('agn.dust_luminosity', lumin_dust, True, unit='W')
         sed.add_info('agn.disk_luminosity', lumin_disk, True, unit='W')
         sed.add_info('agn.luminosity', lumin_dust + lumin_disk, True, unit='W')
 
-        sed.add_contribution('agn.SKIRTOR2016_dust', self.SKIRTOR2016.wave,
+        sed.add_contribution('agn.SKIRTOR2016_dust', self.SKIRTOR2016.wl,
                              agn_power * self.SKIRTOR2016.dust)
-        sed.add_contribution('agn.SKIRTOR2016_disk', self.SKIRTOR2016.wave,
+        sed.add_contribution('agn.SKIRTOR2016_disk', self.SKIRTOR2016.wl,
                              agn_power * self.SKIRTOR2016.disk)
 
 
