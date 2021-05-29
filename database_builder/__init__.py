@@ -3,13 +3,8 @@
 # Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
 # Authors: Yannick Roehlly, Médéric Boquien, Laure Ciesla
 
-"""
-This script is used the build pcigale internal database containing:
-- The various filter transmission tables;
-- The Maraston 2005 single stellar population (SSP) data;
-- The Dale and Helou 2002 infra-red templates.
+"""This script is used the build pcigale internal database containing."""
 
-"""
 import io
 import itertools
 from pathlib import Path
