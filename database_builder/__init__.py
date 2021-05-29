@@ -852,23 +852,23 @@ def build_base(bc03res='lr'):
     print("\nDONE\n")
     print('#' * 78)
 
-    print("4- Importing Draine and Li (2007) models\n")
+    print("4- Importing nebular lines and continuum\n")
+    build_nebular()
+    print("\nDONE\n")
+    print('#' * 78)
+
+    print("5- Importing Draine and Li (2007) models\n")
     build_dl2007()
     print("\nDONE\n")
     print('#' * 78)
 
-    print("5- Importing the updated Draine and Li (2007) models\n")
+    print("6- Importing the updated Draine and Li (2007) models\n")
     build_dl2014()
     print("\nDONE\n")
     print('#' * 78)
 
-    print("6- Importing Fritz et al. (2006) models\n")
-    build_fritz2006()
-    print("\nDONE\n")
-    print('#' * 78)
-
-    print("7- Importing SKIRTOR 2016 models\n")
-    build_skirtor2016()
+    print("7- Importing Jones et al (2017) models)\n")
+    build_themis()
     print("\nDONE\n")
     print('#' * 78)
 
@@ -877,18 +877,18 @@ def build_base(bc03res='lr'):
     print("\nDONE\n")
     print('#' * 78)
 
-    print("9- Importing nebular lines and continuum\n")
-    build_nebular()
-    print("\nDONE\n")
-    print('#' * 78)
-
-    print("10- Importing Schreiber et al (2016) models\n")
+    print("9- Importing Schreiber et al (2016) models\n")
     build_schreiber2016()
     print("\nDONE\n")
     print('#' * 78)
 
-    print("11- Importing Jones et al (2017) models)\n")
-    build_themis()
+    print("10- Importing Fritz et al. (2006) models\n")
+    build_fritz2006()
+    print("\nDONE\n")
+    print('#' * 78)
+
+    print("11- Importing SKIRTOR 2016 models\n")
+    build_skirtor2016()
     print("\nDONE\n")
     print('#' * 78)
 
