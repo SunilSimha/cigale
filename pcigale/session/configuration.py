@@ -9,7 +9,7 @@ import numpy as np
 import validate
 
 from ..managers.parameters import ParametersManager
-from ..data import Database
+from ..data import SimpleDatabase as Database
 from utils.io import read_table
 from .. import sed_modules
 from .. import analysis_modules

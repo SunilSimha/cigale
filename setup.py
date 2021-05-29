@@ -36,13 +36,12 @@ setup(
     version="dev",
     packages=find_packages(exclude=["database_builder"]),
 
-    install_requires=['numpy', 'scipy', 'sqlalchemy', 'matplotlib',
-                      'configobj', 'astropy'],
-    setup_requires=['numpy', 'scipy', 'astropy', 'sqlalchemy', 'configobj'],
+    install_requires=['numpy', 'scipy', 'matplotlib', 'configobj', 'astropy'],
+    setup_requires=['numpy', 'scipy', 'astropy', 'configobj'],
     entry_points=entry_points,
 
     cmdclass={"build": custom_build},
-    package_data={'pcigale': ['data/data.db'],
+    package_data={'pcigale': ['data/*/*.pickle'],
                   'pcigale_plots': ['resources/CIGALE.png']},
 
     include_package_data=True,

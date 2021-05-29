@@ -9,7 +9,7 @@ from scipy import interpolate
 import scipy.constants as cst
 from astropy.table import Table
 
-from pcigale.data import Database, SimpleDatabase
+from pcigale.data import SimpleDatabase
 
 
 def read_bc03_ssp(filename):
@@ -836,9 +836,6 @@ def build_themis():
 
 
 def build_base(bc03res='lr'):
-    base = Database(writable=True)
-    base.upgrade_base()
-
     print('#' * 78)
     print("1- Importing filters...\n")
     build_filters()
@@ -894,8 +891,6 @@ def build_base(bc03res='lr'):
     build_themis()
     print("\nDONE\n")
     print('#' * 78)
-
-    base.session.close_all()
 
 
 if __name__ == '__main__':

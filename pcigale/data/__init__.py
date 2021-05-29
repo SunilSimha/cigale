@@ -1,108 +1,10 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2012, 2013 Centre de données Astrophysiques de Marseille
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Author: Yannick Roehlly
-
-"""
-This is the database where we store some data used by pcigale:
- - the information relative to the filters
- - the single stellar populations as defined in Marason (2005)
- - the infra-red templates from Dale and Helou (2002)
-
-The classes for these various objects are described in pcigale.data
-sub-packages. The corresponding underscored classes here are used by the
-SqlAlchemy ORM to store the data in a unique SQLite3 database.
-
-"""
+"""This is the database where we store some data used by pcigale."""
 
 from pathlib import Path
 import pickle
 import traceback
 
 import pkg_resources
-from sqlalchemy import create_engine, exc, Column, String, Float, PickleType
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import class_mapper, sessionmaker
-import numpy as np
-
-DATABASE_FILE = pkg_resources.resource_filename(__name__, 'data.db')
-
-ENGINE = create_engine('sqlite:///' + DATABASE_FILE, echo=False)
-BASE = declarative_base()
-SESSION = sessionmaker(bind=ENGINE)
-
-
-class DatabaseLookupError(Exception):
-    """
-    A custom exception raised when a search in the database does not find a
-    result.
-    """
-
-
-class DatabaseInsertError(Exception):
-    """
-    A custom exception raised when one tries to insert in the database
-    something that is already in it.
-    """
-
-
-class Database:
-    """Object giving access to pcigale database."""
-
-    def __init__(self, writable=False):
-        """
-        Create a collection giving access to access the pcigale database.
-
-        Parameters
-        ----------
-        writable: boolean
-            If True the user will be able to write new data in the database
-            (but he/she must have a writable access to the sqlite file). By
-            default, False.
-        """
-        self.session = SESSION()
-        self.is_writable = writable
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
-
-    def upgrade_base(self):
-        """ Upgrade the table schemas in the database
-        """
-        if self.is_writable:
-            BASE.metadata.create_all(ENGINE)
-        else:
-            raise Exception('The database is not writable.')
-
-    def close(self):
-        """ Close the connection to the database
-
-        TODO: It would be better to wrap the database use inside a context
-        manager.
-        """
-        self.session.close_all()
-
-    def _get_parameters(self, schema):
-        """Generic function to get parameters from an arbitrary schema.
-
-        Returns
-        -------
-        parameters: dictionary
-            Dictionary of parameters and their values
-        """
-
-        return {k.name: np.sort(
-                [v[0] for v in set(self.session.query(schema).values(k))])
-                for k in class_mapper(schema).primary_key}
-
-    def parse_m2005(self):
-        """Generator to parse the Maraston 2005 SSP database."""
-        for ssp in self.session.query(_M2005):
-            yield M2005(ssp.imf, ssp.metallicity, ssp.time_grid,
-                        ssp.wavelength_grid, ssp.info_table, ssp.spec_table)
 
 
 class SimpleDatabaseEntry:
