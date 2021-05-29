@@ -44,21 +44,3 @@ class Filter:
         result += ("Pivot wavelength: %s nm\n" %
                    self.pivot_wavelength)
         return result
-
-    def normalise(self):
-        """
-        Compute the pivot wavelength of the filter and normalise the filter
-        to compute the flux in Fν (mJy) in cigale.
-        """
-        self.pivot_wavelength = np.sqrt(np.trapz(self.trans_table[1],
-                                                 self.trans_table[0]) /
-                                        np.trapz(self.trans_table[1] /
-                                                 self.trans_table[0] ** 2,
-                                                 self.trans_table[0]))
-
-        # The factor 10²⁰ is so that we get the fluxes directly in mJy when we
-        # integrate with the wavelength in units of nm and the spectrum in
-        # units of W/m²/nm.
-        self.trans_table[1] = 1e20 * self.trans_table[1] / (
-            c * np.trapz(self.trans_table[1] / self.trans_table[0]**2,
-                         self.trans_table[0]))

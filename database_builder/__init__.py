@@ -126,6 +126,25 @@ def read_bc03_ssp(filename):
     return time_grid[1:], wavelength, luminosity[:, 1:]
 
 
+def normalise_filters(trans_table):
+    """
+    Compute the pivot wavelength of the filter and normalise the filter
+    to compute the flux in Fν (mJy) in cigale.
+    """
+    pivot_wavelength = np.sqrt(np.trapz(self.trans_table[1],
+                                        self.trans_table[0]) /
+                               np.trapz(self.trans_table[1] /
+                                        self.trans_table[0] ** 2,
+                                        self.trans_table[0]))
+
+    # The factor 10²⁰ is so that we get the fluxes directly in mJy when we
+    # integrate with the wavelength in units of nm and the spectrum in
+    # units of W/m²/nm.
+    self.trans_table[1] = 1e20 * self.trans_table[1] / (
+        c * np.trapz(self.trans_table[1] / self.trans_table[0]**2,
+                     self.trans_table[0]))
+
+
 def build_filters(base):
     filters = []
     path = Path(__file__).parent / 'filters'
@@ -168,7 +187,19 @@ def build_filters(base):
         # filter is a pseudo-filter used to compute line fluxes, it should not
         # be normalised.
         if not name.startswith('PSEUDO'):
-            new_filter.normalise()
+            new_filter.pivot_wavelength = np.sqrt(np.trapz(new_filter.trans_table[1],
+                                                  new_filter.trans_table[0]) /
+                                                  np.trapz(new_filter.trans_table[1] /
+                                                           new_filter.trans_table[0] ** 2,
+                                                           new_filter.trans_table[0]))
+
+            # The factor 10²⁰ is so that we get the fluxes directly in mJy when
+            # we integrate with the wavelength in units of nm and the spectrum
+            # in units of W/m²/nm.
+            new_filter.trans_table[1] = 1e20 * new_filter.trans_table[1] / (
+                cst.c * np.trapz(new_filter.trans_table[1] /
+                                 new_filter.trans_table[0]**2,
+                                 new_filter.trans_table[0]))
         else:
             new_filter.pivot_wavelength = np.mean(
                 table[0][table[1] > 0]
