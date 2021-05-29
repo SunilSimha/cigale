@@ -9,8 +9,8 @@ from scipy import interpolate
 import scipy.constants as cst
 from astropy.table import Table
 
-from pcigale.data import (Database, SimpleDatabase, Filter, NebularLines,
-                          NebularContinuum, Schreiber2016, THEMIS)
+from pcigale.data import (Database, SimpleDatabase, Filter, Schreiber2016,
+                          THEMIS)
 
 
 def read_bc03_ssp(filename):
@@ -710,20 +710,18 @@ def build_skirtor2016():
                {"norm": norm, "wl": wl, "disk": disk, "dust": dust})
     db.close()
 
-def build_nebular(base):
-    models_lines = []
-    models_cont = []
+def build_nebular():
+    path = Path(__file__).parent / "nebular"
 
-    nebular_dir = Path(__file__).parent / 'nebular'
-    filename = nebular_dir / 'lines.dat'
+    filename = path / "lines.dat"
     print(f"Importing {filename}...")
     lines = np.genfromtxt(filename)
 
-    tmp = Table.read(nebular_dir / 'line_wavelengths.dat', format='ascii')
+    tmp = Table.read(path / "line_wavelengths.dat", format='ascii')
     wave_lines = tmp['col1'].data
     name_lines = tmp['col2'].data
 
-    filename = nebular_dir / 'continuum.dat'
+    filename = path / "continuum.dat"
     print(f"Importing {filename}...")
     cont = np.genfromtxt(filename)
 
@@ -750,23 +748,24 @@ def build_nebular(base):
                     metallicities.size)[:, np.newaxis]
 
     # Import lines
+    db = SimpleDatabase("nebular_lines", writable=True)
     for idx, metallicity in enumerate(metallicities):
         spectra = lines[idx::6, :]
         for logU, spectrum in zip(np.around(np.arange(-4., -.9, .1), 1),
                                   spectra.T):
-            models_lines.append(NebularLines(metallicity, logU, name_lines,
-                                             wave_lines, spectrum))
+            db.add({"Z": float(metallicity), "logU": float(logU)},
+                   {"name": name_lines, "wl": wave_lines, "spec": spectrum})
+    db.close()
 
     # Import continuum
+    db = SimpleDatabase("nebular_continuum", writable=True)
     for idx, metallicity in enumerate(metallicities):
         spectra = cont[3729 * idx: 3729 * (idx+1), :]
         for logU, spectrum in zip(np.around(np.arange(-4., -.9, .1), 1),
                                   spectra.T):
-            models_cont.append(NebularContinuum(metallicity, logU, wave_cont,
-                                                spectrum))
-
-    base.add_nebular_lines(models_lines)
-    base.add_nebular_continuum(models_cont)
+            db.add({"Z": float(metallicity), "logU": float(logU)},
+                   {"wl": wave_cont, "spec": spectrum})
+    db.close()
 
 
 def build_schreiber2016(base):
@@ -912,7 +911,7 @@ def build_base(bc03res='lr'):
     print('#' * 78)
 
     print("9- Importing nebular lines and continuum\n")
-    build_nebular(base)
+    build_nebular()
     print("\nDONE\n")
     print('#' * 78)
 

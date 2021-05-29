@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.constants as cst
 
-from pcigale.data import Database
+from pcigale.data import SimpleDatabase as Database
 from . import SedModule
 
 default_lines = ['Ly-alpha',
@@ -104,21 +104,23 @@ class NebularEmission(SedModule):
             raise Exception("Escape fraction+f_dust>1")
 
         if self.emission:
-            with Database() as db:
-                metallicities = db.get_nebular_continuum_parameters()['metallicity']
-                self.lines_template = {m: db.get_nebular_lines(m, self.logU)
-                                       for m in metallicities}
-                self.cont_template = {m: db.get_nebular_continuum(m, self.logU)
+            with Database("nebular_continuum") as db:
+                metallicities = db.parameters['Z']
+                self.cont_template = {m: db.get(Z=m, logU=self.logU)
                                       for m in metallicities}
 
+            with Database("nebular_lines") as db:
+                self.lines_template = {m: db.get(Z=m, logU=self.logU)
+                                       for m in metallicities}
+
             self.linesdict = {m: dict(zip(self.lines_template[m].name,
-                                          zip(self.lines_template[m].wave,
-                                              self.lines_template[m].ratio)))
+                                          zip(self.lines_template[m].wl,
+                                              self.lines_template[m].spec)))
                               for m in metallicities}
 
             for lines in self.lines_template.values():
                 new_wave = np.array([])
-                for line_wave in lines.wave:
+                for line_wave in lines.wl:
                     width = line_wave * self.lines_width * 1e3 / cst.c
                     new_wave = np.concatenate((new_wave,
                                                np.linspace(line_wave - 3. * width,
@@ -127,13 +129,13 @@ class NebularEmission(SedModule):
                 new_wave.sort()
                 new_flux = np.zeros_like(new_wave)
                 log2 = np.log(2)
-                for line_flux, line_wave in zip(lines.ratio, lines.wave):
+                for line_flux, line_wave in zip(lines.spec, lines.wl):
                     width = line_wave * self.lines_width * 1e3 / cst.c
                     new_flux += (line_flux * np.exp(- 4. * log2 *
                                 (new_wave - line_wave) ** 2. / (width * width)) /
                                 (width * np.sqrt(np.pi / log2) / 2.))
-                lines.wave = new_wave
-                lines.ratio = new_flux
+                lines.wl = new_wave
+                lines.spec = new_flux
 
             # To take into acount the escape fraction and the fraction of Lyman
             # continuum photons absorbed by dust we correct by a factor
@@ -198,15 +200,15 @@ class NebularEmission(SedModule):
                                    ratio * NLy_old * self.corr,
                                    ratio * NLy_young * self.corr)
 
-            sed.add_contribution('nebular.lines_old', lines.wave,
-                                 lines.ratio * NLy_old * self.corr)
-            sed.add_contribution('nebular.lines_young', lines.wave,
-                                 lines.ratio * NLy_young * self.corr)
+            sed.add_contribution('nebular.lines_old', lines.wl,
+                                 lines.spec * NLy_old * self.corr)
+            sed.add_contribution('nebular.lines_young', lines.wl,
+                                 lines.spec * NLy_young * self.corr)
 
-            sed.add_contribution('nebular.continuum_old', cont.wave,
-                                 cont.lumin * NLy_old * self.corr)
-            sed.add_contribution('nebular.continuum_young', cont.wave,
-                                 cont.lumin * NLy_young * self.corr)
+            sed.add_contribution('nebular.continuum_old', cont.wl,
+                                 cont.spec * NLy_old * self.corr)
+            sed.add_contribution('nebular.continuum_young', cont.wl,
+                                 cont.spec * NLy_young * self.corr)
 
 
 # SedModule to be returned by get_module

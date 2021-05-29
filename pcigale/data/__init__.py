@@ -26,8 +26,6 @@ from sqlalchemy.orm import class_mapper, sessionmaker
 import numpy as np
 
 from .filters import Filter
-from .nebular_continuum import NebularContinuum
-from .nebular_lines import NebularLines
 from .schreiber2016 import Schreiber2016
 from .themis import THEMIS
 
@@ -68,42 +66,6 @@ class _Filter(BASE):
         self.description = f.description
         self.trans_table = f.trans_table
         self.pivot_wavelength = f.pivot_wavelength
-
-
-class _NebularLines(BASE):
-    """Storage for line templates
-    """
-
-    __tablename__ = 'nebular_lines'
-    metallicity = Column(Float, primary_key=True)
-    logU = Column(Float, primary_key=True)
-    name = Column(PickleType)
-    wave = Column(PickleType)
-    ratio = Column(PickleType)
-
-    def __init__(self, nebular_lines):
-        self.metallicity = nebular_lines.metallicity
-        self.logU = nebular_lines.logU
-        self.name = nebular_lines.name
-        self.wave = nebular_lines.wave
-        self.ratio = nebular_lines.ratio
-
-
-class _NebularContinuum(BASE):
-    """Storage for nebular continuum templates
-    """
-
-    __tablename__ = 'nebular_continuum'
-    metallicity = Column(Float, primary_key=True)
-    logU = Column(Float, primary_key=True)
-    wave = Column(PickleType)
-    lumin = Column(PickleType)
-
-    def __init__(self, nebular_continuum):
-        self.metallicity = nebular_continuum.metallicity
-        self.logU = nebular_continuum.logU
-        self.wave = nebular_continuum.wave
-        self.lumin = nebular_continuum.lumin
 
 
 class _Schreiber2016(BASE):
@@ -182,99 +144,6 @@ class Database:
         manager.
         """
         self.session.close_all()
-
-    def add_nebular_lines(self, models):
-        """
-        Add ultraviolet and optical line templates to the database.
-        """
-        if self.is_writable:
-            for model in models:
-                self.session.add(_NebularLines(model))
-            try:
-                self.session.commit()
-            except exc.IntegrityError:
-                self.session.rollback()
-                raise Exception('The line is already in the base')
-        else:
-            raise Exception('The database is not writable')
-
-    def get_nebular_lines(self, metallicity, logU):
-        """
-        Get the line ratios corresponding to the given set of parameters.
-
-        Parameters
-        ----------
-        metallicity: float
-            Gas phase metallicity
-        logU: float
-            Ionisation parameter
-        """
-        result = (self.session.query(_NebularLines).
-                  filter(_NebularLines.metallicity == metallicity).
-                  filter(_NebularLines.logU == logU).
-                  first())
-        if result:
-            return NebularLines(result.metallicity, result.logU, result.name,
-                                result.wave, result.ratio)
-        else:
-            return None
-
-    def get_nebular_lines_parameters(self):
-        """Get parameters for the nebular lines.
-
-        Returns
-        -------
-        paramaters: dictionary
-            dictionary of parameters and their values
-        """
-        return self._get_parameters(_NebularLines)
-
-    def add_nebular_continuum(self, models):
-        """
-        Add nebular continuum templates to the database.
-        """
-        if self.is_writable:
-            for model in models:
-                self.session.add(_NebularContinuum(model))
-            try:
-                self.session.commit()
-            except exc.IntegrityError:
-                self.session.rollback()
-                raise Exception('The continuum template is already in the '
-                                'base')
-        else:
-            raise Exception('The database is not writable')
-
-    def get_nebular_continuum(self, metallicity, logU):
-        """
-        Get the nebular continuum corresponding to the given set of parameters.
-
-        Parameters
-        ----------
-        metallicity: float
-            Gas phase metallicity
-        logU: float
-            Ionisation parameter
-        """
-        result = (self.session.query(_NebularContinuum).
-                  filter(_NebularContinuum.metallicity == metallicity).
-                  filter(_NebularContinuum.logU == logU).
-                  first())
-        if result:
-            return NebularContinuum(result.metallicity, result.logU,
-                                    result.wave, result.lumin)
-        else:
-            return None
-
-    def get_nebular_continuum_parameters(self):
-        """Get parameters for the nebular continuum.
-
-        Returns
-        -------
-        paramaters: dictionary
-            dictionary of parameters and their values
-        """
-        return self._get_parameters(_NebularContinuum)
 
     def add_schreiber2016(self, models):
         """
