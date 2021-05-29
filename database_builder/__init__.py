@@ -130,59 +130,19 @@ def build_filters(base):
     filters = []
     filters_dir = Path(__file__).parent / 'filters'
     pathlen = len(filters_dir.parts)
-    for filter_file in filters_dir.rglob('*.dat'):
-        with filter_file.open() as filter_file_read:
-            filter_name = filter_file_read.readline().strip('# \n\t')
-            filter_type = filter_file_read.readline().strip('# \n\t')
-            filter_description = filter_file_read.readline().strip('# \n\t')
+    for filter_file in filters_dir.rglob('*'):
+        if filter_file.suffix not in [".dat", ".pb"]:
+            continue
 
-        filter_name = '.'.join(filter_file.with_suffix('').parts[pathlen:])
-
-        filter_table = np.genfromtxt(filter_file)
-        # The table is transposed to have table[0] containing the wavelength
-        # and table[1] containing the transmission.
-        filter_table = filter_table.transpose()
-
-        # We convert the wavelength from Å to nm.
-        filter_table[0] *= 0.1
-
-        # We convert to energy if needed
-        if filter_type == 'photon':
-            filter_table[1] *= filter_table[0]
-        elif filter_type != 'energy':
-            raise ValueError("Filter transmission type can only be "
-                             "'energy' or 'photon'.")
-
-        print(f"Importing {filter_name}... ({filter_table.shape[1]} points)")
-
-        new_filter = Filter(filter_name, filter_description, filter_table)
-
-        # We normalise the filter and compute the pivot wavelength. If the
-        # filter is a pseudo-filter used to compute line fluxes, it should not
-        # be normalised.
-        if not (filter_name.startswith('PSEUDO') or
-                filter_name.startswith('linefilter')):
-            new_filter.normalise()
-        else:
-            new_filter.pivot_wavelength = np.mean(
-                filter_table[0][filter_table[1] > 0]
-            )
-        filters.append(new_filter)
-
-    base.add_filters(filters)
-
-def build_filters_gazpar(base):
-    filters = []
-    filters_dir = Path(__file__).parent / 'filters_gazpar'
-    pathlen = len(filters_dir.parts)
-    for filter_file in filters_dir.rglob('*.pb'):
         with filter_file.open() as filter_file_read:
             _ = filter_file_read.readline() # We use the filename for the name
             filter_type = filter_file_read.readline().strip('# \n\t')
-            _ = filter_file_read.readline() # We do not yet use the calib type
+            if "gazpar" in str(filter_file):
+                _ = filter_file_read.readline() # We do not use the calib type
+                filter_name = '.'.join(filter_file.with_suffix('').parts[pathlen + 1:])
+            else:
+                filter_name = '.'.join(filter_file.with_suffix('').parts[pathlen:])
             filter_desc = filter_file_read.readline().strip('# \n\t')
-
-        filter_name = '.'.join(filter_file.with_suffix('').parts[pathlen:])
 
         filter_table = np.genfromtxt(filter_file)
         # The table is transposed to have table[0] containing the wavelength
@@ -871,7 +831,6 @@ def build_base(bc03res='lr'):
     print('#' * 78)
     print("1- Importing filters...\n")
     build_filters(base)
-    build_filters_gazpar(base)
     print("\nDONE\n")
     print('#' * 78)
 
