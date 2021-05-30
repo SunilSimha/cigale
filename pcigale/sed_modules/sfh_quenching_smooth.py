@@ -45,9 +45,9 @@ class SfhQuenchSmooth(SedModule):
         self.quenching_age = int(self.parameters["quenching_time"])
         self.quenching_factor = float(self.parameters["quenching_factor"])
         if type(self.parameters["normalise"]) is str:
-            normalise = self.parameters["normalise"].lower() == 'true'
+            self.normalise = self.parameters["normalise"].lower() == 'true'
         else:
-            normalise = bool(self.parameters["normalise"])
+            self.normalise = bool(self.parameters["normalise"])
 
     def process(self, sed):
         """
