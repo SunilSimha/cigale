@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2013 Centre de données Astrophysiques de Marseille
-# Copyright (C) 2014, 2016 Laboratoire d'Astrophysique de Marseille
-# Copyright (C) 2014 University of Cambridge
-# Copyright (C) 2018 Universidad de Antofagasta
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-
 """
 Delayed tau model for star formation history with an optional exponential burst
 ===============================================================================

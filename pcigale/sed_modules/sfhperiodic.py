@@ -1,9 +1,3 @@
-# Copyright (C) 2015 Centre de données Astrophysiques de Marseille
-# Copyright (C) 2015 Institute of Astronomy
-# Copyright (C) 2015 Universidad de Antofagasta
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Author: Denis Burgarella & Médéric Boquien
-
 """
 Periodic SFH in the form of rectangles, and decaying or delayed exponentials
 ============================================================================

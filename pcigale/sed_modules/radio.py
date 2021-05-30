@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2013 Centre de données Astrophysiques de Marseille
-# Copyright (C) 2013 Institute of Astronomy, University of Cambridge
-# Copyright (C) 2014 University of Crete
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Author: Laure Ciesla & Médéric Boquien
-
 """
 Radio module
 =============================

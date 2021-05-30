@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# Copyright (C) 2015-2016 Laboratoire d'Astrophysique de Marseille
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Author: Yannick Roehlly
-
 """
 Star Formation History quenching (smooth) module
 ================================================

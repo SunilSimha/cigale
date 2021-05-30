@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2013, 2014 Department of Physics, University of Crete
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Author: Laure Ciesla
-
 """
 Fritz et al. (2006) AGN dust torus emission module
 ==================================================

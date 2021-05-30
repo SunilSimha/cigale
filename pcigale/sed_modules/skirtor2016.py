@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Authors: Médéric Boquien, Laure Ciesla, Guang Yang
-
 """
 SKIRTOR 2016 (Stalevski et al., 2016) AGN dust torus emission module
 ==================================================

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # DustPedia,  http://www.dustpedia.com/
 # Author: Angelos Nersesian, Frederic Galliano, Anthony Jones, Pieter De Vis
 

@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2017 Universidad de Antofagasta
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Author: Médéric Boquien
-
 """This class manages the handling of models in the code. It contains the
 fluxes and the physical properties and all the necessary information to
 compute them, such as the configuration, the observations, and the parameters

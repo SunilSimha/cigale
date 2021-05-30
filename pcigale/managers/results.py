@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2017 Universidad de Antofagasta
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Author: Médéric Boquien
-
 """These classes manage the results from the analysis. The main class
 ResultsManager contains instances of BayesResultsManager and BestResultsManager
 that contain the bayesian and best-fit estimates of the physical properties

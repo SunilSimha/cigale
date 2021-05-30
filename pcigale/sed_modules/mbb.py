@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2015 Centre de données Astrophysiques de Marseille
-# Copyright (C) 2015 Institute of Astronomy, University of Cambridge
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Author: Denis Burgarella
-
 """
 Modified Black Body module
 ======================================

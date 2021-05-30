@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2014 Yannick Roehlly
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Author: Yannick Roehlly
-
 from astropy.io.votable.tree import VOTableFile, Resource, Table, Field, Info
 import numpy as np
 

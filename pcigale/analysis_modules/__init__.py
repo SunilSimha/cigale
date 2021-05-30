@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2014 Laboratoire d'Astrophysique de Marseille, AMU
-# Copyright (C) 2012, 2014 Centre de données Astrophysiques de Marseille
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Author: Yannick Roehlly & Denis Burgarella
-
 from datetime import datetime
 from importlib import import_module
 from pathlib import Path

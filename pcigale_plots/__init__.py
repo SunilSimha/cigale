@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2013 Centre de données Astrophysiques de Marseille
-# Copyright (C) 2013-2014 Yannick Roehlly
-# Copyright (C) 2013 Institute of Astronomy
-# Copyright (C) 2014 Laboratoire d'Astrophysique de Marseille
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Author: Yannick Roehlly, Médéric Boquien & Denis Burgarella
-
 import os
 # Set environment variables to disable multithreading as users will probably
 # want to set the number of cores to the max of their computer.

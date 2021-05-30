@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2012, 2013 Centre de données Astrophysiques de Marseille
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Authors: Yannick Roehlly, Médéric Boquien
-
 import numpy as np
 from numpy.core.multiarray import interp  # Compiled version
 from scipy.constants import c, pi

@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-
 from functools import lru_cache
 
 from astropy.cosmology import WMAP7 as _cosmo

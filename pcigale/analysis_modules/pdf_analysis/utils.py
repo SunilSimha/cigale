@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2013 Centre de données Astrophysiques de Marseille
-# Copyright (C) 2013-2014 Institute of Astronomy
-# Copyright (C) 2014 Yannick Roehlly <yannick@iaora.eu>
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Author: Yannick Roehlly & Médéric Boquien
-
 from functools import lru_cache
 from pathlib import Path
 

@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2015 Laboratoire d'Astrophysique de Marseille
-# Copyright (C) 2016 Universidad de Antofagasta
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Author: Médéric Boquien & Denis Burgarella
-
 """
 Module that estimates other parameters, e.g., UV slope, Lick indices, etc.
 ==========================================================================

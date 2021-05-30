@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# Copyright (C) 2015 Laboratoire d'Astrophysique de Marseille
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Author: Alessandro Boselli, Yannick Roehlly
-
 """
 Physically motivated star formation history
 ===========================================

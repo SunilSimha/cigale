@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-
 """
 Modified Charlot & Fall 2000 dust attenuation module
 ===================================
