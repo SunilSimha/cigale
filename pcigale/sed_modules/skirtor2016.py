@@ -80,14 +80,14 @@ def disk(wl, limits, coefs):
 
 
 def schartmann2005_disk(wl, delta=0.):
-    limits = np.array([1., 50., 125., 10000., 1e6])
+    limits = np.array([8., 50., 125., 10000., 1e6])
     coefs = np.array([1.0, -0.2, -1.5 + delta, -4.0])
 
     return disk(wl, limits, coefs)
 
 
 def skirtor_disk(wl, delta=0.):
-    limits = np.array([1., 10., 100., 5000., 1e6])
+    limits = np.array([8., 10., 100., 5000., 1e6])
     coefs = np.array([0.2, -1.0, -1.5 + delta, -4.0])
 
     return disk(wl, limits, coefs)
@@ -111,7 +111,7 @@ class SKIRTOR2016(SedModule):
             "Average edge-on optical depth at 9.7 micron; the actual one along"
             "the line of sight may vary depending on the clumps distribution. "
             "Possible values are: 3, 5, 7, 9, and 11.",
-            3
+            7
         ),
         'pl': (
             "cigale_list(options=0. & .5 & 1. & 1.5)",
@@ -128,7 +128,7 @@ class SKIRTOR2016(SedModule):
         'oa': (
             'cigale_list(options=10 & 20 & 30 & 40 & 50 & 60 & 70 & 80)',
             "Angle measured between the equatorial plan and edge of the torus. "
-            "Half-opening angle of the dust-free cone is 90-oa"
+            "Half-opening angle of the dust-free cone is 90°-oa. "
             "Possible values are: 10, 20, 30, 40, 50, 60, 70, and 80",
             40
         ),
@@ -147,11 +147,11 @@ class SKIRTOR2016(SedModule):
         ),
         'i': (
             'cigale_list(options=0 & 10 & 20 & 30 & 40 & 50 & 60 & 70 & 80 & 90)',
-            "inclination, i.e. viewing angle, i.e. position of the instrument "
-            "w.r.t. the AGN axis. i=0: face-on, type 1 view; i=90: edge-on, "
-            "type 2 view."
+            "inclination, i.e. viewing angle, position of the instrument "
+            "w.r.t. the AGN axis. i=[0, 90°-oa): face-on, type 1 view; "
+            "i=[90°-oa, 90°]: edge-on, type 2 view. "
             "Possible values are: 0, 10, 20, 30, 40, 50, 60, 70, 80, and 90.",
-            40
+            30
         ),
         'disk_type': (
             'integer(min=0, max=1)',
@@ -351,9 +351,11 @@ class SKIRTOR2016(SedModule):
         sed.add_info('agn.i', self.i, unit='deg')
         sed.add_info('agn.fracAGN', self.fracAGN)
         sed.add_info('agn.law', self.law)
-        sed.add_info('agn.EBV', self.EBV)
-        sed.add_info('agn.temperature', self.temperature)
+        sed.add_info('agn.EBV', self.EBV, unit='mag')
+        sed.add_info('agn.temperature', self.temperature, unit='K')
         sed.add_info('agn.emissivity', self.emissivity)
+        sed.add_info('agn.disk_type', self.disk_type)
+        sed.add_info('agn.delta', self.delta)
 
         # Compute the AGN luminosity
         if self.lambdamin_fracAGN < self.lambdamax_fracAGN:

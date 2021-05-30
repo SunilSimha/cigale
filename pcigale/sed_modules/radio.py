@@ -44,7 +44,7 @@ class Radio(SedModule):
             "cigale_list()",
             "The slope of the power-law AGN radio emission (assumed "
             "isotropic), Lν∝ν^-α.",
-            0.5
+            0.7
         )
     }
 
