@@ -235,10 +235,10 @@ def _sed_worker(obs, mod, filters, sed_type, logo, xrange, yrange, series,
                            linewidth=1.0)
 
             # Radio emission
-            if 'radio' in series and 'radio_nonthermal' in sed.columns:
+            if 'radio' in series and 'radio.sf_nonthermal' in sed.columns:
                 ax1.loglog(wavelength_spec[wsed],
-                           sed['radio_nonthermal'][wsed],
-                           label="Radio nonthermal", color='brown',
+                           sed['radio.sf_nonthermal'][wsed],
+                           label="Radio SF nonthermal", color='brown',
                            marker=None, nonpositive='clip', linestyle='-',
                            linewidth=1.0)
 
