@@ -128,6 +128,7 @@ class Configuration:
             ["* themis (Themis dust emission models from Jones et al. 2017)"] +
             ["AGN:"] +
             ["* fritz2006 (AGN models from Fritz et al. 2006)"] +
+            ["* skirtor2016 (AGN models from Stalevski et al. 2012, 2016)"] +
             ["Radio:"] +
             ["* radio (synchrotron emission)"] +
             ["Restframe parameters:"] +
