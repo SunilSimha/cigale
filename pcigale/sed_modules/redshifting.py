@@ -19,6 +19,7 @@ from ..utils.cosmology import age, luminosity_distance
 
 from . import SedModule
 
+
 def igm_transmission(wavelength, redshift):
     """Intergalactic transmission (Meiksin, 2006)
 
@@ -68,10 +69,10 @@ def igm_transmission(wavelength, redshift):
     # n = 3 - 9 -> 1
     for n in range(3, n_transitions_max):
         if n <= 5:
-            w = z_n[n, :] < 3
+            w = np.where(z_n[n, :] < 3)
             tau_n[n, w] = (tau_a * fact[n] *
                            np.power(0.25 * (1. + z_n[n, w]), (1. / 3.)))
-            w = z_n[n, :] >= 3
+            w = np.where(z_n[n, :] >= 3)
             tau_n[n, w] = (tau_a * fact[n] *
                            np.power(0.25 * (1. + z_n[n, w]), (1. / 6.)))
         elif 5 < n <= 9:
