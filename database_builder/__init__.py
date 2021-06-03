@@ -687,6 +687,10 @@ def build_nebular():
     wave_lines = tmp['col1'].data
     name_lines = tmp['col2'].data
 
+    # Build the parameters
+    metallicities = np.unique(lines[:, 1])
+    logUs = np.around(np.arange(-4., -.9, .1), 1)
+
     filename = path / "continuum.dat"
     print(f"Importing {filename}...")
     cont = np.genfromtxt(filename)
@@ -695,42 +699,56 @@ def build_nebular():
     wave_lines *= 0.1
     wave_cont = cont[:1600, 0] * 0.1
 
-    # Get the list of metallicities
-    metallicities = np.unique(lines[:, 1])
+    # Compute the wavelength grid to resample the models so as to eliminate
+    # non-physical waves and compute the models faster by avoiding resampling
+    # them at run time.
+    with SimpleDatabase("bc03") as db:
+        wave_stellar = db.get(imf="salp", Z=0.02).wl
+    with SimpleDatabase("dl2014") as db:
+        wave_dust = db.get(qpah=0.47, umin=1., umax=1., alpha=1.).wl
+    wave_cont_interp = np.unique(np.hstack([wave_cont, wave_stellar, wave_dust,
+                                            np.logspace(7., 9., 501)]))
 
     # Keep only the fluxes
     lines = lines[:, 2:]
     cont = cont[:, 1:]
 
-    # We select only models with ne=100. Other values could be included later
-    lines = lines[:, 1::3]
-    cont = cont[:, 1::3]
+    # Reshape the arrays so they are easier to handle
+    cont = np.reshape(cont, (metallicities.size, wave_cont.size, logUs.size, 3))
+    lines = np.reshape(lines, (wave_lines.size, metallicities.size, logUs.size, 3))
+
+    # Move the wavelength to the last position to ease later computations
+    # 0: metallicity, 1: log U, 2: ne, 3: wavelength
+    cont = np.moveaxis(cont, 1, -1)
+    lines = np.moveaxis(lines, (0, 1, 2, 3), (3, 0, 1, 2))
+
+    # We select only models with ne=100. Other values could be included later.
+    lines = lines[:, :, 1, :]
+    cont = cont[:, :, 1, :]
 
     # Convert lines to W and to a linear scale
     lines = 10**(lines-7)
 
     # Convert continuum to W/nm
-    cont *= np.tile(1e-7 * cst.c * 1e9 / wave_cont**2,
-                    metallicities.size)[:, np.newaxis]
+    cont *= 1e-7 * cst.c * 1e9 / wave_cont**2
 
     # Import lines
     db = SimpleDatabase("nebular_lines", writable=True)
     for idx, metallicity in enumerate(metallicities):
-        spectra = lines[idx::25, :]
-        for logU, spectrum in zip(np.around(np.arange(-4., -.9, .1), 1),
-                                  spectra.T):
+        for logU, spectrum in zip(logUs, lines[idx, :, :]):
             db.add({"Z": float(metallicity), "logU": float(logU)},
                    {"name": name_lines, "wl": wave_lines, "spec": spectrum})
     db.close()
 
     # Import continuum
     db = SimpleDatabase("nebular_continuum", writable=True)
+    spectra = 10 ** interpolate.interp1d(np.log10(wave_cont), np.log10(cont),
+                                         axis=-1)(np.log10(wave_cont_interp))
+    spectra = np.nan_to_num(spectra)
     for idx, metallicity in enumerate(metallicities):
-        spectra = cont[1600 * idx: 1600 * (idx+1), :]
-        for logU, spectrum in zip(np.around(np.arange(-4., -.9, .1), 1),
-                                  spectra.T):
+        for logU, spectrum in zip(logUs, spectra[idx, :, :]):
             db.add({"Z": float(metallicity), "logU": float(logU)},
-                   {"wl": wave_cont, "spec": spectrum})
+                   {"wl": wave_cont_interp, "spec": spectrum})
     db.close()
 
 
@@ -852,43 +870,43 @@ def build_base(bc03res='lr'):
     print("\nDONE\n")
     print('#' * 78)
 
-    print("4- Importing nebular lines and continuum\n")
-    build_nebular()
-    print("\nDONE\n")
-    print('#' * 78)
-
-    print("5- Importing Draine and Li (2007) models\n")
+    print("4- Importing Draine and Li (2007) models\n")
     build_dl2007()
     print("\nDONE\n")
     print('#' * 78)
 
-    print("6- Importing the updated Draine and Li (2007) models\n")
+    print("5- Importing the updated Draine and Li (2007) models\n")
     build_dl2014()
     print("\nDONE\n")
     print('#' * 78)
 
-    print("7- Importing Jones et al (2017) models)\n")
+    print("6- Importing Jones et al (2017) models)\n")
     build_themis()
     print("\nDONE\n")
     print('#' * 78)
 
-    print("8- Importing Dale et al (2014) templates\n")
+    print("7- Importing Dale et al (2014) templates\n")
     build_dale2014()
     print("\nDONE\n")
     print('#' * 78)
 
-    print("9- Importing Schreiber et al (2016) models\n")
+    print("8- Importing Schreiber et al (2016) models\n")
     build_schreiber2016()
     print("\nDONE\n")
     print('#' * 78)
 
-    print("10- Importing Fritz et al. (2006) models\n")
+    print("9- Importing Fritz et al. (2006) models\n")
     build_fritz2006()
     print("\nDONE\n")
     print('#' * 78)
 
-    print("11- Importing SKIRTOR 2016 models\n")
+    print("10- Importing SKIRTOR 2016 models\n")
     build_skirtor2016()
+    print("\nDONE\n")
+    print('#' * 78)
+
+    print("11- Importing nebular lines and continuum\n")
+    build_nebular()
     print("\nDONE\n")
     print('#' * 78)
 
