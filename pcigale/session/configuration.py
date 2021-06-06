@@ -279,7 +279,7 @@ class Configuration:
             sys.exit(1)
 
         self.complete_redshifts()
-        self.complete_analysed_parameters()
+        self.check_and_complete_analysed_parameters()
 
         vdt = validate.Validator(validation.functions)
         validity = self.config.validate(vdt, preserve_errors=True)
@@ -367,13 +367,19 @@ class Configuration:
                 raise Exception("No flux file and no redshift indicated. "
                                 "The spectra cannot be computed. Aborting.")
 
-    def complete_analysed_parameters(self):
-        """Complete the configuration when the variables are missing from the
-        configuration file and must be extracted from a dummy run."""
-        if not self.config['analysis_params']['variables']:
-            warehouse = SedWarehouse()
-            params = ParametersManager(self.config.dict())
-            sed = warehouse.get_sed(params.modules, params.from_index(0))
-            info = list(sed.info.keys())
+    def check_and_complete_analysed_parameters(self):
+        """Check that the variables to be analysed are indeed computed and if "
+        "no variable is given, complete the configuration with all the "
+        "variables extracted from a dummy run."""
+        params = ParametersManager(self.config.dict())
+        sed = SedWarehouse().get_sed(params.modules, params.from_index(0))
+        info = list(sed.info.keys())
+
+        if len(self.config['analysis_params']['variables']) > 0:
+            diff = set(self.config['analysis_params']['variables']) - set(info)
+            if len(diff) > 0:
+                raise Exception(f"{', '.join(diff)} unknown. "
+                                f"Available variables are: {', '.join(info)}.")
+        else:
             info.sort()
             self.config['analysis_params']['variables'] = info
