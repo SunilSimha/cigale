@@ -174,9 +174,9 @@ class Xray(SedModule):
             # Fritz model
             cosi = np.sin(np.radians(sed.info['agn.psy']))
         else:
-            raise Exception(
-                "An AGN module (skirtor2016 or fritz2006) is required."
-            )
+            cosi = 0
+        if 'agn.intrin_Lnu_2500A_30deg' not in sed.info:
+            sed.add_info('agn.intrin_Lnu_2500A_30deg', 0., True, unit='W/Hz')
         Lnu_2500A = sed.info['agn.intrin_Lnu_2500A_30deg']
 
         # Add the configuration for X-ray module

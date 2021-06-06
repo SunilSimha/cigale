@@ -130,9 +130,9 @@ class Configuration:
             ["* fritz2006 (AGN models from Fritz et al. 2006)"] +
             ["* skirtor2016 (AGN models from Stalevski et al. 2012, 2016)"] +
             ["X-ray:"] +
-            ["* xray (from AGN and galaxies; skirtor2016 should be used)"] +
+            ["* xray (from AGN and galaxies; skirtor2016 is needed for AGN)"] +
             ["Radio:"] +
-            ["* radio (synchrotron emission and AGN)"] +
+            ["* radio (galaxy synchrotron emission and AGN; skirtor2016 is needed for AGN)"] +
             ["Restframe parameters:"] +
             ["* restframe_parameters (UV slope (β), IRX, D4000, EW, etc.)"] +
             ["Redshift+IGM:"] +

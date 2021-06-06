@@ -94,7 +94,7 @@ class Radio(SedModule):
         luminosity = sed.info['dust.luminosity']
 
         if 'agn.intrin_Lnu_2500A_30deg' not in sed.info:
-            sed.add_info('agn.intrin_Lnu_2500A_30deg', 1., True, unit='W/Hz')
+            sed.add_info('agn.intrin_Lnu_2500A_30deg', 0., True, unit='W/Hz')
         Lnu_2500A = sed.info['agn.intrin_Lnu_2500A_30deg']
 
         sed.add_module(self.name, self.parameters)
