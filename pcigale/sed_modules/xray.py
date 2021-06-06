@@ -169,7 +169,7 @@ class Xray(SedModule):
         # Get AGN viewing angle and 2500A intrinsic luminosity (at 30 deg)
         if 'agn.i' in sed.info:
             # SKIRTOR model
-            cosi = np.cos(np.radians(sed.info['agn.i']))
+            cosi = np.cos(np.radians(np.sed.info['agn.i']))
         elif 'agn.psy' in sed.info:
             # Fritz model
             cosi = np.sin(np.radians(sed.info['agn.psy']))

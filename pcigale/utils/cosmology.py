@@ -1,8 +1,6 @@
 from functools import lru_cache
 
-#from astropy.cosmology import WMAP7 as _cosmo
-from astropy.cosmology import FlatLambdaCDM
-_cosmo = FlatLambdaCDM(H0=70, Om0=0.30)
+from astropy.cosmology import WMAP7 as _cosmo
 from scipy.constants import parsec
 
 
