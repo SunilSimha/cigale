@@ -380,7 +380,9 @@ class Configuration:
         info = list(sed.info.keys())
 
         if len(self.config['analysis_params']['variables']) > 0:
-            diff = set(self.config['analysis_params']['variables']) - set(info)
+            nolog = [k if not k.endswith('_log') else k[:-4]
+                      for k in self.config['analysis_params']['variables']]
+            diff = set(nolog) - set(info)
             if len(diff) > 0:
                 raise Exception(f"{', '.join(diff)} unknown. "
                                 f"Available variables are: {', '.join(info)}.")
