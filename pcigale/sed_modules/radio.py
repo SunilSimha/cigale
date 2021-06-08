@@ -80,6 +80,8 @@ class Radio(SedModule):
         # AGN 2500 A Lnu
         S5GHz = self.R_agn * 5e9**2. / c
         self.lumin_agn *= S5GHz
+        # The 1.4 GHz AGN power
+        self.agn_P14 = np.interp(2.14e8, self.wave, self.lumin_agn) * 0.153
 
     def process(self, sed):
         """Add the radio contribution.
@@ -106,6 +108,7 @@ class Radio(SedModule):
         sed.add_info("radio.alpha_agn", self.alpha_agn)
         sed.add_contribution('radio.agn', self.wave,
                              self.lumin_agn * Lnu_2500A)
+        sed.add_info("radio.P_agn_1p4GHz", self.agn_P14 * Lnu_2500A, True, unit='W/Hz')
 
 
 # SedModule to be returned by get_module
