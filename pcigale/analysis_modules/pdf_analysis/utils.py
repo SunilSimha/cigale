@@ -312,6 +312,6 @@ def weighted_param(param, weights):
 
     mean = np.einsum('i, i', param, weights)
     delta = param - mean
-    std = np.sqrt(np.einsum('i, i, i', delta, delta, weights))
+    std = np.sqrt(np.einsum('i, i, i', weights, delta, delta))
 
     return (mean, std)

@@ -381,7 +381,7 @@ class Configuration:
 
         if len(self.config['analysis_params']['variables']) > 0:
             nolog = [k if not k.endswith('_log') else k[:-4]
-                      for k in self.config['analysis_params']['variables']]
+                     for k in self.config['analysis_params']['variables']]
             diff = set(nolog) - set(info)
             if len(diff) > 0:
                 raise Exception(f"{', '.join(diff)} unknown. "
