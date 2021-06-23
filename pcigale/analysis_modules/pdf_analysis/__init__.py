@@ -65,10 +65,16 @@ class PdfAnalysis(AnalysisModule):
             "none"
         ),
         "lim_flag": (
-            "boolean()",
-            "If true, for each object check whether upper limits are present "
-            "and analyse them.",
-            False
+            "option('full', 'noscaling', 'none')",
+            "Take into account upper limits. If 'full', the exact computation "
+            "is done. If 'noscaling', the scaling of the models will not be "
+            "adjusted but the χ² will include the upper limits adequately. "
+            "Waiving the adjustment makes the fitting much faster compared to "
+            "the 'full' option while generally not affecting the results in "
+            "any substantial manner. This is the recommended option as it "
+            "achieves a good balance between speed and reliability. Finally, "
+            "'none' simply discards bands with upper limits.",
+            "noscaling"
         ),
         "mock_flag": (
             "boolean()",

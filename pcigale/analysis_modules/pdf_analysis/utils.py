@@ -75,7 +75,7 @@ def dchi2_over_ds2(s, obsdata, obsdata_err, obslim, obslim_err, moddata,
         Eq. A11 in Sawicki M. 2012, PASA, 124, 1008).
 
     """
-    # We enter into this function if lim_flag = True.
+    # We enter into this function if lim_flag = full.
 
     # The mask "data" selects the filter(s) for which measured fluxes are given
     # i.e., when obs_fluxes is >=0. and obs_errors >=0.
@@ -218,9 +218,11 @@ def compute_chi2(models, obs, corr_dz, wz, lim_flag):
     wz: slice
         Selection of the models at the redshift of the observation or all the
         redshifts in photometric-redshift mode.
-    lim_flag: boolean
-        Boolean indicating whether upper limits should be treated (True) or
-        discarded (False)
+    lim_flag: str
+        String indicating whether the inclusion of upper limits should affect
+        the scaling of the models (full) or nor (noscaling) or simply discard
+        upper limits (none).
+
 
     Returns
     -------
@@ -229,12 +231,12 @@ def compute_chi2(models, obs, corr_dz, wz, lim_flag):
     scaling: array
         scaling of the models to obtain the minimum χ²
     """
-    limits = lim_flag and (len(obs.flux_ul) > 0 or len(obs.extprop_ul) > 0)
     scaling = _compute_scaling(models, obs, corr_dz, wz)
 
     # Some observations may not have flux values in some filter(s), but
     # they can have upper limit(s).
-    if limits is True:
+    limits = (len(obs.flux_ul) > 0 or len(obs.extprop_ul) > 0)
+    if limits is True and lim_flag == "full":
         _correct_scaling_ul(scaling, models, obs, wz)
 
     # χ² of the comparison of each model to each observation.
@@ -262,7 +264,7 @@ def compute_chi2(models, obs, corr_dz, wz, lim_flag):
         chi2 += (((scaling * model) * corr_dz - prop) * inv_prop_err) ** 2.
 
     # Finally take the presence of upper limits into account
-    if limits is True:
+    if limits is True and lim_flag != "none":
         for band, obs_error in obs.flux_ul_err.items():
             model = models.flux[band][wz]
             chi2 -= 2. * np.log(.5 *
