@@ -161,7 +161,7 @@ class ObservationsManagerPassbands:
                 print(f"Warning: {defaulterror * 100}% of {item} taken as "
                       f"errors.")
 
-    def _check_invalid(self, upperlimits=False, threshold=-9990.):
+    def _check_invalid(self, upperlimits="none", threshold=-9990.):
         """Check whether invalid data are correctly marked as such.
 
         This happens in two cases:
@@ -182,7 +182,7 @@ class ObservationsManagerPassbands:
 
         for item in self.bands + self.extprops:
             error = item + '_err'
-            if upperlimits is False:
+            if upperlimits == "none":
                 w = np.where((self.table[item] < threshold) |
                              (self.table[error] <= 0.))
             else:
