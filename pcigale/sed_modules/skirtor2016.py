@@ -281,8 +281,10 @@ class SKIRTOR2016(SedModule):
             raise ValueError("The parameter disk_type must be 0 or 1.")
         disk *= np.trapz(AGN1.disk, x=AGN1.wl)
 
+        err_settings = np.seterr(invalid='ignore')  # ignore 0/0 warning
         self.SKIRTOR2016.disk = np.nan_to_num(disk * self.SKIRTOR2016.disk /
                                               AGN1.disk)
+        np.seterr(**err_settings)  # Restore the previous settings
         AGN1.disk = disk
 
         # Calculate the extinction
@@ -331,10 +333,12 @@ class SKIRTOR2016(SedModule):
         # Normalize direct, scatter, and thermal components
         norm = 1. / np.trapz(self.SKIRTOR2016.dust, x=self.SKIRTOR2016.wl)
         self.SKIRTOR2016.dust *= norm
+        self.SKIRTOR2016.polar_dust = blackbody*norm
         self.SKIRTOR2016.disk *= norm
 
         # Integrate AGN luminosity for different components
         self.lumin_disk = np.trapz(self.SKIRTOR2016.disk, x=self.SKIRTOR2016.wl)
+        self.lumin_polar_dust = np.trapz(self.SKIRTOR2016.polar_dust, x=self.SKIRTOR2016.wl)
 
         # Intrinsic (de-reddened) AGN luminosity from the central source at theta=30 deg
         norm_fac = np.cos(30*np.pi/180)*(2*np.cos(30*np.pi/180)+1)/3 * norm
@@ -411,6 +415,8 @@ class SKIRTOR2016(SedModule):
         agn_power = scale * (1. / (1. - self.fracAGN) - 1.)
         lumin_dust = agn_power
         lumin_disk = agn_power * self.lumin_disk
+        lumin_polar_dust = agn_power * self.lumin_polar_dust
+        lumin_torus = agn_power - lumin_polar_dust
         # power_accretion means the intrinsic disk luminosity
         # integrated over 4pi solid angles
         # The factor (0.493) comes from the fact that lumin_intrin_disk
@@ -418,14 +424,18 @@ class SKIRTOR2016(SedModule):
         power_accretion = agn_power * self.lumin_intrin_disk * 0.493
         l_agn_2500A = agn_power * self.l_agn_2500A
 
-        sed.add_info('agn.dust_luminosity', lumin_dust, True, unit='W')
+        sed.add_info('agn.total_dust_luminosity', lumin_dust, True, unit='W')
+        sed.add_info('agn.polar_dust_luminosity', lumin_polar_dust, True, unit='W')
+        sed.add_info('agn.torus_dust_luminosity', lumin_torus, True, unit='W')
         sed.add_info('agn.disk_luminosity', lumin_disk, True, unit='W')
         sed.add_info('agn.luminosity', lumin_dust + lumin_disk, True, unit='W')
         sed.add_info('agn.accretion_power', power_accretion, True, unit='W')
         sed.add_info('agn.intrin_Lnu_2500A_30deg', l_agn_2500A, True, unit='W/Hz')
 
-        sed.add_contribution('agn.SKIRTOR2016_dust', self.SKIRTOR2016.wl,
-                             agn_power * self.SKIRTOR2016.dust)
+        sed.add_contribution('agn.SKIRTOR2016_torus', self.SKIRTOR2016.wl,
+                             agn_power * (self.SKIRTOR2016.dust-self.SKIRTOR2016.polar_dust) )
+        sed.add_contribution('agn.SKIRTOR2016_polar_dust', self.SKIRTOR2016.wl,
+                             agn_power * (self.SKIRTOR2016.polar_dust) )
         sed.add_contribution('agn.SKIRTOR2016_disk', self.SKIRTOR2016.wl,
                              agn_power * self.SKIRTOR2016.disk)
 
