@@ -184,7 +184,7 @@ class SKIRTOR2016(SedModule):
             'integer(min=0, max=1)',
             "Disk spectrum: 0 for the regular Skirtor spectrum, 1 for the "
             "Schartmann (2005) spectrum.",
-            0
+            1
         ),
         'delta': (
             'cigale_list()',
