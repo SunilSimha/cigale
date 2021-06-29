@@ -16,8 +16,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import multiprocessing as mp
 import numpy as np
-from utils.io import read_table
-from utils.counter import Counter
+from pcigale.utils.io import read_table
+from pcigale.utils.counter import Counter
 
 
 def pool_initializer(counter):
