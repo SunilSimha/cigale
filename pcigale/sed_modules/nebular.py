@@ -66,6 +66,11 @@ class NebularEmission(SedModule):
             "Gas metallicity",
             0.014
         ),
+        'ne': (
+            'cigale_list(options=10 & 100 & 1000)',
+            "Electron density",
+            100
+        ),
         'f_esc': (
             'cigale_list(minvalue=0., maxvalue=1.)',
             "Fraction of Lyman continuum photons escaping the galaxy",
@@ -94,6 +99,7 @@ class NebularEmission(SedModule):
         """
         self.logU = float(self.parameters['logU'])
         self.zgas = float(self.parameters['zgas'])
+        self.ne = float(self.parameters['ne'])
         self.fesc = float(self.parameters['f_esc'])
         self.fdust = float(self.parameters['f_dust'])
         self.lines_width = float(self.parameters['lines_width'])
@@ -115,11 +121,11 @@ class NebularEmission(SedModule):
         if self.emission:
             with Database("nebular_continuum") as db:
                 metallicities = db.parameters['Z']
-                self.cont_template = {m: db.get(Z=m, logU=self.logU)
+                self.cont_template = {m: db.get(Z=m, logU=self.logU, ne=self.ne)
                                       for m in metallicities}
 
             with Database("nebular_lines") as db:
-                self.lines_template = {m: db.get(Z=m, logU=self.logU)
+                self.lines_template = {m: db.get(Z=m, logU=self.logU, ne=self.ne)
                                        for m in metallicities}
 
             self.linesdict = {m: dict(zip(self.lines_template[m].name,
@@ -203,6 +209,7 @@ class NebularEmission(SedModule):
             sed.add_info('nebular.lines_width', self.lines_width, unit='km/s')
             sed.add_info('nebular.logU', self.logU)
             sed.add_info('nebular.zgas', self.zgas)
+            sed.add_info('nebular.ne', self.ne, unit='cm^-3')
 
             for line in default_lines:
                 wave, ratio = linesdict[line]

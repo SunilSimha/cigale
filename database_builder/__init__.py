@@ -690,6 +690,7 @@ def build_nebular():
     # Build the parameters
     metallicities = np.unique(lines[:, 1])
     logUs = np.around(np.arange(-4., -.9, .1), 1)
+    nes = np.array([10., 100., 1000.])
 
     filename = path / "continuum.dat"
     print(f"Importing {filename}...")
@@ -714,17 +715,15 @@ def build_nebular():
     cont = cont[:, 1:]
 
     # Reshape the arrays so they are easier to handle
-    cont = np.reshape(cont, (metallicities.size, wave_cont.size, logUs.size, 3))
-    lines = np.reshape(lines, (wave_lines.size, metallicities.size, logUs.size, 3))
+    cont = np.reshape(cont, (metallicities.size, wave_cont.size, logUs.size,
+                             nes.size))
+    lines = np.reshape(lines, (wave_lines.size, metallicities.size, logUs.size,
+                               nes.size))
 
     # Move the wavelength to the last position to ease later computations
     # 0: metallicity, 1: log U, 2: ne, 3: wavelength
     cont = np.moveaxis(cont, 1, -1)
     lines = np.moveaxis(lines, (0, 1, 2, 3), (3, 0, 1, 2))
-
-    # We select only models with ne=100. Other values could be included later.
-    lines = lines[:, :, 1, :]
-    cont = cont[:, :, 1, :]
 
     # Convert lines to W and to a linear scale
     lines = 10**(lines-7)
@@ -734,10 +733,12 @@ def build_nebular():
 
     # Import lines
     db = SimpleDatabase("nebular_lines", writable=True)
-    for idx, metallicity in enumerate(metallicities):
-        for logU, spectrum in zip(logUs, lines[idx, :, :]):
-            db.add({"Z": float(metallicity), "logU": float(logU)},
-                   {"name": name_lines, "wl": wave_lines, "spec": spectrum})
+    for idxZ, metallicity in enumerate(metallicities):
+        for idxU, logU in enumerate(logUs):
+            for ne, spectrum in zip(nes, lines[idxZ, idxU, :, :]):
+                db.add({"Z": float(metallicity), "logU": float(logU),
+                        "ne": float(ne)},
+                       {"name": name_lines, "wl": wave_lines, "spec": spectrum})
     db.close()
 
     # Import continuum
@@ -745,10 +746,12 @@ def build_nebular():
     spectra = 10 ** interpolate.interp1d(np.log10(wave_cont), np.log10(cont),
                                          axis=-1)(np.log10(wave_cont_interp))
     spectra = np.nan_to_num(spectra)
-    for idx, metallicity in enumerate(metallicities):
-        for logU, spectrum in zip(logUs, spectra[idx, :, :]):
-            db.add({"Z": float(metallicity), "logU": float(logU)},
-                   {"wl": wave_cont_interp, "spec": spectrum})
+    for idxZ, metallicity in enumerate(metallicities):
+        for idxU, logU in enumerate(logUs):
+            for ne, spectrum in zip(nes, spectra[idxZ, idxU, :, :]):
+                db.add({"Z": float(metallicity), "logU": float(logU),
+                        "ne": float(ne)},
+                       {"wl": wave_cont_interp, "spec": spectrum})
     db.close()
 
 
