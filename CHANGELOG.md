@@ -6,6 +6,7 @@
 - An additional check is done when constructing the `pcigale.ini` and `pcigale.ini.spec` files to avoid the generation of an incorrect `pcigale.ini.spec` when `pcigale.ini` exists but `pcigale.ini.spec` does not, which is not supposed to happen under regular circumstances. (Médéric Boquien)
 - Now `pcigale check` also displays the number of models per redshift. (Médéric Boquien)
 - Implementation of the AGN radio emission (Guang Yang, adapted by Médéric Boquien)
+- The X-ray modelling from X-CIGALE has been integrated into the regular version. This mainly comprises the new `xray` module and modifications to the fitting procedure to take into account the constraints based on ΔαOX. (Guang Yang, adapted by Médéric Boquien)
 ### Changed
 - The IGM absorption from Meiksin has been modified to include the dependence of the hydrogen absorption cross section (~λ^2.75) so that the universe becomes transparent again at very short wavelengths. (Guang Yang, adapted by Médéric Boquien)
 - The `fluxes` module has been removed as it has been superseded by the `bands` parameter of the `pdf\_analysis` module. (Médéric Boquien)
