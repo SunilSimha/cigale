@@ -22,43 +22,46 @@ class Xray(SedModule):
     parameter_list = {
         "gam": (
             "cigale_list()",
-            "The photon index (Gamma) of AGN intrinsic X-ray spectrum.",
+            "Photon index (Γ) of the AGN intrinsic X-ray spectrum.",
             1.8
         ),
         "alpha_ox": (
             "cigale_list()",
-            "the power-law slope connecting L_nu at rest-frame 2500 A and 2 keV, "
-            "defined as alpha_ox = 0.3838*log(Lnu_2keV/Lnu_2500A).",
+            "Power-law slope connecting Lν at rest-frame 2500 Å and 2 keV, "
+            "defined as αox = 0.3838×log(Lν(2keV)/Lν(2500 Å)).",
             (-1.9, -1.8, -1.7, -1.6, -1.5, -1.4, -1.3, -1.2, -1.1)
         ),
         "max_dev_alpha_ox": (
             "float()",
-            "Maximum allowed deviation of alpha_ox from the empirical alpha_ox-Lnu_2500A relation (Just et al. 2007), "
-            "i.e. |alpha_ox-alpha_ox(Lnu_2500A)| <= max_dev_alpha_ox. "
-            "The alpha_ox-Lnu_2500A relation has a 1-sigma scatter of ~ 0.1. "
-            "We assume the relation is measured at a typical AGN viewing angle of 30°. "
-            "Setting it to zero or a negative value means do not apply the alpha_ox-Lnu_2500A relation "
-            "(i.e., allowing all given alpha_ox values).",
+            "Maximum allowed deviation of αox from the empirical αox-Lν(2500 Å)"
+            " relation (Just et al. 2007), i.e. |αox-αox(Lν(2500 Å))| <= "
+            "max_dev_alpha_ox. The αox-Lν(2500 Å) relation has a 1-σ scatter "
+            "of ~0.1. We assume the relation is measured at a typical AGN "
+            "viewing angle of 30°. Setting it to zero or a negative value "
+            "means do not apply the αox-Lν(2500 Å) relation (i.e., we allow "
+            "all given αox values).",
             0.2
         ),
         "angle_coef": (
             "cigale_string_list()",
-            "The 1st-order and 2nd-order polynomial coefficients (a1 & a2) in X-ray dependence on AGN viewing angle, "
-            "i.e. Lx(i)/Lx(0) = a1*cos(i) + a2*cos(i)^2 + 1-a1-a2, where i=0° is face-on and i=90° is edge on. "
-            "The viewing angle, i, is defined in the AGN module. "
-            "Setting to 0 & 0 means isotropic AGN X-ray emission. "
-            "You can give multiple sets of a1 & a2 separated by comma.",
+            "First and second order polynomial coefficients (a1 & a2) of the "
+            "AGN accretion disk X-ray emission dependence on AGN viewing "
+            "angle, i.e. Lx(i)/Lx(0) = a1×cos(i) + a2×cos(i)² + 1 - a1 - a2, "
+            "where i=0° is face-on and i=90° is edge on. The viewing angle, i, "
+            "is defined in the AGN module. Setting to 0 & 0 means isotropic "
+            "AGN X-ray emission. Multiple sets of a1 & a2 separated by commas "
+            "can be provided.",
             "0 & 0"
         ),
         "det_lmxb": (
             "cigale_list()",
-            "The deviation from the expected low-mass X-ray binary (LMXB) logLx. "
+            "Deviation from the expected low-mass X-ray binary (LMXB) logLx. "
             "Positive values mean higher logLx from LMXB.",
             0.
         ),
         "det_hmxb": (
             "cigale_list()",
-            "The deviation from the expected high-mass X-ray binary (HMXB) logLx. "
+            "Deviation from the expected high-mass X-ray binary (HMXB) logLx. "
             "Positive values mean higher logLx from HMXB.",
             0.
         )
