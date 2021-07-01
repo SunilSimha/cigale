@@ -333,20 +333,23 @@ class SKIRTOR2016(SedModule):
         # Normalize direct, scatter, and thermal components
         norm = 1. / np.trapz(self.SKIRTOR2016.dust, x=self.SKIRTOR2016.wl)
         self.SKIRTOR2016.dust *= norm
-        self.SKIRTOR2016.polar_dust = blackbody*norm
+        self.SKIRTOR2016.polar_dust = blackbody * norm
         self.SKIRTOR2016.disk *= norm
 
         # Integrate AGN luminosity for different components
         self.lumin_disk = np.trapz(self.SKIRTOR2016.disk, x=self.SKIRTOR2016.wl)
-        self.lumin_polar_dust = np.trapz(self.SKIRTOR2016.polar_dust, x=self.SKIRTOR2016.wl)
+        self.lumin_polar_dust = np.trapz(self.SKIRTOR2016.polar_dust,
+                                         x=self.SKIRTOR2016.wl)
 
-        # Intrinsic (de-reddened) AGN luminosity from the central source at theta=30 deg
-        norm_fac = np.cos(30*np.pi/180)*(2*np.cos(30*np.pi/180)+1)/3 * norm
+        # Intrinsic (de-reddened) AGN luminosity from the central source at
+        # θ=30°
+        cos30 = np.cos(np.radians(30.0))
+        norm_fac = cos30 * (2.0 * cos30 + 1.0) / 3.0 * norm
         self.lumin_intrin_disk = np.trapz(AGN1.disk, x=AGN1.wl) * norm_fac
-        # Calculate L_lam(2500A) at theta=30 deg
+
+        # Calculate Lλ(2500 Å) at θ=30° and convert to Lν
         self.l_agn_2500A = np.interp(250, AGN1.wl, AGN1.disk) * norm_fac
-        # Convert L_lam to L_nu
-        self.l_agn_2500A *= 250**2/c
+        self.l_agn_2500A *= 250.0 ** 2.0 / c
 
         if self.lambdamin_fracAGN < self.lambdamax_fracAGN:
             w = np.where((self.SKIRTOR2016.wl >= self.lambdamin_fracAGN) &
@@ -417,10 +420,10 @@ class SKIRTOR2016(SedModule):
         lumin_disk = agn_power * self.lumin_disk
         lumin_polar_dust = agn_power * self.lumin_polar_dust
         lumin_torus = agn_power - lumin_polar_dust
-        # power_accretion means the intrinsic disk luminosity
-        # integrated over 4pi solid angles
-        # The factor (0.493) comes from the fact that lumin_intrin_disk
-        # is calculated at viewing angle = 30 deg
+
+        # power_accretion is the intrinsic disk luminosity integrated over a
+        # solid angle of 4π. The factor 0.493 comes from the fact that
+        # lumin_intrin_disk is calculated at viewing angle of 30°.
         power_accretion = agn_power * self.lumin_intrin_disk * 0.493
         l_agn_2500A = agn_power * self.l_agn_2500A
 
@@ -433,7 +436,8 @@ class SKIRTOR2016(SedModule):
         sed.add_info('agn.intrin_Lnu_2500A_30deg', l_agn_2500A, True, unit='W/Hz')
 
         sed.add_contribution('agn.SKIRTOR2016_torus', self.SKIRTOR2016.wl,
-                             agn_power * (self.SKIRTOR2016.dust-self.SKIRTOR2016.polar_dust) )
+                             agn_power * (self.SKIRTOR2016.dust -
+                                          self.SKIRTOR2016.polar_dust))
         sed.add_contribution('agn.SKIRTOR2016_polar_dust', self.SKIRTOR2016.wl,
                              agn_power * (self.SKIRTOR2016.polar_dust) )
         sed.add_contribution('agn.SKIRTOR2016_disk', self.SKIRTOR2016.wl,

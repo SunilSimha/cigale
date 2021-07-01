@@ -32,10 +32,12 @@ class ModelsManager:
 
         props_nolog = set([prop[:-4] if prop.endswith('log') else prop
                            for prop in conf['analysis_params']['variables']])
-        # If X-ray module used, add some necessary properties for internal use
-        if ('xray' in self.params.modules) and (conf['sed_modules_params']['xray']['max_dev_alpha_ox']>0):
-            if 'xray.alpha_ox' not in props_nolog: props_nolog.add('xray.alpha_ox')
-            if 'agn.intrin_Lnu_2500A_30deg' not in props_nolog: props_nolog.add('agn.intrin_Lnu_2500A_30deg')
+
+        # If the xray module used, add some properties for internal use
+        if (('xray' in self.params.modules) and
+            (conf['sed_modules_params']['xray']['max_dev_alpha_ox'] > 0)):
+                props_nolog.add('xray.alpha_ox')
+                props_nolog.add('agn.intrin_Lnu_2500A_30deg')
 
         self.intpropnames = (self.allintpropnames & set(obs.intprops) |
                              self.allintpropnames & props_nolog)

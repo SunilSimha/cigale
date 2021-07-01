@@ -108,7 +108,8 @@ class Radio(SedModule):
         sed.add_info("radio.alpha_agn", self.alpha_agn)
         sed.add_contribution('radio.agn', self.wave,
                              self.lumin_agn * Lnu_2500A)
-        sed.add_info("radio.P_agn_1p4GHz", self.agn_P14 * Lnu_2500A, True, unit='W/Hz')
+        sed.add_info("radio.P_agn_1p4GHz", self.agn_P14 * Lnu_2500A, True,
+                     unit='W/Hz')
 
 
 # SedModule to be returned by get_module

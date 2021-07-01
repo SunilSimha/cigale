@@ -132,7 +132,8 @@ class Configuration:
             ["X-ray:"] +
             ["* xray (from AGN and galaxies; skirtor2016 is needed for AGN)"] +
             ["Radio:"] +
-            ["* radio (galaxy synchrotron emission and AGN; skirtor2016 is needed for AGN)"] +
+            ["* radio (galaxy synchrotron emission and AGN; skirtor2016 is "
+             "needed for AGN)"] +
             ["Restframe parameters:"] +
             ["* restframe_parameters (UV slope (β), IRX, D4000, EW, etc.)"] +
             ["Redshift+IGM:"] +

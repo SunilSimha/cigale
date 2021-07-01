@@ -219,10 +219,12 @@ def _sed_worker(obs, mod, filters, sed_type, logo, xrange, yrange, series,
             if 'agn' in series and ('agn.fritz2006_dust' in sed.columns or \
                                     'agn.SKIRTOR2016_torus' in sed.columns):
                 if 'agn.fritz2006_dust' in sed.columns:
-                    agn_sed = sed['agn.fritz2006_dust'] + sed['agn.fritz2006_disk']
+                    agn_sed = sed['agn.fritz2006_dust'] + \
+                              sed['agn.fritz2006_disk']
                 elif 'agn.SKIRTOR2016_torus' in sed.columns:
                     agn_sed = sed['agn.SKIRTOR2016_polar_dust'] + \
-                              sed['agn.SKIRTOR2016_torus'] + sed['agn.SKIRTOR2016_disk']
+                              sed['agn.SKIRTOR2016_torus'] + \
+                              sed['agn.SKIRTOR2016_disk']
                 if 'xray.agn' in sed.columns:
                     agn_sed += sed['xray.agn']
                 if 'radio.agn' in sed.columns:
