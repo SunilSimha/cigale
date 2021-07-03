@@ -251,7 +251,7 @@ def compute_chi2(models, obs, corr_dz, wz, lim_flag):
         chi2 += ((model * scaling - flux) * inv_flux_err) ** 2.
 
     # Penalize det_alpha_ox which lie out of the user-set range
-    if (('xray' in models.params.modules) and
+    if  ('xray' in models.params.modules) and \
         (models.conf['sed_modules_params']['xray']['max_dev_alpha_ox'] > 0):
         # Get the model indices that have valid AGN component
         agn_idxs = np.where(models.extprop['agn.intrin_Lnu_2500A_30deg'][wz] > 0)[0]
