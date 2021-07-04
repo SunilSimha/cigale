@@ -83,6 +83,13 @@ def k_ext(wavelength, ext_law):
     else:
         raise KeyError("Extinction law is different from the expected ones")
 
+    mask = np.where(wavelength < 100.)
+    if mask[0].size > 0:
+        k_short = k_ext_short(ext_law)(wavelength[mask])
+        k[mask] = k_short * (k[mask][-1] / k_short[-1])
+
+    return k
+
 def disk(wl, limits, coefs):
     ss = np.searchsorted(wl, limits)
     wpl = [slice(lo, hi) for lo, hi in zip(ss[:-1], ss[1:])]
@@ -172,6 +179,19 @@ class Fritz2006(SedModule):
             "are: 0.001, 10.100, 20.100, 30.100, 40.100, 50.100, 60.100, "
             "70.100, 80.100, 89.990.",
             50.100
+        ),
+        'disk_type': (
+            'integer(min=0, max=1)',
+            "Disk spectrum: 0 for the regular Skirtor spectrum, 1 for the "
+            "Schartmann (2005) spectrum.",
+            1
+        ),
+        'delta': (
+            'cigale_list()',
+            "Power-law of index δ modifying the optical slop of the disk. "
+            "Negative values make the slope steeper where as positive values "
+            "make it shallower.",
+            0.
         ),
         'fracAGN': (
             'cigale_list(minvalue=0., maxvalue=1.)',
@@ -286,7 +306,7 @@ class Fritz2006(SedModule):
         c = cst.c * 1e9
         lambda_0 = 200e3
         conv = c / self.fritz2006.wl ** 2.
-        hc_lkt = cst.h * c / (self.fritz1006.wl * cst.k * self.temperature)
+        hc_lkt = cst.h * c / (self.fritz2006.wl * cst.k * self.temperature)
         err_settings = np.seterr(over='ignore')  # ignore exp overflow
         blackbody = conv * \
             (1. - np.exp(-(lambda_0 / self.fritz2006.wl) ** self.emissivity)) * \
