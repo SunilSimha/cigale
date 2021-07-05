@@ -216,10 +216,11 @@ def _sed_worker(obs, mod, filters, sed_type, logo, xrange, yrange, series,
                            linewidth=1.0)
 
             # AGN emission
-            if 'agn' in series and ('agn.fritz2006_dust' in sed.columns or \
+            if 'agn' in series and ('agn.fritz2006_torus' in sed.columns or \
                                     'agn.SKIRTOR2016_torus' in sed.columns):
-                if 'agn.fritz2006_dust' in sed.columns:
-                    agn_sed = sed['agn.fritz2006_dust'] + \
+                if 'agn.fritz2006_torus' in sed.columns:
+                    agn_sed = sed['agn.fritz2006_polar_dust'] + \
+                              sed['agn.fritz2006_torus'] + \
                               sed['agn.fritz2006_disk']
                 elif 'agn.SKIRTOR2016_torus' in sed.columns:
                     agn_sed = sed['agn.SKIRTOR2016_polar_dust'] + \
