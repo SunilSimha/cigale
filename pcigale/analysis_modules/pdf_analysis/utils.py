@@ -252,11 +252,11 @@ def compute_chi2(models, obs, corr_dz, wz, lim_flag):
 
     # Penalize det_alpha_ox which lie out of the user-set range
     if (('xray' in models.params.modules) and
-        (models.conf['sed_modules_params']['xray']['max_dev_alpha_ox'] > 0):
+        (models.conf['sed_modules_params']['xray']['max_dev_alpha_ox'] > 0)):
         # Get the model indices that have valid AGN component
         agn_idxs = np.where(models.extprop['agn.intrin_Lnu_2500A_30deg'][wz] > 0)[0]
         # Calculate expected alpha_ox from Lnu_2500 (Just et al. 2007)
-        exp_alpha_ox = -0.137 * np.log10(models.extprop['agn.intrin_Lnu_2500A_30deg'][wz][agn_idxs] * 1e7 *scaling[agn_idxs]) + 2.638
+        exp_alpha_ox = -0.137 * np.log10(models.extprop['agn.intrin_Lnu_2500A_30deg'][wz][agn_idxs] * 1e7 * scaling[agn_idxs]) + 2.638
         # Calculate det_alpha_ox = alpha_ox - alpha_ox(Lnu_2500)
         det_alpha_ox = models.intprop['xray.alpha_ox'][wz][agn_idxs] - exp_alpha_ox
         # If det_alpha_ox out of range, set corresponding chi2 to nan
