@@ -129,8 +129,11 @@ class Configuration:
             ["AGN:"] +
             ["* fritz2006 (AGN models from Fritz et al. 2006)"] +
             ["* skirtor2016 (AGN models from Stalevski et al. 2012, 2016)"] +
+            ["X-ray:"] +
+            ["* xray (from AGN and galaxies; skirtor2016 is needed for AGN)"] +
             ["Radio:"] +
-            ["* radio (synchrotron emission)"] +
+            ["* radio (galaxy synchrotron emission and AGN; skirtor2016 is "
+             "needed for AGN)"] +
             ["Restframe parameters:"] +
             ["* restframe_parameters (UV slope (β), IRX, D4000, EW, etc.)"] +
             ["Redshift+IGM:"] +
@@ -279,7 +282,7 @@ class Configuration:
             sys.exit(1)
 
         self.complete_redshifts()
-        self.complete_analysed_parameters()
+        self.check_and_complete_analysed_parameters()
 
         vdt = validate.Validator(validation.functions)
         validity = self.config.validate(vdt, preserve_errors=True)
@@ -317,6 +320,7 @@ class Configuration:
                    'dust emission': ['casey2012', 'dale2014', 'dl2007',
                                      'dl2014', 'themis'],
                    'AGN': ['fritz2006', 'skirtor2016'],
+                   'X-ray': ['xray'],
                    'radio': ['radio'],
                    'restframe_parameters': ['restframe_parameters'],
                    'redshift': ['redshifting']
@@ -330,6 +334,7 @@ class Configuration:
                     'dust attenuation': "No dust attenuation module found.",
                     'dust emission': "No dust emission module found.",
                     'AGN': "No AGN module found.",
+                    'X-ray': "No X-ray module found.",
                     'radio': "No radio module found.",
                     'restframe_parameters': "No restframe parameters module "
                                             "found",
@@ -367,13 +372,21 @@ class Configuration:
                 raise Exception("No flux file and no redshift indicated. "
                                 "The spectra cannot be computed. Aborting.")
 
-    def complete_analysed_parameters(self):
-        """Complete the configuration when the variables are missing from the
-        configuration file and must be extracted from a dummy run."""
-        if not self.config['analysis_params']['variables']:
-            warehouse = SedWarehouse()
-            params = ParametersManager(self.config.dict())
-            sed = warehouse.get_sed(params.modules, params.from_index(0))
-            info = list(sed.info.keys())
+    def check_and_complete_analysed_parameters(self):
+        """Check that the variables to be analysed are indeed computed and if "
+        "no variable is given, complete the configuration with all the "
+        "variables extracted from a dummy run."""
+        params = ParametersManager(self.config.dict())
+        sed = SedWarehouse().get_sed(params.modules, params.from_index(0))
+        info = list(sed.info.keys())
+
+        if len(self.config['analysis_params']['variables']) > 0:
+            nolog = [k if not k.endswith('_log') else k[:-4]
+                     for k in self.config['analysis_params']['variables']]
+            diff = set(nolog) - set(info)
+            if len(diff) > 0:
+                raise Exception(f"{', '.join(diff)} unknown. "
+                                f"Available variables are: {', '.join(info)}.")
+        else:
             info.sort()
             self.config['analysis_params']['variables'] = info
