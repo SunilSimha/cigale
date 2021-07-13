@@ -206,7 +206,7 @@ class SKIRTOR2016(SedModule):
             "Power-law of index δ modifying the optical slop of the disk. "
             "Negative values make the slope steeper where as positive values "
             "make it shallower.",
-            0.0
+            -0.27
         ),
         "fracAGN": (
             "cigale_list(minvalue=0., maxvalue=1.)",
@@ -229,7 +229,7 @@ class SKIRTOR2016(SedModule):
         "EBV": (
             "cigale_list(minvalue=0.)",
             "E(B-V) for the extinction in the polar direction in magnitudes.",
-            0.1
+            0.04
         ),
         "temperature": (
             "cigale_list(minvalue=0.)",

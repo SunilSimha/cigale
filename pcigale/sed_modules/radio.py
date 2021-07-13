@@ -38,7 +38,7 @@ class Radio(SedModule):
             "The radio-loudness parameter for AGN, defined as "
             "R=Lν_5GHz/Lν_2500A, where Lν_2500A is the AGN 2500 Å intrinsic "
             "disk luminosity measured at viewing angle=30°.",
-            0.
+            10
         ),
         "alpha_agn": (
             "cigale_list()",

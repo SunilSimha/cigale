@@ -51,7 +51,7 @@ class Xray(SedModule):
             "is defined in the AGN module. Setting to 0 & 0 means isotropic "
             "AGN X-ray emission. Multiple sets of a1 & a2 separated by commas "
             "can be provided.",
-            "0 & 0"
+            "0.5 & 0"
         ),
         "det_lmxb": (
             "cigale_list()",
