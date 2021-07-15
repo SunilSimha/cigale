@@ -61,7 +61,7 @@ class Radio(SedModule):
         # m s¯¹.
         c = cst.c * 1e9
         # We define the wavelength range for the non thermal emission
-        self.wave = np.logspace(5., 9., 1000)
+        self.wave = np.logspace(5., 11., 1000)
 
         # We compute the SF synchrotron emission normalised at 21cm
         self.lumin_nonthermal_sf = (1. / self.wave)**(-self.alpha_sf + 2.) / \
