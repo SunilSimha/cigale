@@ -16,7 +16,7 @@ from .. import analysis_modules
 from ..warehouse import SedWarehouse
 from . import validation
 from pcigale.sed_modules.nebular import default_lines
-
+from pcigale.utils.console import console, INFO, WARNING, ERROR
 
 class Configuration:
     """This class manages the configuration of pcigale.
@@ -166,8 +166,7 @@ class Configuration:
 
         """
         if self.pcigaleini_exists is False:
-            print("Error: pcigale.ini could not be found.")
-            sys.exit(1)
+            raise Exception("pcigale.ini could not be found.")
 
         # Getting the list of the filters available in pcigale database
         with Database("filters") as db:
@@ -278,8 +277,7 @@ class Configuration:
             Dictionary containing the information provided in pcigale.ini.
         """
         if self.pcigaleini_exists is False:
-            print("Error: pcigale.ini could not be found.")
-            sys.exit(1)
+            raise Exception("pcigale.ini could not be found.")
 
         self.complete_redshifts()
         self.check_and_complete_analysed_parameters()
@@ -288,15 +286,18 @@ class Configuration:
         validity = self.config.validate(vdt, preserve_errors=True)
 
         if validity is not True:
-            print("The following issues have been found in pcigale.ini:")
+            console.print(f"{ERROR} The following issues have been found in "
+                          "pcigale.ini:")
             for module, param, message in configobj.flatten_errors(self.config,
                                                                    validity):
                 if len(module) > 0:
-                    print(f"Module {'/'.join(module)}, parameter {param}: "
-                          f"{message}")
+                    console.print(f"{ERROR} Module [b]{'/'.join(module)}[/b], "
+                                  f"parameter [b]{param}[/b]: {message}")
                 else:
-                    print(f"Parameter {param}: {message}")
-            print("Run the same command after having fixed pcigale.ini.")
+                    console.print(f"{ERROR} Parameter [b]{param}[/b]:"
+                                  f"{message}")
+            console.print(f"{INFO} Run the same command after having fixed "
+                          "pcigale.ini.")
 
             return None
 
@@ -326,25 +327,28 @@ class Configuration:
                    'redshift': ['redshifting']
                    }
 
-        comments = {'SFH': "ERROR! Choosing one SFH module is mandatory.",
-                    'SSP': "ERROR! Choosing one SSP module is mandatory.",
-                    'nebular': "WARNING! Choosing the nebular module is "
-                               "recommended. Without it the Lyman continuum "
-                               "is left untouched.",
-                    'dust attenuation': "No dust attenuation module found.",
-                    'dust emission': "No dust emission module found.",
-                    'AGN': "No AGN module found.",
-                    'X-ray': "No X-ray module found.",
-                    'radio': "No radio module found.",
-                    'restframe_parameters': "No restframe parameters module "
-                                            "found",
-                    'redshift': "ERROR! No redshifting module found."}
+        comments = {'SFH': f"{WARNING} No SFH module selected. Is it on "
+                           "purpose?",
+                    'SSP': f"{WARNING} No SSP module selected. Is it on "
+                           "purpose?",
+                    'nebular': f"{INFO} No nebular module selected. Without it "
+                               "the Lyman continuum is left untouched.",
+                    'dust attenuation': f"{INFO} No dust attenuation module "
+                                        "selected.",
+                    'dust emission': f"{INFO} No dust emission module "
+                                     "selected.",
+                    'AGN': f"{INFO} No AGN module selected.",
+                    'X-ray': f"{INFO} No X-ray module selected.",
+                    'radio': f"{INFO} No radio module selected.",
+                    'restframe_parameters': f"{INFO} No restframe parameters "
+                                            "module selected.",
+                    'redshift': f"{ERROR} No redshifting module found."}
 
         for module in modules:
             if all([user_module not in modules[module] for user_module in
                     self.config['sed_modules']]):
-                print(f"{comments[module]} Options are: "
-                      f"{', '.join(modules[module])}.")
+                console.print(f"{comments[module]} Options are: [b]"
+                              f"{'[/b], [b]'.join(modules[module])}[/b].")
 
     def complete_redshifts(self):
         """Complete the configuration when the redshifts are missing from the
