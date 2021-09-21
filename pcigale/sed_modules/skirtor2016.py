@@ -169,8 +169,8 @@ class SKIRTOR2016(SedModule):
         ),
         "oa": (
             "cigale_list(options=10 & 20 & 30 & 40 & 50 & 60 & 70 & 80)",
-            "Angle measured between the equatorial plan and edge of the torus. "
-            "Half-opening angle of the dust-free cone is 90°-oa. "
+            "Angle measured between the equatorial plane and edge of the torus. "
+            "Half-opening angle of the dust-free (or polar-dust) cone is 90°-oa. "
             "Possible values are: 10, 20, 30, 40, 50, 60, 70, and 80",
             40
         ),
