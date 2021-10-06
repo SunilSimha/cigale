@@ -140,9 +140,21 @@ class PdfAnalysis(AnalysisModule):
             for idx, item in enumerate(items):
                 worker(idx, item)
         else:  # run in parallel
+            # Save and remove the counter sub-process that updates the progress
+            # bar as it cannot be pickled when creating the sub-process when
+            # using the "spawn" starting method
+            for arg in initargs:
+                if isinstance(arg, Counter):
+                    counter = arg
+                    progress = counter.progress
+                    counter.progress = None
+
             with mp.Pool(processes=ncores, initializer=initializer,
                          initargs=initargs) as pool:
                 pool.starmap(worker, enumerate(items), chunksize)
+
+            # Restore the process
+            counter.progress = progress
 
     def _compute(self, conf, obs, params):
         results = []
