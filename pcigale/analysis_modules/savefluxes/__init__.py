@@ -58,9 +58,9 @@ class SaveFluxes(AnalysisModule):
             for idx, item in enumerate(items):
                 worker(idx, item)
         else:  # run in parallel
-            # Save and remove the counter sub-process that updates the progress
-            # bar as it cannot be pickled when creating the sub-process when
-            # using the "spawn" starting method
+            # Temporarily remove the counter sub-process that updates the
+            # progress bar as it cannot be pickled when creating the parallel
+            # processes when using the "spawn" starting method.
             for arg in initargs:
                 if isinstance(arg, Counter):
                     counter = arg
@@ -71,7 +71,7 @@ class SaveFluxes(AnalysisModule):
                          initargs=initargs) as pool:
                 pool.starmap(worker, enumerate(items))
 
-            # Restore the process
+            # After the parallel processes have exited, it can be restored
             counter.progress = progress
 
     def _compute_models(self, conf, obs, params):
