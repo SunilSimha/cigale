@@ -8,6 +8,7 @@
 - Implementation of the AGN radio emission (Guang Yang, adapted by Médéric Boquien)
 - The X-ray modelling from X-CIGALE has been integrated into the regular version. This mainly comprises the new `xray` module and modifications to the fitting procedure to take into account the constraints based on ΔαOX. (Guang Yang, adapted by Médéric Boquien)
 - The ugrizy LSST filters (version 1.7) have been added to the default list of filters. (Médéric Boquien)
+- The intrinsic UV slope β₀ is now computed at the same time as the observed UV slope β when `beta_calz94` is set to `True` in the `restframe_parameters` module. (Médéric Boquien)
 ### Changed
 - The IGM absorption from Meiksin has been modified to include the dependence of the hydrogen absorption cross section (~λ^2.75) so that the universe becomes transparent again at very short wavelengths. (Guang Yang, adapted by Médéric Boquien)
 - The `fluxes` module has been removed as it has been superseded by the `bands` parameter of the `pdf\_analysis` module. (Médéric Boquien)
@@ -41,6 +42,7 @@
 - The storage of individual spectral physical components has been improved in order to require fewer memory allocations and copies. The exact gain depends somewhat on the parameter space but speedups of about 50% are typically seen. (Médéric Boquien)
 - The test to determine if we need to reinterpolate all the components when adding a new one has been made more efficient, yielding a speedup of 1.5-2.0%. (Médéric Boquien)
 - The `sfhfromfile` module is much faster now, thanks to caching the file containing the SFH. (Médéric Boquien)
+- The computation of the UV slope β in the `resftframe_parameters` module has been made faster. (Médéric Boquien)
 
 ## 2020.0 (2020-06-29)
 ### Added
