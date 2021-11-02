@@ -10,9 +10,9 @@ import numpy as np
 import pkg_resources
 from scipy.constants import c
 from pcigale.data import SimpleDatabase as Database
-from utils.io import read_table
+from pcigale.utils.io import read_table
 import matplotlib.gridspec as gridspec
-from utils.counter import Counter
+from pcigale.utils.counter import Counter
 
 from pcigale.utils.console import console, WARNING
 

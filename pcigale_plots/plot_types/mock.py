@@ -8,7 +8,7 @@ import numpy as np
 import pkg_resources
 from scipy import stats
 
-from utils.counter import Counter
+from pcigale.utils.counter import Counter
 
 # Name of the file containing the best models information
 BEST_RESULTS = "results.fits"

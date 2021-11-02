@@ -2,7 +2,7 @@ import collections
 import itertools
 import numpy as np
 
-from utils.io import read_table
+from pcigale.utils.io import read_table
 
 
 class ParametersManager:
