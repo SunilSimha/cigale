@@ -17,6 +17,8 @@ from .analysis_modules import get_module
 from .managers.parameters import ParametersManager
 from pcigale.utils.console import console, INFO
 
+from pcigale.version import __version__
+
 def init(config):
     """Create a blank configuration file.
     """
