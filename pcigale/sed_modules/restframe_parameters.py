@@ -20,6 +20,8 @@ from scipy.constants import c, parsec
 from . import SedModule
 from ..sed.utils import flux_trapz
 
+__category__ = "restframe_parameters"
+
 
 class RestframeParam(SedModule):
     """Compute miscellaneous parameters on the full SED. This is a separate

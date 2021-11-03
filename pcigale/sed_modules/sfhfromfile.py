@@ -11,6 +11,8 @@ import numpy as np
 from pcigale.utils.io import read_table
 from . import SedModule
 
+__category__ = "SFH"
+
 
 class SfhFromFile(SedModule):
     """Module reading the SFH from a file

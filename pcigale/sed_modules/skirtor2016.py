@@ -16,6 +16,8 @@ from scipy.interpolate import interp1d
 from pcigale.data import SimpleDatabase as Database
 from . import SedModule
 
+__category__ = "AGN"
+
 
 @lru_cache
 def k_ext_short(ext_law):

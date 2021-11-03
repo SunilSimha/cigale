@@ -11,6 +11,8 @@ import scipy.constants as cst
 
 from . import SedModule
 
+__category__ = "X-ray"
+
 
 class Xray(SedModule):
     """X-ray emission
