@@ -15,6 +15,7 @@ import sys
 from .session.configuration import Configuration
 from .analysis_modules import get_module
 from .managers.parameters import ParametersManager
+from pcigale.utils.info import Info
 from pcigale.utils.console import console, INFO
 
 from pcigale.version import __version__
@@ -36,20 +37,18 @@ def genconf(config):
                   "complete the various module parameters and the data file "
                   "columns to use in the analysis.")
 
+    # Pass config rather than configuration as the file cannot be auto-filled.
+    info = Info(config.config)
+    info.print_tables()
 
 def check(config):
     """Check the configuration.
     """
-    # TODO: Check if all the parameters that don't have default values are
-    # given for each module.
     configuration = config.configuration
 
     if configuration:
-        pm = ParametersManager(configuration)
-        console.print(f"{INFO} With this configuration cigale will compute "
-                      f"{pm.size} models ({pm.size // pm.shape[-1]} per "
-                      "redshift).")
-
+        info = Info(config.configuration)
+        info.print_tables()
 
 def run(config):
     """Run the analysis.
@@ -57,11 +56,14 @@ def run(config):
     configuration = config.configuration
 
     if configuration:
+        info = Info(config.configuration)
+        info.print_tables()
         analysis_module = get_module(configuration['analysis_method'])
         analysis_module.process(configuration)
 
 
 def main():
+    Info.print_panel()
     if sys.version_info[:2] < (3, 8):
         raise Exception(f"Python {sys.version_info[0]}.{sys.version_info[1]} is"
                         f" unsupported. Please upgrade to Python 3.8 or later.")

@@ -9,6 +9,7 @@
 - The X-ray modelling from X-CIGALE has been integrated into the regular version. This mainly comprises the new `xray` module and modifications to the fitting procedure to take into account the constraints based on ΔαOX. (Guang Yang, adapted by Médéric Boquien)
 - The ugrizy LSST filters (version 1.7) have been added to the default list of filters. (Médéric Boquien)
 - The intrinsic UV slope β₀ is now computed at the same time as the observed UV slope β when `beta_calz94` is set to `True` in the `restframe_parameters` module. (Médéric Boquien)
+- When starting `pcigale`, tables are now displayed with 1) information about cigale and the machine (cigale version, python version, and platform), 2) summary information about the run (input file names, number of objects, redshift range, number of models, band and properties to, fit number of cores, analysis module), and 3) the module used for each SED component. (Médéric Boquien & Miguel Figueira)
 ### Changed
 - The IGM absorption from Meiksin has been modified to include the dependence of the hydrogen absorption cross section (~λ^2.75) so that the universe becomes transparent again at very short wavelengths. (Guang Yang, adapted by Médéric Boquien)
 - The `fluxes` module has been removed as it has been superseded by the `bands` parameter of the `pdf\_analysis` module. (Médéric Boquien)
