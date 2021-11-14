@@ -83,7 +83,7 @@ def sed(config, sed_type, nologo, xrange, yrange, series, format, outdir):
         logo = False
     else:
         logo = plt.imread(pkg_resources.resource_filename(__name__,
-                                                          "../resources/CIGALE.png"))
+                                                          "../../resources/CIGALE.png"))
 
     counter = Counter(len(obs), 1, "Object")
     items = zip(obs, mod, repeat(filters), repeat(sed_type), repeat(logo),

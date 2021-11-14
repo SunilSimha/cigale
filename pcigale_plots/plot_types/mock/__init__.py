@@ -74,7 +74,7 @@ def mock(config, nologo, outdir):
             exact[param] = np.log10(exact[param[:-4]])
 
     logo = False if nologo else plt.imread(pkg_resources.resource_filename(__name__,
-                                                                           "../resources/CIGALE.png"))
+                                                                           "../../resources/CIGALE.png"))
 
     arguments = [(exact[f"best.{param}"], estimated[f"bayes.{param}"], param,
                   logo, outdir) for param in params]
