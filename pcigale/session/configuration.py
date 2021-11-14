@@ -69,6 +69,9 @@ class Configuration:
         well as the method selected for statistical analysis.
 
         """
+        # If there is a pre-existing pcigale.ini, delete the initial comment as
+        # otherwise it gets added each time a pcigale init is run.
+        self.config.initial_comment = []
 
         self.config['data_file'] = ""
         self.config.comments['data_file'] = wrap(
