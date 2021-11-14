@@ -6,6 +6,7 @@ import multiprocessing as mp
 import numpy as np
 
 from pcigale.utils.io import read_table
+from pcigale.utils.console import console, INFO
 from pcigale.utils.counter import Counter
 
 
@@ -20,23 +21,57 @@ def pool_initializer(counter):
     gbl_counter = counter
 
 
+def _parallel_job(worker, items, initargs, initializer, ncores, chunksize=None):
+    if ncores == 1:  # Do not create a new process
+        initializer(*initargs)
+        for item in items:
+            worker(*item)
+    else:  # run in parallel
+        # Temporarily remove the counter sub-process that updates the
+        # progress bar as it cannot be pickled when creating the parallel
+        # processes when using the "spawn" starting method.
+        for arg in initargs:
+            if isinstance(arg, Counter):
+                counter = arg
+                progress = counter.progress
+                counter.progress = None
+
+        with mp.Pool(
+            processes=ncores, initializer=initializer, initargs=initargs
+        ) as pool:
+            pool.starmap(worker, items, chunksize)
+
+        # After the parallel processes have exited, it can be restored
+        counter.progress = progress
+
 def chi2(config, format, outdir):
     """Plot the χ² values of analysed variables.
     """
-    file = outdir.parent / config.configuration['data_file']
+    configuration = config.configuration
+    file = outdir.parent / configuration['data_file']
     input_data = read_table(file)
-    chi2_vars = config.configuration['analysis_params']['variables']
-    chi2_vars += [band for band in config.configuration['bands']
-                  if band.endswith('_err') is False]
+    save_chi2 = configuration['analysis_params']['save_chi2']
+
+    chi2_vars = []
+    if 'all' in save_chi2 or 'properties' in save_chi2:
+        chi2_vars += configuration['analysis_params']['variables']
+    if 'all' in save_chi2 or 'fluxes' in save_chi2:
+        chi2_vars += configuration['analysis_params']['bands']
 
     items = list(product(input_data['id'], chi2_vars, [format], [outdir]))
     counter = Counter(len(items), 1, "Item")
-    with mp.Pool(processes=config.configuration['cores'], initializer=pool_initializer,
-                 initargs=(counter,)) as pool:
-        pool.starmap(_chi2_worker, items)
-        pool.close()
-        pool.join()
+
+    _parallel_job(_chi2_worker,
+        items,
+        (counter, ),
+        pool_initializer,
+        configuration["cores"]
+    )
+
+    # Print the final value as it may not otherwise be printed
+    counter.global_counter.value = len(items)
     counter.progress.join()
+    console.print(f"{INFO} Done.")
 
 
 def _chi2_worker(obj_name, var_name, format, outdir):

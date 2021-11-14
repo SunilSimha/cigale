@@ -14,6 +14,7 @@ from pcigale.utils.io import read_table
 import matplotlib.gridspec as gridspec
 from pcigale.utils.counter import Counter
 
+from pcigale.utils.console import console, INFO
 from pcigale.utils.console import console, WARNING
 
 # Name of the file containing the best models information
@@ -31,6 +32,30 @@ AVAILABLE_SERIES = [
 ]
 
 
+def _parallel_job(worker, items, initargs, initializer, ncores, chunksize=None):
+    if ncores == 1:  # Do not create a new process
+        initializer(*initargs)
+        for item in items:
+            worker(*item)
+    else:  # run in parallel
+        # Temporarily remove the counter sub-process that updates the
+        # progress bar as it cannot be pickled when creating the parallel
+        # processes when using the "spawn" starting method.
+        for arg in initargs:
+            if isinstance(arg, Counter):
+                counter = arg
+                progress = counter.progress
+                counter.progress = None
+
+        with mp.Pool(
+            processes=ncores, initializer=initializer, initargs=initargs
+        ) as pool:
+            pool.starmap(worker, items, chunksize)
+
+        # After the parallel processes have exited, it can be restored
+        counter.progress = progress
+
+
 def pool_initializer(counter):
     """Initializer of the pool of processes to share variables between workers.
     Parameters
@@ -45,12 +70,13 @@ def pool_initializer(counter):
 def sed(config, sed_type, nologo, xrange, yrange, series, format, outdir):
     """Plot the best SED with associated observed and modelled fluxes.
     """
-    obs = read_table(outdir.parent / config.configuration['data_file'])
+    configuration = config.configuration
+    obs = read_table(outdir.parent / configuration['data_file'])
     mod = Table.read(outdir / BEST_RESULTS)
 
     with Database("filters") as db:
         filters = {name: db.get(name=name)
-                   for name in config.configuration['bands']
+                   for name in configuration['bands']
                    if not (name.endswith('_err') or name.startswith('line'))}
 
     if nologo is True:
@@ -60,16 +86,20 @@ def sed(config, sed_type, nologo, xrange, yrange, series, format, outdir):
                                                           "../resources/CIGALE.png"))
 
     counter = Counter(len(obs), 1, "Object")
-    with mp.Pool(processes=config.configuration['cores'],
-                 initializer=pool_initializer, initargs=(counter,)) as pool:
-        pool.starmap(_sed_worker, zip(obs, mod, repeat(filters),
-                                      repeat(sed_type), repeat(logo),
-                                      repeat(xrange), repeat(yrange),
-                                      repeat(series), repeat(format),
-                                      repeat(outdir)))
-        pool.close()
-        pool.join()
+    items = zip(obs, mod, repeat(filters), repeat(sed_type), repeat(logo),
+                repeat(xrange), repeat(yrange), repeat(series), repeat(format),
+                repeat(outdir))
+    _parallel_job(_sed_worker,
+        items,
+        (counter, ),
+        pool_initializer,
+        configuration["cores"]
+    )
+
+    # Print the final value as it may not otherwise be printed
+    counter.global_counter.value = len(obs)
     counter.progress.join()
+    console.print(f"{INFO} Done.")
 
 
 def _sed_worker(obs, mod, filters, sed_type, logo, xrange, yrange, series,

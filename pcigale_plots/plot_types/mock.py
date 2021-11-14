@@ -8,6 +8,7 @@ import numpy as np
 import pkg_resources
 from scipy import stats
 
+from pcigale.utils.console import console, INFO
 from pcigale.utils.counter import Counter
 
 # Name of the file containing the best models information
@@ -25,6 +26,28 @@ def pool_initializer(counter):
 
     gbl_counter = counter
 
+def _parallel_job(worker, items, initargs, initializer, ncores, chunksize=None):
+    if ncores == 1:  # Do not create a new process
+        initializer(*initargs)
+        for item in items:
+            worker(*item)
+    else:  # run in parallel
+        # Temporarily remove the counter sub-process that updates the
+        # progress bar as it cannot be pickled when creating the parallel
+        # processes when using the "spawn" starting method.
+        for arg in initargs:
+            if isinstance(arg, Counter):
+                counter = arg
+                progress = counter.progress
+                counter.progress = None
+
+        with mp.Pool(
+            processes=ncores, initializer=initializer, initargs=initargs
+        ) as pool:
+            pool.starmap(worker, items, chunksize)
+
+        # After the parallel processes have exited, it can be restored
+        counter.progress = progress
 
 def mock(config, nologo, outdir):
     """Plot the comparison of input/output values of analysed variables.
@@ -42,7 +65,8 @@ def mock(config, nologo, outdir):
     except FileNotFoundError:
         raise Exception(f"Mock models file {mock_results_file} not found.")
 
-    params = config.configuration['analysis_params']['variables']
+    configuration = config.configuration
+    params = configuration['analysis_params']['variables']
 
     for param in params:
         if param.endswith('_log'):
@@ -56,13 +80,18 @@ def mock(config, nologo, outdir):
                   logo, outdir) for param in params]
 
     counter = Counter(len(arguments), 1, "Parameter")
-    with mp.Pool(processes=config.configuration['cores'], initializer=pool_initializer,
-                 initargs=(counter,)) as pool:
-        pool.starmap(_mock_worker, arguments)
-        pool.close()
-        pool.join()
-    counter.progress.join()
 
+    _parallel_job(_mock_worker,
+        arguments,
+        (counter, ),
+        pool_initializer,
+        configuration["cores"]
+    )
+
+    # Print the final value as it may not otherwise be printed
+    counter.global_counter.value = len(arguments)
+    counter.progress.join()
+    console.print(f"{INFO} Done.")
 
 def _mock_worker(exact, estimated, param, logo, outdir):
     """Plot the exact and estimated values of a parameter for the mock analysis
