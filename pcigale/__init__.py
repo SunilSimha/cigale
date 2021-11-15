@@ -8,9 +8,11 @@ os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
 
 import argparse
+import datetime as dt
 import multiprocessing as mp
 from pathlib import Path
 import sys
+import time
 
 from .session.configuration import Configuration
 from .analysis_modules import get_module
@@ -59,8 +61,19 @@ def run(config):
         info = Info(config.configuration)
         info.print_tables()
         analysis_module = get_module(configuration['analysis_method'])
+
+        start = dt.datetime.now()
+        console.print(f"{INFO} Start: {start.isoformat('/', 'seconds')}")
+        start = time.monotonic()  # Simpler time for run duration
+
         analysis_module.process(configuration)
 
+        end = dt.datetime.now()
+        console.print(f"{INFO} End: {end.isoformat('/', 'seconds')}")
+        end = time.monotonic()
+
+        delta = dt.timedelta(seconds=int(end-start))
+        console.print(f"{INFO} Total duration: {delta}")
 
 def main():
     Info.print_panel()
