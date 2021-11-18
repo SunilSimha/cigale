@@ -662,6 +662,31 @@ def build_skirtor2016():
         disk /= wl
         dust /= wl
 
+        # Extrapolate the model to 10 mm
+        wl_ext = np.array([2e6, 4e6, 8e6, 1e7])
+        disk_ext = np.zeros(len(wl_ext)) + 1e-99
+        if dust[-1]==0:
+            dust_ext = np.zeros(len(wl_ext)) + 1e-99
+        else:
+            dust_ext = 10** ( np.log10(dust[-1]) + np.log10(wl_ext/wl[-1]) * \
+                    np.log10(dust[-2]/dust[-1]) / np.log10(wl[-2]/wl[-1]) )
+        wl = np.append(wl, wl_ext)
+        disk[-1] = 1e-99
+        disk = np.append(disk, disk_ext)
+        dust = np.append(dust, dust_ext)
+
+        # Interpolate to a denser grid
+        with SimpleDatabase("nebular_continuum") as db1:
+             nebular = db1.get(Z=0.02, logU=-2.0)
+        wl_den = nebular.wl[np.where((nebular.wl >= 3e4)  & (nebular.wl <= 1e7))]
+        idx = np.where(wl>1e4)
+        disk_den = 10** np.interp( np.log10(wl_den), np.log10(wl[idx]), np.log10(disk[idx]) )
+        dust_den = 10** np.interp( np.log10(wl_den), np.log10(wl[idx]), np.log10(dust[idx]) )
+        idx = np.where(wl<3e4)
+        wl = np.append(wl[idx], wl_den)
+        disk = np.append(disk[idx], disk_den)
+        dust = np.append(dust[idx], dust_den)
+
         # Normalization of the lumin_therm to 1W
         norm = np.trapz(dust, x=wl)
         disk /= norm
