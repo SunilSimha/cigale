@@ -3,8 +3,8 @@ import numpy as np
 from pathlib import Path
 from scipy.constants import parsec
 
-from pcigale.utils.cosmology import luminosity_distance
-from pcigale.utils.io import read_table
+from ..utils.cosmology import luminosity_distance
+from utils.io import read_table
 from .utils import get_info
 
 from pcigale.utils.console import console, WARNING
