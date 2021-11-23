@@ -12,6 +12,8 @@ import scipy.constants as cst
 
 from . import SedModule
 
+__category__ = "radio"
+
 
 class Radio(SedModule):
     """Radio emission
@@ -38,7 +40,7 @@ class Radio(SedModule):
             "The radio-loudness parameter for AGN, defined as "
             "R=Lν_5GHz/Lν_2500A, where Lν_2500A is the AGN 2500 Å intrinsic "
             "disk luminosity measured at viewing angle=30°.",
-            0.
+            10
         ),
         "alpha_agn": (
             "cigale_list()",
@@ -61,7 +63,7 @@ class Radio(SedModule):
         # m s¯¹.
         c = cst.c * 1e9
         # We define the wavelength range for the non thermal emission
-        self.wave = np.logspace(5., 9., 1000)
+        self.wave = np.logspace(5., 11., 1000)
 
         # We compute the SF synchrotron emission normalised at 21cm
         self.lumin_nonthermal_sf = (1. / self.wave)**(-self.alpha_sf + 2.) / \

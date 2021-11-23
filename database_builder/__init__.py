@@ -603,29 +603,27 @@ def build_fritz2006():
         for n in range(len(psy)):
             block = data[nskip + blocksize * n + 4 * (n + 1) - 1:
                          nskip + blocksize * (n+1) + 4 * (n + 1) - 1]
-            lumin_therm, lumin_scatt, lumin_agn = np.genfromtxt(
+            dust, scatt, disk = np.genfromtxt(
                 io.BytesIO("".join(block).encode()), usecols=(2, 3, 4),
                 unpack=True)
             # Remove NaN
-            lumin_therm = np.nan_to_num(lumin_therm)
-            lumin_scatt = np.nan_to_num(lumin_scatt)
-            lumin_agn = np.nan_to_num(lumin_agn)
+            dust = np.nan_to_num(dust)
+            scatt = np.nan_to_num(scatt)
+            disk = np.nan_to_num(disk)
+            # Merge scatter into disk
+            disk += scatt
             # Conversion from erg/s/microns to W/nm
-            lumin_therm *= 1e-4
-            lumin_scatt *= 1e-4
-            lumin_agn *= 1e-4
+            dust *= 1e-4
+            disk *= 1e-4
             # Normalization of the lumin_therm to 1W
-            norm = np.trapz(lumin_therm, x=wave)
-            lumin_therm /= norm
-            lumin_scatt /= norm
-            lumin_agn /= norm
-
+            norm = np.trapz(dust, x=wave)
+            dust /= norm
+            disk /= norm
 
             db.add({"r_ratio": float(params[4]), "tau": float(params[3]),
                     "beta": float(params[2]), "gamma": float(params[1]),
                     "opening_angle": float(params[0]), "psy": float(psy[n])},
-                   {"wl": wave, "spec_therm": lumin_therm,
-                    "spec_scatt": lumin_scatt, "spec_agn": lumin_agn})
+                   {"norm": norm, "wl": wave, "disk": disk, "dust": dust})
     db.close()
 
 def build_skirtor2016():
@@ -663,6 +661,31 @@ def build_skirtor2016():
         disk += scatt
         disk /= wl
         dust /= wl
+
+        # Extrapolate the model to 10 mm
+        wl_ext = np.array([2e6, 4e6, 8e6, 1e7])
+        disk_ext = np.zeros(len(wl_ext)) + 1e-99
+        if dust[-1]==0:
+            dust_ext = np.zeros(len(wl_ext)) + 1e-99
+        else:
+            dust_ext = 10** ( np.log10(dust[-1]) + np.log10(wl_ext/wl[-1]) * \
+                    np.log10(dust[-2]/dust[-1]) / np.log10(wl[-2]/wl[-1]) )
+        wl = np.append(wl, wl_ext)
+        disk[-1] = 1e-99
+        disk = np.append(disk, disk_ext)
+        dust = np.append(dust, dust_ext)
+
+        # Interpolate to a denser grid
+        with SimpleDatabase("nebular_continuum") as db1:
+             nebular = db1.get(Z=0.02, logU=-2.0)
+        wl_den = nebular.wl[np.where((nebular.wl >= 3e4)  & (nebular.wl <= 1e7))]
+        idx = np.where(wl>1e4)
+        disk_den = 10** np.interp( np.log10(wl_den), np.log10(wl[idx]), np.log10(disk[idx]) )
+        dust_den = 10** np.interp( np.log10(wl_den), np.log10(wl[idx]), np.log10(dust[idx]) )
+        idx = np.where(wl<3e4)
+        wl = np.append(wl[idx], wl_den)
+        disk = np.append(disk[idx], disk_den)
+        dust = np.append(dust[idx], dust_den)
 
         # Normalization of the lumin_therm to 1W
         norm = np.trapz(dust, x=wl)

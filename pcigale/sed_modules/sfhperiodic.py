@@ -12,6 +12,8 @@ import numpy as np
 
 from . import SedModule
 
+__category__ = "SFH"
+
 
 class SfhPeriodic(SedModule):
     """Several regularly-spaced short delayed-SFH SF events

@@ -4,6 +4,8 @@ import scipy.constants as cst
 from pcigale.data import SimpleDatabase as Database
 from . import SedModule
 
+__category__ = "nebular"
+
 default_lines = ['Ly-alpha',
                  'CII-133.5',
                  'SiIV-139.7',
