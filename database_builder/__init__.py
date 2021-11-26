@@ -677,7 +677,7 @@ def build_skirtor2016():
 
         # Interpolate to a denser grid
         with SimpleDatabase("nebular_continuum") as db1:
-             nebular = db1.get(Z=0.02, logU=-2.0)
+             nebular = db1.get(Z=0.019, logU=-2.0, ne=100.0)
         wl_den = nebular.wl[np.where((nebular.wl >= 3e4)  & (nebular.wl <= 1e7))]
         idx = np.where(wl>1e4)
         disk_den = 10** np.interp( np.log10(wl_den), np.log10(wl[idx]), np.log10(disk[idx]) )
@@ -921,20 +921,21 @@ def build_base(bc03res='lr'):
     print("\nDONE\n")
     print('#' * 78)
 
-    print("9- Importing Fritz et al. (2006) models\n")
+    print("9- Importing nebular lines and continuum\n")
+    build_nebular()
+    print("\nDONE\n")
+    print('#' * 78)
+
+    print("10- Importing Fritz et al. (2006) models\n")
     build_fritz2006()
     print("\nDONE\n")
     print('#' * 78)
 
-    print("10- Importing SKIRTOR 2016 models\n")
+    print("11- Importing SKIRTOR 2016 models\n")
     build_skirtor2016()
     print("\nDONE\n")
     print('#' * 78)
 
-    print("11- Importing nebular lines and continuum\n")
-    build_nebular()
-    print("\nDONE\n")
-    print('#' * 78)
 
 
 if __name__ == '__main__':
