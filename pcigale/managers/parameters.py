@@ -1,4 +1,4 @@
-import collections
+from collections.abc import Iterable
 import itertools
 import numpy as np
 
@@ -95,8 +95,7 @@ class ParametersManagerGrid:
         # We must take a special care of strings, because they are iterable.
 
         for key, value in dictionary.items():
-            if ((not isinstance(value, collections.Iterable)) or
-                    isinstance(value, str)):
+            if (not isinstance(value, Iterable)) or isinstance(value, str):
                 dictionary[key] = [value]
 
         # We use itertools.product to make all the possible combinations from

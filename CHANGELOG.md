@@ -41,6 +41,7 @@
 - When an unknown variable is listed in `pdf\_analysis`, an exception is now raised before starting the run. (Médéric Boquien, reported by Guang Yang)
 - The `m2005` module is not compatible with the `nebular` and `xray` modules. An exception is not emitted when trying to build the `pcigale.ini` file. (Médéric Boquien, reported by Miguel Figueira)
 - When running `pcigale init` several times with an existing `pcigale.ini`, the top comment was repeatedly included due to the default behaviour of configobj. (Médéric Boquien, reported by Miguel Figueira)
+- Import `Iterable` from `collections.abc` rather than from `collections` in order to prevent `ImportError`/`AttributeError` exceptions with Python 3.10+. (Médéric Boquien)
 ### Optimised
 - The estimation of the physical properties and the related uncertainties has been made up to 50% faster. The final gain in the analysis speed accounting for all the steps depends on the number of properties to be evaluated and the number of models but can be over 25% when estimating many properties over a large parameter space. (Médéric Boquien)
 - Invalid models (e.g., when the stellar populations are older than the universe) are now ignored when handling upper limits. The speedup is very variable but can be substantial in case there are many invalid models. (Médéric Boquien)
