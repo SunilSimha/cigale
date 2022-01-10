@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## 2022.0 (2022-01-10)
 ### Added
 - The polar dust model of X-CIGALE (Yang et al., 2020) for the `skirtor2016` module has been integrated into the regular version. (Médéric Boquien, based on the initial work of Guang Yang)
 - An additional check is done when constructing the `pcigale.ini` and `pcigale.ini.spec` files to avoid the generation of an incorrect `pcigale.ini.spec` when `pcigale.ini` exists but `pcigale.ini.spec` does not, which is not supposed to happen under regular circumstances. (Médéric Boquien)
