@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2012, 2013 Centre de données Astrophysiques de Marseille
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Author: Yannick Roehlly
-
 import os
 import inspect
 from importlib import import_module
+
+from pcigale.utils.console import console, ERROR
 
 
 def complete_parameters(given_parameters, parameter_list):
@@ -16,9 +13,7 @@ def complete_parameters(given_parameters, parameter_list):
     have no default value and is not present in given_parameters, raises an
     error. If a parameter is present in given_parameters and not in
     parameter_list, an exception is also raised.
-    Returns an ordered dictionary with the same key order as the parameter
-    list.
-
+    Returns a dicti
     Parameters
     ----------
     given_parameters: dictionary
@@ -29,8 +24,8 @@ def complete_parameters(given_parameters, parameter_list):
     Returns
     -------
     parameters: dict
-        Ordered dictionary combining the given parameters with the default
-        values for the missing ones.
+        Dictionary combining the given parameters with the default values for
+        the missing ones.
 
     Raises
     ------
@@ -67,7 +62,7 @@ def complete_parameters(given_parameters, parameter_list):
     return result
 
 
-class SedModule(object):
+class SedModule:
     """Abstract class, the pCigale SED creation modules are based on.
     """
 
@@ -170,5 +165,4 @@ def get_module(name, **kwargs):
         module = import_module("." + name, 'pcigale.sed_modules')
         return module.Module(name=name, **kwargs)
     except ImportError:
-        print('Module ' + name + ' does not exist!')
-        raise
+        raise Exception(f"Module {name} could not be imported.")

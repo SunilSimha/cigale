@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2012, 2013 Centre de données Astrophysiques de Marseille
-# Licensed under the CeCILL-v2 licence - see Licence_CeCILL_V2-en.txt
-# Author: Yannick Roehlly
-
 import os
 # Set environment variables to disable multithreading as users will probably
 # want to set the number of cores to the max of their computer.
@@ -13,42 +8,49 @@ os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
 
 import argparse
+import datetime as dt
 import multiprocessing as mp
+from pathlib import Path
 import sys
+import time
 
 from .session.configuration import Configuration
 from .analysis_modules import get_module
 from .managers.parameters import ParametersManager
+from pcigale.utils.info import Info
+from pcigale.utils.console import console, INFO
 
+from pcigale.version import __version__
 
 def init(config):
     """Create a blank configuration file.
     """
     config.create_blank_conf()
-    print("The initial configuration file was created. Please complete it "
-          "with the data file name and the pcigale modules to use.")
+    console.print(f"{INFO} The initial configuration file was created. Please "
+                  "complete it with the data file name and the pcigale modules "
+                  "to use.")
 
 
 def genconf(config):
     """Generate the full configuration.
     """
     config.generate_conf()
-    print("The configuration file has been updated. Please complete the "
-          "various module parameters and the data file columns to use in "
-          "the analysis.")
+    console.print(f"{INFO} The configuration file has been updated. Please "
+                  "complete the various module parameters and the data file "
+                  "columns to use in the analysis.")
 
+    # Pass config rather than configuration as the file cannot be auto-filled.
+    info = Info(config.config)
+    info.print_tables()
 
 def check(config):
     """Check the configuration.
     """
-    # TODO: Check if all the parameters that don't have default values are
-    # given for each module.
     configuration = config.configuration
 
     if configuration:
-        print(f"With this configuration cigale will compute "
-              f"{ParametersManager(configuration).size} models.")
-
+        info = Info(config.configuration)
+        info.print_tables()
 
 def run(config):
     """Run the analysis.
@@ -56,14 +58,28 @@ def run(config):
     configuration = config.configuration
 
     if configuration:
+        info = Info(config.configuration)
+        info.print_tables()
         analysis_module = get_module(configuration['analysis_method'])
+
+        start = dt.datetime.now()
+        console.print(f"{INFO} Start: {start.isoformat('/', 'seconds')}")
+        start = time.monotonic()  # Simpler time for run duration
+
         analysis_module.process(configuration)
 
+        end = dt.datetime.now()
+        console.print(f"{INFO} End: {end.isoformat('/', 'seconds')}")
+        end = time.monotonic()
+
+        delta = dt.timedelta(seconds=int(end-start))
+        console.print(f"{INFO} Total duration: {delta}")
 
 def main():
-    if sys.version_info[:2] < (3, 6):
+    Info.print_panel()
+    if sys.version_info[:2] < (3, 8):
         raise Exception(f"Python {sys.version_info[0]}.{sys.version_info[1]} is"
-                        f" unsupported. Please upgrade to Python 3.6 or later.")
+                        f" unsupported. Please upgrade to Python 3.8 or later.")
 
     # We set the sub processes start method to spawn because it solves
     # deadlocks when a library cannot handle being used on two sides of a
@@ -100,7 +116,7 @@ def main():
         args = parser.parse_args()
 
         if args.config_file:
-            config = Configuration(args.config_file)
+            config = Configuration(Path(args.config_file))
         else:
             config = Configuration()
 
