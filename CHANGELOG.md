@@ -1,5 +1,11 @@
 # Change Log
 
+## Unreleased
+### Added
+### Changed
+### Fixed
+### Optimised
+
 ## 2022.0 (2022-01-10)
 ### Added
 - The polar dust model of X-CIGALE (Yang et al., 2020) for the `skirtor2016` module has been integrated into the regular version. (Médéric Boquien, based on the initial work of Guang Yang)
