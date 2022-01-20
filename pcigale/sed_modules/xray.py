@@ -27,6 +27,11 @@ class Xray(SedModule):
             "Photon index (Γ) of the AGN intrinsic X-ray spectrum.",
             1.8
         ),
+        "E_cut": (
+            "cigale_list()",
+            "Exponential cutoff energy of the AGN spectrum in keV.",
+            300
+        ),
         "alpha_ox": (
             "cigale_list()",
             "Power-law slope connecting Lν at rest-frame 2500 Å and 2 keV, "
@@ -73,6 +78,7 @@ class Xray(SedModule):
         """Build the model for a given set of parameters."""
 
         self.gam = float(self.parameters["gam"])
+        self.E_cut = float(self.parameters["E_cut"])
         self.a1, self.a2 = [
             float(item) for item in self.parameters["angle_coef"].split('&')
         ]
@@ -88,7 +94,7 @@ class Xray(SedModule):
         lam_1keV = self.c * cst.h / (1e3 * cst.eV)
         lam_0p5keV = lam_1keV * 2
         lam_100keV = lam_1keV * 0.01
-        lam_300keV = lam_1keV * 0.0033333
+        lam_cut = lam_1keV / self.E_cut
         lam_2keV = lam_1keV / 2
         lam_10keV = lam_1keV * 0.1
 
@@ -126,14 +132,13 @@ class Xray(SedModule):
 
         # We compute the unobscured AGN corona X-ray emission
         # The shape is power-law with high-E exp. cutoff
-        # with cut-off E=300 keV (Ueda+2014; Aird+2015)
         self.lumin_corona = self.wave ** (self.gam - 3.0) * np.exp(
-            -lam_300keV / self.wave
+            -lam_cut / self.wave
         )
 
         # Normalise the SED at 2 keV
         self.lumin_corona *= 1.0 / (
-            lam_2keV ** (self.gam - 3.0) * np.exp(-lam_300keV / lam_2keV)
+            lam_2keV ** (self.gam - 3.0) * np.exp(-lam_cut / lam_2keV)
         )
 
         # Calculate total AGN corona X-ray luminosity
@@ -187,6 +192,7 @@ class Xray(SedModule):
         # Add the configuration for X-ray module
         sed.add_module(self.name, self.parameters)
         sed.add_info("xray.gam", self.gam)
+        sed.add_info("xray.E_cut", self.E_cut)
         sed.add_info("xray.det_lmxb", self.det_lmxb)
         sed.add_info("xray.det_hmxb", self.det_hmxb)
         sed.add_info("xray.alpha_ox", self.alpha_ox)
