@@ -192,7 +192,7 @@ class Xray(SedModule):
         # Add the configuration for X-ray module
         sed.add_module(self.name, self.parameters)
         sed.add_info("xray.gam", self.gam)
-        sed.add_info("xray.E_cut", self.E_cut)
+        sed.add_info("xray.E_cut", self.E_cut, unit="keV")
         sed.add_info("xray.det_lmxb", self.det_lmxb)
         sed.add_info("xray.det_hmxb", self.det_hmxb)
         sed.add_info("xray.alpha_ox", self.alpha_ox)
