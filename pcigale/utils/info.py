@@ -79,7 +79,7 @@ class Info:
         """
 
         if len(self.config["data_file"]) == 0:
-            fname_data = f"[warning]None[/warning]"
+            fname_data = "[warning]None[/warning]"
             ntargets = "[warning]None[/warning]"
             z = self.config["sed_modules_params"]["redshifting"]["redshift"]
             if len(z) == 0:
@@ -166,7 +166,7 @@ class Info:
         """Return the formatted name of the parameters file for printing."""
 
         if len(self.config["parameters_file"]) == 0:
-            return f"[warning]None[/warning]"
+            return "[warning]None[/warning]"
         return self.config["parameters_files"]
 
     def _bands(self):

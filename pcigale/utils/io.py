@@ -34,7 +34,7 @@ def read_table(file_):
         table = Table.read(file_)
     except Exception:  # astropy should raise a specific exception
         try:
-            table = Table.read(file_, format="ascii", delimiter='\s')
+            table = Table.read(file_, format="ascii", delimiter=r"\s")
         except InconsistentTableError:
             raise Exception(f"The file {file_} can not be parsed as a data "
                             "table.")
