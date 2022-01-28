@@ -51,7 +51,7 @@ class SharedArray:
         # this with a try.
         try:
             self.array[:] = np.nan
-        except:
+        except Exception:
             pass
 
     def __setitem__(self, idx, data):

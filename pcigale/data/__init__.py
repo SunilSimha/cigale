@@ -76,7 +76,7 @@ class SimpleDatabase:
         try:
             with open(self.path / "parameters.pickle", "rb") as f:
                 self.parameters = pickle.load(f)
-        except:
+        except Exception:
             raise Exception(f"The database {self.name} appears corrupted. "
                             f"Erase {self.path} and rebuild it.")
 
@@ -152,7 +152,7 @@ class SimpleDatabase:
         try:
             with open(self.path / Path(f"{basename}.pickle"), "rb") as f:
                 entry = pickle.load(f)
-        except:
+        except Exception:
             raise Exception(f"Cannot read model {primarykeys}. Either the "
                             "parameters were passed incorrectly or the "
                             "database has not been built correctly.")

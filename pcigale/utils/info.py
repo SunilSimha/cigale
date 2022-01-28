@@ -40,7 +40,7 @@ class Info:
                         self.sedmodules[category] = [module.name]
                     else:
                         self.sedmodules[category].append(module.name)
-            except:
+            except Exception:
                 continue
 
     def print_tables(self):
