@@ -9,6 +9,7 @@ from .utils import get_info
 
 from pcigale.utils.console import console, WARNING
 
+
 class ObservationsManager:
     """Class to abstract the handling of the observations and provide a
     consistent interface for the rest of cigale to deal with observations.

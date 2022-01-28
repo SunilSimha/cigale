@@ -22,6 +22,7 @@ from pcigale.utils.console import console, INFO
 
 from pcigale.version import __version__
 
+
 def init(config):
     """Create a blank configuration file.
     """
@@ -43,6 +44,7 @@ def genconf(config):
     info = Info(config.config)
     info.print_tables()
 
+
 def check(config):
     """Check the configuration.
     """
@@ -51,6 +53,7 @@ def check(config):
     if configuration:
         info = Info(config.configuration)
         info.print_tables()
+
 
 def run(config):
     """Run the analysis.
@@ -74,6 +77,7 @@ def run(config):
 
         delta = dt.timedelta(seconds=int(end-start))
         console.print(f"{INFO} Total duration: {delta}")
+
 
 def main():
     Info.print_panel()

@@ -35,6 +35,7 @@ from ...managers.observations import ObservationsManager
 from ...managers.parameters import ParametersManager
 from pcigale.utils.console import console, INFO
 
+
 class PdfAnalysis(AnalysisModule):
     """PDF analysis module"""
 

@@ -18,6 +18,7 @@ from . import validation
 from pcigale.sed_modules.nebular import default_lines
 from pcigale.utils.console import console, INFO, WARNING, ERROR
 
+
 class Configuration:
     """This class manages the configuration of pcigale.
     """

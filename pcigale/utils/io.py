@@ -6,6 +6,7 @@ from functools import lru_cache
 from astropy.table import Table
 from astropy.io.ascii.core import InconsistentTableError
 
+
 @lru_cache
 def read_table(file_):
     """Read a data table using astropy

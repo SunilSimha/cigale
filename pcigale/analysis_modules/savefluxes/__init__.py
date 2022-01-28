@@ -21,6 +21,7 @@ from ...managers.observations import ObservationsManager
 from ...managers.parameters import ParametersManager
 from pcigale.utils.console import console, INFO
 
+
 class SaveFluxes(AnalysisModule):
     """Save fluxes analysis module
 
@@ -124,7 +125,6 @@ class SaveFluxes(AnalysisModule):
         self._compute_models(conf, observations, params)
 
         console.print(f"{INFO} Run completed! :thumbs_up:")
-
 
 
 # AnalysisModule to be returned by get_module

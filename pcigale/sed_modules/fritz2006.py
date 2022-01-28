@@ -36,6 +36,7 @@ def k_ext_short(ext_law):
 
     return interp1d(wl, curve['ext'] / (AB - AV))
 
+
 def k_ext(wavelength, ext_law):
     """
     Compute k(λ)=A(λ)/E(B-V) for a specified extinction law
@@ -93,6 +94,7 @@ def k_ext(wavelength, ext_law):
 
     return k
 
+
 def disk(wl, limits, coefs):
     ss = np.searchsorted(wl, limits)
     wpl = [slice(lo, hi) for lo, hi in zip(ss[:-1], ss[1:])]
@@ -107,6 +109,7 @@ def disk(wl, limits, coefs):
         spectrum[w] = wl[w]**coef * norm
 
     return spectrum * (1. / np.trapz(spectrum, x=wl))
+
 
 def schartmann2005_disk(wl, delta=0.):
     limits = np.array([8., 50., 125., 10000., 1e6])

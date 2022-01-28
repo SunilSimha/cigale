@@ -257,5 +257,6 @@ class Xray(SedModule):
         )
         sed.add_contribution('xray.agn', self.wave, self.lumin_corona * scl_fac)
 
+
 # SedModule to be returned by get_module
 Module = Xray
