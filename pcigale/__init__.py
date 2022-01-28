@@ -16,7 +16,6 @@ import time
 
 from .session.configuration import Configuration
 from .analysis_modules import get_module
-from .managers.parameters import ParametersManager
 from pcigale.utils.info import Info
 from pcigale.utils.console import console, INFO
 

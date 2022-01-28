@@ -16,7 +16,7 @@ from .. import analysis_modules
 from ..warehouse import SedWarehouse
 from . import validation
 from pcigale.sed_modules.nebular import default_lines
-from pcigale.utils.console import console, INFO, WARNING, ERROR
+from pcigale.utils.console import console, INFO, ERROR
 
 
 class Configuration:
