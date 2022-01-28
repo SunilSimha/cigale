@@ -36,12 +36,14 @@ def read_table(file_):
         try:
             table = Table.read(file_, format="ascii", delimiter=r"\s")
         except InconsistentTableError:
-            raise Exception(f"The file {file_} can not be parsed as a data "
-                            "table.")
+            raise Exception(
+                f"The file {file_} can not be parsed as a data table."
+            )
 
     # Convert all the integers to floats.
-    return Table([
-        col.astype(float) if col.name != 'id' and col.dtype == int
-        else col
-        for col in table.columns.values()
-    ])
+    return Table(
+        [
+            col.astype(float) if col.name != "id" and col.dtype == int else col
+            for col in table.columns.values()
+        ]
+    )
