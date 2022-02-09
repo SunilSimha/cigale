@@ -224,6 +224,13 @@ class Configuration:
             "the equivalent widths and for luminosity densities.")
         self.spec['properties'] = "cigale_string_list()"
 
+        # Additional error
+        self.config["additionalerror"] = "0.1"
+        self.config.comments["additionalerror"] = [""] + wrap("Relative "
+            "error added in quadrature to the uncertainties of the fluxes and "
+            "the extensive properties.")
+        self.spec["additionalerror"] = "float(min=0.0)"
+
         # SED creation modules configurations. For each module, we generate
         # the configuration section from its parameter list.
         self.config['sed_modules_params'] = {}

@@ -64,7 +64,7 @@ class ObservationsManagerPassbands:
         self._check_errors(defaulterror)
         self._check_invalid(config['analysis_params']['lim_flag'],
                             threshold)
-        self._add_model_error(modelerror)
+        self._add_model_error(config["additionalerror"])
 
         # Rebuild the quantities to fit after vetting them
         self.tofit = self.bands + self.intprops + self.extprops
