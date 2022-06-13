@@ -62,8 +62,8 @@ class SfhFromFile(SedModule):
             normalise = bool(self.parameters["normalise"])
 
         table = read_table(filename)
-        self.sfr = table.columns[self.sfr_column_number].data.astype(np.float)
-        time_grid = table.columns[0].data.astype(np.int)
+        self.sfr = table.columns[self.sfr_column_number].data.astype(np.float64)
+        time_grid = table.columns[0].data.astype(np.int64)
         if time_grid[0] != 0:
             raise Exception("The time grid must start from 0.")
         if np.all(time_grid[1:] - time_grid[:-1] == 1) == False:

@@ -73,7 +73,7 @@ class SfhPeriodic(SedModule):
             normalise = bool(self.parameters["normalise"])
 
         time_grid = np.arange(0, age)
-        self.sfr = np.zeros_like(time_grid, dtype=np.float)
+        self.sfr = np.zeros_like(time_grid, dtype=np.float64)
 
         if self.type_bursts == 0:
             burst = np.exp(-time_grid / self.tau_bursts)
