@@ -6,22 +6,37 @@ from . import SedModule
 
 __category__ = "nebular"
 
-default_lines = ['Ly-alpha',
-                 'HeII-164.0',
-                 'OII-372.6',
-                 'OII-372.9',
-                 'H-delta',
-                 'H-gamma',
-                 'H-beta',
-                 'OIII-495.9',
-                 'OIII-500.7',
-                 'OI-630.0',
-                 'NII-654.8',
-                 'H-alpha',
-                 'NII-658.3',
-                 'SII-671.6',
-                 'SII-673.1'
-                 ]
+default_lines = [
+        'ArIII-713.6',
+        'CII-232.4',
+        'CII-232.47',
+        'CII-232.54',
+        'CII-232.7',
+        'CII-232.8',
+        'CIII-190.7',
+        'CIII-190.9',
+        'H-alpha',
+        'H-beta',
+        'H-delta',
+        'H-gamma',
+        'HeII-164.0',
+        'Ly-alpha',
+        'NII-654.8',
+        'NII-658.3',
+        'NeIII-396.7',
+        'OI-630.0',
+        'OII-372.6',
+        'OII-372.9',
+        'OIII-495.9',
+        'OIII-500.7',
+        'Pa-alpha',
+        'Pa-beta',
+        'Pa-gamma',
+        'SII-671.6',
+        'SII-673.1',
+        'SIII-906.9',
+        'SIII-953.1',
+]
 
 
 class NebularEmission(SedModule):
