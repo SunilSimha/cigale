@@ -60,7 +60,10 @@ class NebularEmission(SedModule):
             '-3.4 & -3.3 & -3.2 & -3.1 & -3.0 & -2.9 & -2.8 & -2.7 & -2.6 & '
             '-2.5 & -2.4 & -2.3 & -2.2 & -2.1 & -2.0 & -1.9 & -1.8 & -1.7 & '
             '-1.6 & -1.5 & -1.4 & -1.3 & -1.2 & -1.1 & -1.0)',
-            "Ionisation parameter",
+            "Ionisation parameter. Possible values are: -4.0, -3.9, -3.8, "
+            "-3.7, -3.6, -3.5, -3.4, -3.3, -3.2, -3.1, -3.0, -2.9, -2.8, "
+            "-2.7, -2.6, -2.5, -2.4, -2.3, -2.2, -2.1, -2.0, -1.9, -1.8, "
+            "-1.7, -1.6, -1.5, -1.4, -1.3, -1.2, -1.1, -1.0.",
             -2.
         ),
         'zgas': (
@@ -68,27 +71,32 @@ class NebularEmission(SedModule):
             '0.003 & 0.004 & 0.005 & 0.006 & 0.007 & 0.008 & 0.009 & 0.011 & '
             '0.012 & 0.014 & 0.016 & 0.019 & 0.020 & 0.022 & 0.025 & 0.03 & '
             '0.033 & 0.037 & 0.041 & 0.046 & 0.051)',
-            "Gas metallicity",
+            "Gas metallicity. Possible values are: 0.000, 0.0004, 0.001, "
+            "0.002, 0.0025, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009,"
+            " 0.011, 0.012, 0.014, 0.016, 0.019, 0.020, 0.022, 0.025, 0.03, "
+            "0.033, 0.037, 0.041, 0.046, 0.051.",
             0.02
         ),
         'ne': (
             'cigale_list(options=10 & 100 & 1000)',
-            "Electron density",
+            "Electron density. Possible values are: 10, 100, 1000.",
             100
         ),
         'f_esc': (
             'cigale_list(minvalue=0., maxvalue=1.)',
-            "Fraction of Lyman continuum photons escaping the galaxy",
+            "Fraction of Lyman continuum photons escaping the galaxy. "
+            "Possible values between 0 and 1.",
             0.
         ),
         'f_dust': (
             'cigale_list(minvalue=0., maxvalue=1.)',
-            "Fraction of Lyman continuum photons absorbed by dust",
+            "Fraction of Lyman continuum photons absorbed by dust. Possible "
+            "values between 0 and 1.",
             0.
         ),
         'lines_width': (
             'cigale_list(minvalue=0.)',
-            "Line width in km/s",
+            "Line width in km/s.",
             300.
         ),
         'emission': (
