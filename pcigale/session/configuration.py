@@ -326,7 +326,7 @@ class Configuration:
         """
 
         z_mod = self.config['sed_modules_params']['redshifting']['redshift']
-        if type(z_mod) is str and not z_mod:
+        if isinstance(z_mod, str) and not z_mod:
             if self.config['data_file']:
                 obs_table = read_table(self.config['data_file'])
                 if 'redshift_decimals' in self.config['analysis_params']:

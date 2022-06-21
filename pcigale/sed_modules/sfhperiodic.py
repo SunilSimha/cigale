@@ -67,7 +67,7 @@ class SfhPeriodic(SedModule):
         self.tau_bursts = float(self.parameters["tau_bursts"])
         age = int(self.parameters["age"])
         sfr_A = float(self.parameters["sfr_A"])
-        if type(self.parameters["normalise"]) is str:
+        if isinstance(self.parameters["normalise"], str):
             normalise = self.parameters["normalise"].lower() == 'true'
         else:
             normalise = bool(self.parameters["normalise"])

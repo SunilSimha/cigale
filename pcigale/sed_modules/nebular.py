@@ -116,7 +116,7 @@ class NebularEmission(SedModule):
         self.fesc = float(self.parameters["f_esc"])
         self.fdust = float(self.parameters["f_dust"])
         self.lines_width = float(self.parameters["lines_width"])
-        if type(self.parameters["emission"]) is str:
+        if isinstance(self.parameters["emission"], str):
             self.emission = self.parameters["emission"].lower() == "true"
         else:
             self.emission = bool(self.parameters["emission"])

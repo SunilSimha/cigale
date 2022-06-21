@@ -56,7 +56,7 @@ class SfhFromFile(SedModule):
         filename = self.parameters['filename']
         age = int(self.parameters['age'])
         self.sfr_column_number = int(self.parameters['sfr_column'])
-        if type(self.parameters["normalise"]) is str:
+        if isinstance(self.parameters["normalise"], str):
             normalise = self.parameters["normalise"].lower() == 'true'
         else:
             normalise = bool(self.parameters["normalise"])
