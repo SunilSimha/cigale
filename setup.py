@@ -54,6 +54,6 @@ setup(
     author_email="cigale@lam.fr",
     url="https://cigale.lam.fr",
     description="Python Code Investigating Galaxy Emission",
-    license="CeCILL-V2",
+    license="CECILL-2.0",
     keywords="astrophysics, galaxy, SED fitting"
 )
