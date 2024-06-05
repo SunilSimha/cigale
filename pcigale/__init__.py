@@ -71,7 +71,10 @@ def main():
     # for instance. On Linux we should be pretty safe with a fork, which allows
     # to start processes much more rapidly.
     if sys.platform.startswith('linux'):
-        mp.set_start_method('fork')
+        try:
+            mp.set_start_method('fork')
+        except:
+            pass
     else:
         mp.set_start_method('spawn')
 

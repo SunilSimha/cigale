@@ -127,7 +127,10 @@ def plot_filters(fnames):
 def main():
 
     if sys.version_info[:2] >= (3, 4):
-        mp.set_start_method('spawn')
+        try:
+            mp.set_start_method('spawn')
+        except RuntimeError:
+            pass
     else:
         print("Could not set the multiprocessing start method to spawn. If "
               "you encounter a deadlock, please upgrade to Python≥3.4.")

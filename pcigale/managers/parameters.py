@@ -101,7 +101,7 @@ class ParametersManagerGrid(object):
         # We must take a special care of strings, because they are iterable.
 
         for key, value in dictionary.items():
-            if ((not isinstance(value, collections.Iterable)) or
+            if ((not isinstance(value, collections.abc.Iterable)) or
                     isinstance(value, str)):
                 dictionary[key] = [value]
 
